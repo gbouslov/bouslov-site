@@ -53,6 +53,23 @@ export interface Score {
   category?: Category
 }
 
+export interface Travel {
+  id: string
+  user_email: string
+  country_code: string
+  country_name: string
+  visited_at: string
+  notes: string | null
+}
+
+export interface StateVisited {
+  id: string
+  user_email: string
+  state_code: string
+  state_name: string
+  visited_at: string
+}
+
 // Helper functions
 export async function getCategories(): Promise<Category[]> {
   const { data, error } = await supabase
@@ -204,4 +221,126 @@ export async function upsertUser(user: Partial<User> & { email: string }) {
 
   if (error) throw error
   return data
+}
+
+// Travel functions
+export async function getAllTravels(): Promise<Travel[]> {
+  const { data, error } = await supabase
+    .from('travels')
+    .select('*')
+    .order('country_name')
+
+  if (error) throw error
+  return data || []
+}
+
+export async function getTravelsByUser(email: string): Promise<Travel[]> {
+  const { data, error } = await supabase
+    .from('travels')
+    .select('*')
+    .eq('user_email', email)
+    .order('country_name')
+
+  if (error) throw error
+  return data || []
+}
+
+export async function addTravel(travel: {
+  user_email: string
+  country_code: string
+  country_name: string
+  notes?: string
+}): Promise<Travel> {
+  const { data, error } = await supabase
+    .from('travels')
+    .insert({
+      user_email: travel.user_email,
+      country_code: travel.country_code,
+      country_name: travel.country_name,
+      notes: travel.notes || null,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function removeTravel(id: string, userEmail: string): Promise<void> {
+  const { error } = await supabase
+    .from('travels')
+    .delete()
+    .eq('id', id)
+    .eq('user_email', userEmail)
+
+  if (error) throw error
+}
+
+export async function getTravelCounts(): Promise<Record<string, number>> {
+  const { data, error } = await supabase
+    .from('travels')
+    .select('user_email')
+
+  if (error) throw error
+
+  const counts: Record<string, number> = {}
+  for (const travel of data || []) {
+    counts[travel.user_email] = (counts[travel.user_email] || 0) + 1
+  }
+  return counts
+}
+
+// States functions
+export async function getAllStates(): Promise<StateVisited[]> {
+  const { data, error } = await supabase
+    .from('states_visited')
+    .select('*')
+    .order('state_name')
+
+  if (error) throw error
+  return data || []
+}
+
+export async function getStatesByUser(email: string): Promise<StateVisited[]> {
+  const { data, error } = await supabase
+    .from('states_visited')
+    .select('*')
+    .eq('user_email', email)
+    .order('state_name')
+
+  if (error) throw error
+  return data || []
+}
+
+export async function addState(state: {
+  user_email: string
+  state_code: string
+  state_name: string
+}): Promise<StateVisited> {
+  const { data, error } = await supabase
+    .from('states_visited')
+    .insert({
+      user_email: state.user_email,
+      state_code: state.state_code,
+      state_name: state.state_name,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function getStateCounts(): Promise<Record<string, number>> {
+  const { data, error } = await supabase
+    .from('states_visited')
+    .select('user_email')
+
+  if (error) throw error
+
+  const counts: Record<string, number> = {}
+  for (const state of data || []) {
+    counts[state.user_email] = (counts[state.user_email] || 0) + 1
+  }
+  return counts
 }

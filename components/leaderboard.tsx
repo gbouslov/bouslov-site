@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
-import { ExternalLink, Trophy, Clock, TrendingUp, Crown, Keyboard, Target, Brain, Crosshair, Zap } from 'lucide-react'
+import { ExternalLink, Trophy, Clock, TrendingUp, Crown, Keyboard, Target, Brain, Crosshair, Zap, Globe, MapPin } from 'lucide-react'
 import { CATEGORIES, RANK_LABELS, RANK_COLORS, RANK_BG } from '@/lib/constants'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -19,6 +19,8 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   memory: <Brain className="h-4 w-4" />,
   accuracy: <Target className="h-4 w-4" />,
   aim: <Crosshair className="h-4 w-4" />,
+  countries: <Globe className="h-4 w-4" />,
+  states: <MapPin className="h-4 w-4" />,
 }
 
 interface Score {
@@ -106,7 +108,7 @@ export function Leaderboard({ initialScores = {}, recentActivity = [] }: Leaderb
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-6 bg-zinc-800/50 p-1">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-6 bg-zinc-800/50 p-1">
               {CATEGORIES.map(cat => (
                 <TabsTrigger 
                   key={cat.slug} 
@@ -131,16 +133,29 @@ export function Leaderboard({ initialScores = {}, recentActivity = [] }: Leaderb
                     </h3>
                     <p className="text-sm text-zinc-500">{category.description}</p>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    asChild
-                    className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-300"
-                  >
-                    <a href={category.external_url} target="_blank" rel="noopener noreferrer">
-                      Take Test <ExternalLink className="ml-2 h-3 w-3" />
-                    </a>
-                  </Button>
+                  {'internal' in category && category.internal ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-300"
+                    >
+                      <Link href={category.external_url}>
+                        View Map <Globe className="ml-2 h-3 w-3" />
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-300"
+                    >
+                      <a href={category.external_url} target="_blank" rel="noopener noreferrer">
+                        Take Test <ExternalLink className="ml-2 h-3 w-3" />
+                      </a>
+                    </Button>
+                  )}
                 </div>
                 
                 <div className="space-y-2">

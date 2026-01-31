@@ -48,6 +48,24 @@ export const CATEGORIES = [
     unit: 'ms',
     description: 'Click accuracy',
   },
+  {
+    slug: 'countries',
+    name: 'Countries',
+    external_url: '/travel',
+    score_type: 'higher_better' as const,
+    unit: '',
+    description: 'Countries visited',
+    internal: true,
+  },
+  {
+    slug: 'states',
+    name: 'US States',
+    external_url: '/travel',
+    score_type: 'higher_better' as const,
+    unit: '',
+    description: 'States visited',
+    internal: true,
+  },
 ]
 
 // Rank position labels
