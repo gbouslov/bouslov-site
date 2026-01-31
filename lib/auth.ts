@@ -14,8 +14,8 @@ export const ALLOWED_EMAILS = [
 export const EMAIL_TO_NAME: Record<string, string> = {
   'gbouslov@gmail.com': 'Gabe',
   'dbouslov@gmail.com': 'Daniel',
-  'jbouslov@gmail.com': 'Jake',
-  'bouslovd@gmail.com': 'Dad',
+  'jbouslov@gmail.com': 'Jonathan',
+  'bouslovd@gmail.com': 'Daniel',
 }
 
 export const authOptions: NextAuthOptions = {

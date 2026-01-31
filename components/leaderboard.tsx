@@ -254,8 +254,8 @@ function calculateOverallRankings(scoresByCategory: Record<string, Score[]>) {
   const allowedEmails = [
     { email: 'gbouslov@gmail.com', name: 'Gabe' },
     { email: 'dbouslov@gmail.com', name: 'Daniel' },
-    { email: 'jbouslov@gmail.com', name: 'Jake' },
-    { email: 'bouslovd@gmail.com', name: 'Dad' },
+    { email: 'jbouslov@gmail.com', name: 'Jonathan' },
+    { email: 'bouslovd@gmail.com', name: 'Daniel' },
   ]
 
   allowedEmails.forEach(({ email, name }) => {
