@@ -60,16 +60,6 @@ export default function LandingPage() {
             </Link>
           )}
         </div>
-
-        <div className="mt-8 flex items-center gap-6 text-zinc-600 text-xs">
-          <span>Gabe</span>
-          <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-          <span>David</span>
-          <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-          <span>Jonathan</span>
-          <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-          <span>Daniel</span>
-        </div>
       </div>
     </div>
   )

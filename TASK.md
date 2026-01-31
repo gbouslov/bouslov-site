@@ -1,41 +1,55 @@
-# TASK.md - Bouslov.com Globe Landing Page
+# TASK.md - Bouslov.com Globe Landing Page (v2 - Real Earth)
 
 ## Overview
-Transform bouslov.com from basic leaderboard into a stunning site with an unauthenticated globe landing page, with all actual content (leaderboard, profiles) behind Google OAuth.
+Replace the current procedural dark sphere with a REAL Earth globe with day/night cycle, like Apple's globe.
 
 ## Current State
-- Next.js 15 + shadcn/ui + Supabase + NextAuth (Google OAuth)
-- Basic leaderboard functionality working
-- Dark mode implemented (#09090b background)
-- Auth working for 4 Bouslov emails only
+- Globe landing page exists but uses procedural dark sphere (boring)
+- Need actual Earth textures with day/night terminator
+- Auth gating already working
 
 ## Requirements
 
-### 1. Globe Landing Page (Unauthenticated)
-Create a visually stunning landing page featuring:
+### 1. Real Earth Globe with Day/Night
+Use `react-globe.gl` with the day-night-cycle shader approach:
 
-**3D Globe:**
-- Use Three.js / react-three-fiber / react-globe.gl
-- Slowly rotating Earth with subtle glow effect
-- Dark/space aesthetic matching site theme
-- Smooth, performant animation
+**Implementation (from react-globe.gl example):**
+```bash
+npm install react-globe.gl solar-calculator three
+```
+
+**Key features needed:**
+- Real Earth day texture: `//cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg`
+- Real Earth night texture: `//cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg`  
+- Night sky background: `//cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png`
+- Custom shader that blends day/night based on sun position
+- Solar calculator for realistic sun position
+- Smooth day/night terminator (shadow line)
+- Slowly rotating
+
+**Reference implementation:**
+https://github.com/vasturiano/react-globe.gl/blob/master/example/day-night-cycle/index.html
+
+The shader uses:
+- `dayTexture` and `nightTexture` uniforms
+- `sunPosition` calculated from solar-calculator
+- `smoothstep` blend between day/night at terminator
 
 **Interactive Elements:**
-- 4 glowing dots on the globe representing each family member's location
-- On hover: dot expands, shows name + mini avatar/icon
-- Optional: connection lines between dots (we're family, connected worldwide)
+- 4 glowing dots for family members (keep existing)
+- On hover: show name tooltip
+- Keep connection lines if they exist
 
 **Layout:**
-- Globe centered, takes up hero section
-- Minimal text: "BOUSLOV" title, maybe a subtle tagline
-- "Sign In" button (Google OAuth) - sleek, not prominent
-- Dark background (#09090b) with subtle star field or gradient
+- Globe centered, full hero
+- "BOUSLOV" title + "Connected worldwide" tagline
+- "Sign In" button
+- Dark background with star field
 
 **Vibe:**
-- Linear.app / Vercel aesthetic
-- NO emojis anywhere - use Lucide icons if needed
-- Sleek, modern, premium feel
-- "This family is serious about competition" energy
+- Apple-style realistic Earth
+- Premium, sleek
+- NO emojis
 
 ### 2. Auth Gating
 - `/` (root) = Globe landing page (public, no auth required)
