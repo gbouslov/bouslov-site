@@ -7,11 +7,11 @@ import { Providers } from '@/components/providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Bouslov Bros | Family Competition Leaderboard',
-  description: 'The ultimate family competition leaderboard. Track scores across typing, chess, reaction time, and more!',
+  title: 'Bouslov Bros',
+  description: 'Family competition leaderboard',
   openGraph: {
-    title: 'Bouslov Bros | Family Competition Leaderboard',
-    description: 'The ultimate family competition leaderboard',
+    title: 'Bouslov Bros',
+    description: 'Family competition leaderboard',
     type: 'website',
   },
 }
@@ -22,12 +22,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className={`${inter.className} bg-[#09090b] min-h-screen`}>
         <Providers>
-          <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+          <div className="min-h-screen">
             <Nav />
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 py-8 max-w-6xl">
               {children}
             </main>
           </div>

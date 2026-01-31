@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Trophy, LogIn, AlertCircle } from 'lucide-react'
+import { Zap, AlertCircle } from 'lucide-react'
 
 function LoginContent() {
   const { data: session, status } = useSession()
@@ -22,7 +22,7 @@ function LoginContent() {
   if (status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
       </div>
     )
   }
@@ -32,25 +32,25 @@ function LoginContent() {
       {/* Logo */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2">
-          <Trophy className="h-12 w-12 text-yellow-500" />
+          <Zap className="h-10 w-10 text-blue-500" />
         </div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold text-white">
           Bouslov Bros
         </h1>
-        <p className="text-muted-foreground">Family Competition Leaderboard</p>
+        <p className="text-zinc-500">Family competition tracker</p>
       </div>
 
       {/* Login Card */}
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/50">
         <CardHeader className="text-center">
-          <CardTitle>Sign In</CardTitle>
-          <CardDescription>
-            Family members only. Sign in with your Google account.
+          <CardTitle className="text-zinc-100">Sign In</CardTitle>
+          <CardDescription className="text-zinc-500">
+            Family members only
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-500 text-sm">
+            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-400 text-sm">
               <AlertCircle className="h-4 w-4" />
               {error === 'AccessDenied' 
                 ? 'Access denied. This site is for Bouslov family members only.'
@@ -59,7 +59,7 @@ function LoginContent() {
           )}
 
           <Button 
-            className="w-full bg-white hover:bg-gray-100 text-gray-900 border shadow-sm"
+            className="w-full bg-white hover:bg-zinc-100 text-zinc-900 border-0"
             onClick={() => signIn('google', { callbackUrl: '/' })}
           >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -83,9 +83,9 @@ function LoginContent() {
             Sign in with Google
           </Button>
 
-          <div className="text-center text-xs text-muted-foreground">
-            <p>Authorized emails only:</p>
-            <p className="font-mono mt-1">
+          <div className="text-center text-xs text-zinc-600">
+            <p>Authorized accounts only</p>
+            <p className="font-mono mt-1 text-zinc-500">
               gbouslov, dbouslov, jbouslov, bouslovd
             </p>
           </div>
@@ -99,7 +99,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
       </div>
     }>
       <LoginContent />

@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -14,9 +13,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ExternalLink, Upload, Loader2, Trophy } from 'lucide-react'
+import { ExternalLink, Upload, Loader2, Trophy, Keyboard, Crown, Zap, Brain, Target, Crosshair, ArrowUp, ArrowDown } from 'lucide-react'
 import { CATEGORIES } from '@/lib/constants'
 import { toast } from 'sonner'
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  wpm: <Keyboard className="h-4 w-4" />,
+  chess: <Crown className="h-4 w-4" />,
+  reaction: <Zap className="h-4 w-4" />,
+  memory: <Brain className="h-4 w-4" />,
+  accuracy: <Target className="h-4 w-4" />,
+  aim: <Crosshair className="h-4 w-4" />,
+}
 
 export function ScoreForm() {
   const router = useRouter()
@@ -59,7 +67,7 @@ export function ScoreForm() {
         throw new Error(error.message || 'Failed to submit score')
       }
 
-      toast.success('Score submitted! 🎉')
+      toast.success('Score submitted!')
       router.push('/')
       router.refresh()
     } catch (error) {
@@ -71,29 +79,36 @@ export function ScoreForm() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Card>
+      <Card className="border-zinc-800 bg-zinc-900/50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-yellow-500" />
-            Log Your Score
+          <CardTitle className="flex items-center gap-2 text-zinc-100">
+            <Trophy className="h-5 w-5 text-amber-400" />
+            Log Score
           </CardTitle>
-          <CardDescription>
-            Complete a test and record your achievement
+          <CardDescription className="text-zinc-500">
+            Record your achievement
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Category Selection */}
             <div className="space-y-2">
-              <Label htmlFor="category">Category *</Label>
+              <Label htmlFor="category" className="text-zinc-300">Category</Label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
+                <SelectTrigger className="border-zinc-700 bg-zinc-800/50 text-zinc-100">
+                  <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="border-zinc-700 bg-zinc-900">
                   {CATEGORIES.map(cat => (
-                    <SelectItem key={cat.slug} value={cat.slug}>
-                      {cat.icon} {cat.name}
+                    <SelectItem 
+                      key={cat.slug} 
+                      value={cat.slug}
+                      className="text-zinc-300 focus:bg-zinc-800 focus:text-zinc-100"
+                    >
+                      <span className="flex items-center gap-2">
+                        {CATEGORY_ICONS[cat.slug]}
+                        {cat.name}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -102,24 +117,32 @@ export function ScoreForm() {
 
             {/* External Link */}
             {selectedCategory && (
-              <div className="p-4 bg-muted rounded-lg">
+              <div className="p-4 rounded-lg border border-zinc-800 bg-zinc-900/30">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">{selectedCategory.icon} {selectedCategory.name}</p>
-                    <p className="text-sm text-muted-foreground">{selectedCategory.description}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="font-medium text-zinc-200 flex items-center gap-2">
+                      {CATEGORY_ICONS[selectedCategory.slug]}
+                      {selectedCategory.name}
+                    </p>
+                    <p className="text-sm text-zinc-500">{selectedCategory.description}</p>
+                    <p className="text-xs text-zinc-600 mt-1 flex items-center gap-1">
                       {selectedCategory.score_type === 'higher_better' 
-                        ? '↑ Higher is better' 
-                        : '↓ Lower is better'}
+                        ? <><ArrowUp className="h-3 w-3" /> Higher is better</>
+                        : <><ArrowDown className="h-3 w-3" /> Lower is better</>}
                     </p>
                   </div>
-                  <Button variant="outline" size="sm" asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    asChild
+                    className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-300"
+                  >
                     <a 
                       href={selectedCategory.external_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
                     >
-                      Take Test <ExternalLink className="ml-2 h-4 w-4" />
+                      Test <ExternalLink className="ml-2 h-3 w-3" />
                     </a>
                   </Button>
                 </div>
@@ -128,39 +151,42 @@ export function ScoreForm() {
 
             {/* Score Input */}
             <div className="space-y-2">
-              <Label htmlFor="score">
-                Score * {selectedCategory && `(${selectedCategory.unit})`}
+              <Label htmlFor="score" className="text-zinc-300">
+                Score {selectedCategory && <span className="text-zinc-500">({selectedCategory.unit})</span>}
               </Label>
               <Input
                 id="score"
                 type="number"
                 step="any"
-                placeholder={selectedCategory ? `Enter your ${selectedCategory.unit}` : 'Enter your score'}
+                placeholder={selectedCategory ? `Enter ${selectedCategory.unit}` : 'Enter score'}
                 value={score}
                 onChange={(e) => setScore(e.target.value)}
-                className="font-mono text-lg"
+                className="font-mono text-lg border-zinc-700 bg-zinc-800/50 text-zinc-100 placeholder:text-zinc-600"
               />
             </div>
 
             {/* Proof URL */}
             <div className="space-y-2">
-              <Label htmlFor="proof">Proof URL (optional)</Label>
+              <Label htmlFor="proof" className="text-zinc-300">
+                Proof URL <span className="text-zinc-600">(optional)</span>
+              </Label>
               <Input
                 id="proof"
                 type="url"
-                placeholder="Link to screenshot or results page"
+                placeholder="Link to screenshot or results"
                 value={proofUrl}
                 onChange={(e) => setProofUrl(e.target.value)}
+                className="border-zinc-700 bg-zinc-800/50 text-zinc-100 placeholder:text-zinc-600"
               />
-              <p className="text-xs text-muted-foreground">
-                Share a link to your results for verification (e.g., screenshot URL, shared results page)
+              <p className="text-xs text-zinc-600">
+                Screenshot or results page URL for verification
               </p>
             </div>
 
             {/* Submit */}
             <Button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white border-0"
               disabled={loading}
             >
               {loading ? (
@@ -171,7 +197,7 @@ export function ScoreForm() {
               ) : (
                 <>
                   <Upload className="mr-2 h-4 w-4" />
-                  Submit Score
+                  Submit
                 </>
               )}
             </Button>
@@ -180,17 +206,25 @@ export function ScoreForm() {
       </Card>
 
       {/* Quick Links */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Links</CardTitle>
-          <CardDescription>Jump to any test</CardDescription>
+      <Card className="mt-6 border-zinc-800 bg-zinc-900/50">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base text-zinc-100">Quick Links</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {CATEGORIES.map(cat => (
-              <Button key={cat.slug} variant="outline" size="sm" asChild>
+              <Button 
+                key={cat.slug} 
+                variant="outline" 
+                size="sm" 
+                asChild
+                className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+              >
                 <a href={cat.external_url} target="_blank" rel="noopener noreferrer">
-                  {cat.icon} {cat.name.split(' ')[0]}
+                  <span className="flex items-center gap-1.5">
+                    {CATEGORY_ICONS[cat.slug]}
+                    {cat.name.split(' ')[0]}
+                  </span>
                 </a>
               </Button>
             ))}
