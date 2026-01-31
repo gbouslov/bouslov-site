@@ -1,14 +1,14 @@
-import { notFound } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { notFound, redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, TrendingUp, Trophy, Keyboard, Crown, Zap, Brain, Target, Crosshair } from 'lucide-react'
 import { getUserByEmail, getUserScores } from '@/lib/supabase'
-import { CATEGORIES, RANK_LABELS } from '@/lib/constants'
-import { EMAIL_TO_NAME, ALLOWED_EMAILS } from '@/lib/auth'
+import { CATEGORIES } from '@/lib/constants'
+import { EMAIL_TO_NAME, ALLOWED_EMAILS, authOptions } from '@/lib/auth'
 import { formatDistanceToNow, format } from 'date-fns'
 
-// Category icons mapping
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   wpm: <Keyboard className="h-4 w-4" />,
   chess: <Crown className="h-4 w-4" />,
@@ -23,6 +23,12 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
+  const session = await getServerSession(authOptions)
+
+  if (!session) {
+    redirect('/login')
+  }
+
   const { id } = await params
   const email = decodeURIComponent(id)
 
@@ -44,14 +50,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   const displayName = user?.name || EMAIL_TO_NAME[email.toLowerCase()] || 'Unknown'
 
-  // Calculate personal bests per category
   const personalBests: Record<string, any> = {}
   for (const score of scores) {
     const catSlug = score.category?.slug
     if (!catSlug) continue
 
     const isHigherBetter = score.category?.score_type === 'higher_better'
-    
+
     if (!personalBests[catSlug]) {
       personalBests[catSlug] = score
     } else {
@@ -67,7 +72,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      {/* Profile Header */}
       <Card className="border-zinc-800 bg-zinc-900/50">
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row items-center gap-6">
@@ -101,7 +105,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         </CardContent>
       </Card>
 
-      {/* Personal Bests */}
       <Card className="border-zinc-800 bg-zinc-900/50">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-zinc-100">
@@ -121,8 +124,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 if (!best) return null
 
                 return (
-                  <div 
-                    key={category.slug} 
+                  <div
+                    key={category.slug}
                     className="p-4 rounded-lg border border-zinc-800 bg-zinc-900/30"
                   >
                     <div className="flex items-center justify-between mb-3">
@@ -148,7 +151,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         </CardContent>
       </Card>
 
-      {/* Score History */}
       <Card className="border-zinc-800 bg-zinc-900/50">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-zinc-100">
@@ -164,7 +166,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           ) : (
             <div className="space-y-2">
               {scores.slice(0, 20).map(score => (
-                <div 
+                <div
                   key={score.id}
                   className="flex items-center gap-4 p-3 rounded-lg border border-zinc-800/50 hover:bg-zinc-800/30 transition-colors"
                 >
@@ -185,7 +187,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                       </span>
                     </p>
                     {score.proof_url && (
-                      <a 
+                      <a
                         href={score.proof_url}
                         target="_blank"
                         rel="noopener noreferrer"

@@ -15,7 +15,7 @@ function LoginContent() {
 
   useEffect(() => {
     if (session) {
-      router.push('/')
+      router.push('/leaderboard')
     }
   }, [session, router])
 
@@ -58,9 +58,9 @@ function LoginContent() {
             </div>
           )}
 
-          <Button 
+          <Button
             className="w-full bg-white hover:bg-zinc-100 text-zinc-900 border-0"
-            onClick={() => signIn('google', { callbackUrl: '/' })}
+            onClick={() => signIn('google', { callbackUrl: '/leaderboard' })}
           >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path

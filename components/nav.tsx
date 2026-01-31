@@ -19,12 +19,12 @@ export function Nav() {
   return (
     <nav className="border-b border-zinc-800/50 bg-[#09090b]/80 backdrop-blur-xl sticky top-0 z-50">
       <div className="container mx-auto px-4 h-14 flex items-center justify-between max-w-6xl">
-        <Link 
-          href="/" 
+        <Link
+          href="/leaderboard"
           className="flex items-center gap-2 font-semibold text-lg text-white hover:text-zinc-300 transition-colors"
         >
           <Zap className="h-5 w-5 text-blue-500" />
-          <span>Bouslov Bros</span>
+          <span>Bouslov</span>
         </Link>
 
         <div className="flex items-center gap-3">
@@ -69,7 +69,7 @@ export function Nav() {
                   </div>
                   <DropdownMenuSeparator className="bg-zinc-800" />
                   <DropdownMenuItem asChild className="text-zinc-300 focus:bg-zinc-800 focus:text-zinc-100">
-                    <Link href="/" className="cursor-pointer">
+                    <Link href="/leaderboard" className="cursor-pointer">
                       <Home className="mr-2 h-4 w-4" />
                       Leaderboard
                     </Link>

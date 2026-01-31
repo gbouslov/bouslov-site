@@ -13,7 +13,7 @@ export const ALLOWED_EMAILS = [
 // Email to display name mapping
 export const EMAIL_TO_NAME: Record<string, string> = {
   'gbouslov@gmail.com': 'Gabe',
-  'dbouslov@gmail.com': 'Daniel',
+  'dbouslov@gmail.com': 'David',
   'jbouslov@gmail.com': 'Jonathan',
   'bouslovd@gmail.com': 'Daniel',
 }
