@@ -452,14 +452,6 @@ function CategoryDetailModal({
   if (!category) return null
 
   const groupKey = CATEGORY_TO_GROUP[category.slug]
-  const accentColor = groupKey === 'chess' ? 'amber' :
-                      groupKey === 'cognitive' ? 'blue' :
-                      groupKey === 'travel' ? 'emerald' :
-                      groupKey === 'typing' ? 'violet' :
-                      'zinc'
-
-  const iconBgClass = `bg-${accentColor}-500/10`
-  const iconTextClass = `text-${accentColor}-400`
   const headerBorderClass = groupKey === 'chess' ? 'bg-gradient-to-r from-amber-400 to-amber-600' :
                             groupKey === 'cognitive' ? 'bg-gradient-to-r from-blue-400 to-blue-600' :
                             groupKey === 'travel' ? 'bg-gradient-to-r from-emerald-400 to-emerald-600' :
@@ -662,12 +654,25 @@ function LogScoreModal({
     }
   }
 
+  // Get accent colors based on selected category
+  const groupKey = selectedCategory ? CATEGORY_TO_GROUP[selectedCategory] : null
+  const buttonClass = groupKey === 'chess' ? 'bg-amber-500 hover:bg-amber-600' :
+                      groupKey === 'cognitive' ? 'bg-blue-500 hover:bg-blue-600' :
+                      groupKey === 'travel' ? 'bg-emerald-500 hover:bg-emerald-600' :
+                      groupKey === 'typing' ? 'bg-violet-500 hover:bg-violet-600' :
+                      'bg-zinc-600 hover:bg-zinc-500'
+  const accentBorder = groupKey === 'chess' ? 'bg-gradient-to-r from-amber-400 to-amber-600' :
+                       groupKey === 'cognitive' ? 'bg-gradient-to-r from-blue-400 to-blue-600' :
+                       groupKey === 'travel' ? 'bg-gradient-to-r from-emerald-400 to-emerald-600' :
+                       groupKey === 'typing' ? 'bg-gradient-to-r from-violet-400 to-violet-600' :
+                       'bg-gradient-to-r from-zinc-400 to-zinc-600'
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button
           size="sm"
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-zinc-700 hover:bg-zinc-600 text-white border border-zinc-600"
         >
           <Plus className="h-4 w-4 mr-2" />
           Log Score
@@ -675,7 +680,10 @@ function LogScoreModal({
       </DialogTrigger>
       <DialogContent className="bg-zinc-900 border-zinc-800 max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-zinc-100">Log a Score</DialogTitle>
+          <div className="space-y-2">
+            <DialogTitle className="text-zinc-100">Log a Score</DialogTitle>
+            <div className={`h-0.5 w-12 rounded-full transition-all duration-300 ${accentBorder}`} />
+          </div>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -683,19 +691,43 @@ function LogScoreModal({
               Category
             </Label>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+              <SelectTrigger className={`bg-zinc-800 border-zinc-700 text-zinc-100 transition-all ${
+                groupKey === 'chess' ? 'focus:border-amber-500/50' :
+                groupKey === 'cognitive' ? 'focus:border-blue-500/50' :
+                groupKey === 'travel' ? 'focus:border-emerald-500/50' :
+                groupKey === 'typing' ? 'focus:border-violet-500/50' :
+                'focus:border-zinc-500'
+              }`}>
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent className="bg-zinc-800 border-zinc-700">
-                {manualCategories.map(cat => (
-                  <SelectItem
-                    key={cat.id}
-                    value={cat.slug}
-                    className="text-zinc-100 focus:bg-zinc-700"
-                  >
-                    {cat.name}
-                  </SelectItem>
-                ))}
+                {manualCategories.map(cat => {
+                  const catGroup = CATEGORY_TO_GROUP[cat.slug]
+                  return (
+                    <SelectItem
+                      key={cat.id}
+                      value={cat.slug}
+                      className={`text-zinc-100 focus:bg-zinc-700 ${
+                        catGroup === 'chess' ? 'focus:text-amber-400' :
+                        catGroup === 'cognitive' ? 'focus:text-blue-400' :
+                        catGroup === 'travel' ? 'focus:text-emerald-400' :
+                        catGroup === 'typing' ? 'focus:text-violet-400' :
+                        ''
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${
+                          catGroup === 'chess' ? 'bg-amber-400' :
+                          catGroup === 'cognitive' ? 'bg-blue-400' :
+                          catGroup === 'travel' ? 'bg-emerald-400' :
+                          catGroup === 'typing' ? 'bg-violet-400' :
+                          'bg-zinc-400'
+                        }`} />
+                        {cat.name}
+                      </span>
+                    </SelectItem>
+                  )
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -711,14 +743,20 @@ function LogScoreModal({
               placeholder="Enter your score"
               value={value}
               onChange={e => setValue(e.target.value)}
-              className="bg-zinc-800 border-zinc-700 text-zinc-100"
+              className={`bg-zinc-800 border-zinc-700 text-zinc-100 transition-all ${
+                groupKey === 'chess' ? 'focus:border-amber-500/50' :
+                groupKey === 'cognitive' ? 'focus:border-blue-500/50' :
+                groupKey === 'travel' ? 'focus:border-emerald-500/50' :
+                groupKey === 'typing' ? 'focus:border-violet-500/50' :
+                ''
+              }`}
               required
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="proof" className="text-zinc-300">
-              Proof URL (optional)
+              Proof URL <span className="text-zinc-500">(optional)</span>
             </Label>
             <Input
               id="proof"
@@ -735,7 +773,7 @@ function LogScoreModal({
           <Button
             type="submit"
             disabled={submitting || !selectedCategory || !value}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            className={`w-full text-white transition-all ${buttonClass} disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {submitting ? 'Submitting...' : 'Submit Score'}
           </Button>
