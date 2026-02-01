@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ExternalLink, Github, Crown, Globe, Keyboard, Brain, BookOpen, Gamepad2, Code } from 'lucide-react'
+import { ExternalLink, Github, Crown, Globe, Keyboard, Brain, BookOpen, Gamepad2, Code, SquareAsterisk } from 'lucide-react'
 
 export default async function QuicklinksPage() {
   const session = await getServerSession(authOptions)
@@ -56,6 +56,30 @@ export default async function QuicklinksPage() {
       url: 'https://www.thewikigame.com',
       description: 'Navigate Wikipedia from start to finish',
       icon: BookOpen,
+    },
+    {
+      name: 'Woogles.io',
+      url: 'https://woogles.io',
+      description: 'Free Scrabble - modern, open-source, multiplayer',
+      icon: SquareAsterisk,
+    },
+    {
+      name: 'Internet Scrabble Club',
+      url: 'https://www.isc.ro',
+      description: 'Classic Scrabble - 600+ players online',
+      icon: SquareAsterisk,
+    },
+    {
+      name: 'PlayScrabble (Official)',
+      url: 'https://playscrabble.com',
+      description: 'Official Hasbro Scrabble - play with friends',
+      icon: SquareAsterisk,
+    },
+    {
+      name: 'Lexulous',
+      url: 'https://www.lexulous.com',
+      description: 'Free word game - multiplayer or vs AI',
+      icon: SquareAsterisk,
     },
   ]
 
