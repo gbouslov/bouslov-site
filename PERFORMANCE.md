@@ -4,17 +4,23 @@
 
 **Date:** January 31, 2026  
 **Site:** https://bouslov.com  
-**Framework:** Next.js 16.1.6 with React 19.2.3
+**Framework:** Next.js 16.1.6 with React 19.2.3  
+**Deployed:** https://bouslov-site-4ueyz1pnw-embedmy-gpt.vercel.app
 
 ### Key Findings
 
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
-| Total JS Bundle | 2.47MB | ~1.8MB | ~27% reduction |
-| Largest Chunk | 1.5MB (Three.js) | Code-split | Lazy loaded |
-| CSS Bundle | 67KB | ~45KB | ~33% reduction |
-| LCP | TBD | TBD | TBD |
-| TTI | TBD | TBD | TBD |
+| Build Size | 21MB | 24MB | +3MB (new features) |
+| Largest Chunk | 1.5MB (Three.js) | 1.5MB | Lazy loaded |
+| Build Time | 2.7s | 15s | More optimizations |
+| Static Pages | 14 | 17 | +3 pages |
+
+**Note:** Three.js bundle (~1.5MB) is inherent to react-globe.gl and cannot be significantly reduced without switching libraries. Optimizations focus on:
+- Lazy loading (intersection observer)
+- WebGL detection with fallbacks
+- Render performance (reduced frame updates)
+- Caching and memoization
 
 ---
 
