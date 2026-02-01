@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Pin, PinType } from '@/lib/supabase'
 import { PIN_TYPES } from '@/lib/pins'
 import { Button } from '@/components/ui/button'
@@ -63,6 +63,17 @@ export function AddPinModal({
   const [lat, setLat] = useState(editPin?.lat?.toString() || initialLocation?.lat?.toString() || '')
   const [lng, setLng] = useState(editPin?.lng?.toString() || initialLocation?.lng?.toString() || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Update lat/lng when globe is clicked (initialLocation changes)
+  useEffect(() => {
+    if (initialLocation && !editPin) {
+      setLat(initialLocation.lat.toString())
+      setLng(initialLocation.lng.toString())
+      if (initialLocation.name) {
+        setLocationName(initialLocation.name)
+      }
+    }
+  }, [initialLocation, editPin])
 
   const handleAddLink = () => {
     setLinks([...links, { title: '', url: '' }])
