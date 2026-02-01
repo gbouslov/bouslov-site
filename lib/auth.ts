@@ -8,6 +8,7 @@ export const ALLOWED_EMAILS = [
   'dbouslov@gmail.com',
   'jbouslov@gmail.com',
   'bouslovd@gmail.com',
+  'bouslovb@gmail.com',
 ]
 
 // Email to display name mapping
@@ -16,6 +17,7 @@ export const EMAIL_TO_NAME: Record<string, string> = {
   'dbouslov@gmail.com': 'David',
   'jbouslov@gmail.com': 'Jonathan',
   'bouslovd@gmail.com': 'Daniel',
+  'bouslovb@gmail.com': 'Dad',
 }
 
 export const authOptions: NextAuthOptions = {

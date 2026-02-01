@@ -1,100 +1,24 @@
-# TASK.md - Bouslov.com Globe Landing Page (v2 - Real Earth)
+# TASK: Fix Travel Highlighting + Add Favicon
 
-## Overview
-Replace the current procedural dark sphere with a REAL Earth globe with day/night cycle, like Apple's globe.
+## COMPLETED
 
-## Current State
-- Globe landing page exists but uses procedural dark sphere (boring)
-- Need actual Earth textures with day/night terminator
-- Auth gating already working
+### 1. Countries Not Highlighting - FIXED
+**Root cause:** The GeoJSON from `datasets/geo-countries` uses different property names than expected:
+- Country code: `ISO3166-1-Alpha-2` (not `ISO_A2`)
+- Country name: `name` (not `ADMIN`)
 
-## Requirements
+**Fix:** Updated `components/travel-globe.tsx` to use correct property names.
 
-### 1. Real Earth Globe with Day/Night
-Use `react-globe.gl` with the day-night-cycle shader approach:
+### 2. Favicon - ADDED
+Created a modern "B" monogram favicon with blue gradient (#3b82f6 → #1d4ed8):
+- `public/favicon.ico` - 32x32 ICO
+- `public/favicon-16x16.png` - 16x16 PNG
+- `public/favicon-32x32.png` - 32x32 PNG
+- `public/icon-192.png` - 192x192 PWA icon
+- `app/icon.svg` - SVG for modern browsers
+- `app/apple-icon.png` - 180x180 Apple touch icon
 
-**Implementation (from react-globe.gl example):**
-```bash
-npm install react-globe.gl solar-calculator three
-```
+Updated `app/layout.tsx` with proper icon metadata.
 
-**Key features needed:**
-- Real Earth day texture: `//cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg`
-- Real Earth night texture: `//cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg`  
-- Night sky background: `//cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png`
-- Custom shader that blends day/night based on sun position
-- Solar calculator for realistic sun position
-- Smooth day/night terminator (shadow line)
-- Slowly rotating
-
-**Reference implementation:**
-https://github.com/vasturiano/react-globe.gl/blob/master/example/day-night-cycle/index.html
-
-The shader uses:
-- `dayTexture` and `nightTexture` uniforms
-- `sunPosition` calculated from solar-calculator
-- `smoothstep` blend between day/night at terminator
-
-**Interactive Elements:**
-- 4 glowing dots for family members (keep existing)
-- On hover: show name tooltip
-- Keep connection lines if they exist
-
-**Layout:**
-- Globe centered, full hero
-- "BOUSLOV" title + "Connected worldwide" tagline
-- "Sign In" button
-- Dark background with star field
-
-**Vibe:**
-- Apple-style realistic Earth
-- Premium, sleek
-- NO emojis
-
-### 2. Auth Gating
-- `/` (root) = Globe landing page (public, no auth required)
-- `/leaderboard`, `/profile/*`, etc. = Protected, redirect to sign-in if not authenticated
-- After sign-in → redirect to `/leaderboard`
-- Only these emails allowed:
-  - gbouslov@gmail.com (Gabe)
-  - dbouslov@gmail.com (David)
-  - jbouslov@gmail.com (Jonathan)
-  - bouslovd@gmail.com (Daniel)
-
-### 3. Design System (Strict)
-- Background: #09090b (near-black)
-- No emojis - EVER
-- Icons: Lucide React only
-- Typography: Clean, modern sans-serif (Inter or similar)
-- Animations: Subtle, smooth, 60fps
-- Mobile responsive
-
-## Technical Notes
-- Globe libraries to consider: `react-globe.gl`, `@react-three/fiber` + `@react-three/drei`
-- Keep bundle size reasonable - lazy load the globe component
-- Test performance on mobile
-- Supabase project: `oswcicwdjkthjextalyh`
-
-## Family Members (CORRECT NAMES)
-| Name | Email | Notes |
-|------|-------|-------|
-| Gabe | gbouslov@gmail.com | Oldest, entrepreneur |
-| David | dbouslov@gmail.com | M2 med student |
-| Jonathan | jbouslov@gmail.com | 16yo, twin |
-| Daniel | bouslovd@gmail.com | 16yo, twin |
-
-**NOT Jake. NOT Dad. Just the 4 brothers.**
-
-## Success Criteria
-1. Landing page loads fast, globe animates smoothly
-2. Unauthenticated users see only the globe page
-3. Sign-in redirects to leaderboard
-4. Non-Bouslov emails rejected gracefully
-5. Mobile looks good (globe scales down nicely)
-6. No emojis anywhere in the entire site
-7. Feels premium, not hobby-project
-
-## Out of Scope (for now)
-- Real-time location tracking
-- Actual geographic accuracy of dots
-- Profile photos (just use initials or icons)
+## Deployed
+- Production: https://bouslov.com

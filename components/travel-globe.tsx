@@ -212,11 +212,11 @@ export function TravelGlobe({
     if (!countries.length) return []
 
     return countries.filter(country => {
-      const isoCode = country.properties.ISO_A2
+      const isoCode = country.properties['ISO3166-1-Alpha-2']
       return visitedCountries[isoCode]
     }).map(country => ({
       ...country,
-      visitors: visitedCountries[country.properties.ISO_A2] || []
+      visitors: visitedCountries[country.properties['ISO3166-1-Alpha-2']] || []
     }))
   }, [countries, visitedCountries])
 
@@ -248,7 +248,7 @@ export function TravelGlobe({
     if (onCountryHover) {
       if (polygon) {
         onCountryHover({
-          name: polygon.properties.ADMIN,
+          name: polygon.properties.name,
           visitors: polygon.visitors || []
         })
       } else {
@@ -259,7 +259,7 @@ export function TravelGlobe({
 
   const handlePolygonClick = useCallback((polygon: any) => {
     if (onCountryClick && polygon) {
-      onCountryClick(polygon.properties.ISO_A2, polygon.properties.ADMIN)
+      onCountryClick(polygon.properties['ISO3166-1-Alpha-2'], polygon.properties.name)
     }
   }, [onCountryClick])
 
@@ -267,7 +267,7 @@ export function TravelGlobe({
     const visitors = d.visitors || []
     const names = visitors.map((email: string) => USER_NAMES[email] || email).join(', ')
     return `<div class="bg-zinc-900/95 border border-zinc-700 px-3 py-2 rounded-lg text-sm backdrop-blur-sm shadow-xl">
-      <div class="font-medium text-white">${d.properties.ADMIN}</div>
+      <div class="font-medium text-white">${d.properties.name}</div>
       <div class="text-zinc-400 text-xs mt-1">Visited by: ${names}</div>
     </div>`
   }, [])
