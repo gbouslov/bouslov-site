@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -13,31 +13,65 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ExternalLink, Upload, Loader2, Trophy, Keyboard, Crown, Zap, Brain, Target, Crosshair, ArrowUp, ArrowDown } from 'lucide-react'
-import { CATEGORIES } from '@/lib/constants'
+import {
+  ExternalLink,
+  Upload,
+  Loader2,
+  Trophy,
+  Keyboard,
+  Zap,
+  Brain,
+  Target,
+  Crosshair,
+  ArrowUp,
+  ArrowDown,
+  Clock,
+  Calendar,
+  Puzzle,
+  Globe,
+  Map,
+} from 'lucide-react'
 import { toast } from 'sonner'
+import type { Category } from '@/lib/supabase'
 
-const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  wpm: <Keyboard className="h-4 w-4" />,
-  chess: <Crown className="h-4 w-4" />,
-  reaction: <Zap className="h-4 w-4" />,
-  memory: <Brain className="h-4 w-4" />,
-  accuracy: <Target className="h-4 w-4" />,
-  aim: <Crosshair className="h-4 w-4" />,
+const ICON_MAP: Record<string, React.ReactNode> = {
+  Keyboard: <Keyboard className="h-4 w-4" />,
+  Target: <Target className="h-4 w-4" />,
+  Brain: <Brain className="h-4 w-4" />,
+  Crosshair: <Crosshair className="h-4 w-4" />,
+  Zap: <Zap className="h-4 w-4" />,
+  Globe: <Globe className="h-4 w-4" />,
+  Map: <Map className="h-4 w-4" />,
+  Clock: <Clock className="h-4 w-4" />,
+  Calendar: <Calendar className="h-4 w-4" />,
+  Puzzle: <Puzzle className="h-4 w-4" />,
 }
 
-export function ScoreForm() {
+function getIcon(iconName: string): React.ReactNode {
+  return ICON_MAP[iconName] || <Trophy className="h-4 w-4" />
+}
+
+interface ScoreFormProps {
+  categories: Category[]
+}
+
+export function ScoreForm({ categories }: ScoreFormProps) {
   const router = useRouter()
   const [category, setCategory] = useState('')
   const [score, setScore] = useState('')
   const [proofUrl, setProofUrl] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const selectedCategory = CATEGORIES.find(c => c.slug === category)
+  // Filter out API-synced and travel categories
+  const manualCategories = categories.filter(
+    c => !c.api_source && !c.slug.includes('countries') && !c.slug.includes('states')
+  )
+
+  const selectedCategory = manualCategories.find(c => c.slug === category)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!category || !score) {
       toast.error('Please fill in all required fields')
       return
@@ -56,8 +90,8 @@ export function ScoreForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          category,
-          score: scoreNum,
+          category_slug: category,
+          value: scoreNum,
           proof_url: proofUrl || null,
         }),
       })
@@ -68,7 +102,7 @@ export function ScoreForm() {
       }
 
       toast.success('Score submitted!')
-      router.push('/')
+      router.push('/leaderboard')
       router.refresh()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Something went wrong')
@@ -85,28 +119,28 @@ export function ScoreForm() {
             <Trophy className="h-5 w-5 text-amber-400" />
             Log Score
           </CardTitle>
-          <CardDescription className="text-zinc-500">
-            Record your achievement
-          </CardDescription>
+          <CardDescription className="text-zinc-500">Record your achievement</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Category Selection */}
             <div className="space-y-2">
-              <Label htmlFor="category" className="text-zinc-300">Category</Label>
+              <Label htmlFor="category" className="text-zinc-300">
+                Category
+              </Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="border-zinc-700 bg-zinc-800/50 text-zinc-100">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent className="border-zinc-700 bg-zinc-900">
-                  {CATEGORIES.map(cat => (
-                    <SelectItem 
-                      key={cat.slug} 
+                  {manualCategories.map(cat => (
+                    <SelectItem
+                      key={cat.slug}
                       value={cat.slug}
                       className="text-zinc-300 focus:bg-zinc-800 focus:text-zinc-100"
                     >
                       <span className="flex items-center gap-2">
-                        {CATEGORY_ICONS[cat.slug]}
+                        {getIcon(cat.icon)}
                         {cat.name}
                       </span>
                     </SelectItem>
@@ -121,30 +155,38 @@ export function ScoreForm() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-zinc-200 flex items-center gap-2">
-                      {CATEGORY_ICONS[selectedCategory.slug]}
+                      {getIcon(selectedCategory.icon)}
                       {selectedCategory.name}
                     </p>
                     <p className="text-sm text-zinc-500">{selectedCategory.description}</p>
                     <p className="text-xs text-zinc-600 mt-1 flex items-center gap-1">
-                      {selectedCategory.score_type === 'higher_better' 
-                        ? <><ArrowUp className="h-3 w-3" /> Higher is better</>
-                        : <><ArrowDown className="h-3 w-3" /> Lower is better</>}
+                      {selectedCategory.higher_is_better ? (
+                        <>
+                          <ArrowUp className="h-3 w-3" /> Higher is better
+                        </>
+                      ) : (
+                        <>
+                          <ArrowDown className="h-3 w-3" /> Lower is better
+                        </>
+                      )}
                     </p>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    asChild
-                    className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-300"
-                  >
-                    <a 
-                      href={selectedCategory.external_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
+                  {selectedCategory.external_url && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-300"
                     >
-                      Test <ExternalLink className="ml-2 h-3 w-3" />
-                    </a>
-                  </Button>
+                      <a
+                        href={selectedCategory.external_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Test <ExternalLink className="ml-2 h-3 w-3" />
+                      </a>
+                    </Button>
+                  )}
                 </div>
               </div>
             )}
@@ -152,7 +194,10 @@ export function ScoreForm() {
             {/* Score Input */}
             <div className="space-y-2">
               <Label htmlFor="score" className="text-zinc-300">
-                Score {selectedCategory && <span className="text-zinc-500">({selectedCategory.unit})</span>}
+                Score{' '}
+                {selectedCategory && (
+                  <span className="text-zinc-500">({selectedCategory.unit})</span>
+                )}
               </Label>
               <Input
                 id="score"
@@ -160,7 +205,7 @@ export function ScoreForm() {
                 step="any"
                 placeholder={selectedCategory ? `Enter ${selectedCategory.unit}` : 'Enter score'}
                 value={score}
-                onChange={(e) => setScore(e.target.value)}
+                onChange={e => setScore(e.target.value)}
                 className="font-mono text-lg border-zinc-700 bg-zinc-800/50 text-zinc-100 placeholder:text-zinc-600"
               />
             </div>
@@ -175,17 +220,15 @@ export function ScoreForm() {
                 type="url"
                 placeholder="Link to screenshot or results"
                 value={proofUrl}
-                onChange={(e) => setProofUrl(e.target.value)}
+                onChange={e => setProofUrl(e.target.value)}
                 className="border-zinc-700 bg-zinc-800/50 text-zinc-100 placeholder:text-zinc-600"
               />
-              <p className="text-xs text-zinc-600">
-                Screenshot or results page URL for verification
-              </p>
+              <p className="text-xs text-zinc-600">Screenshot or results page URL for verification</p>
             </div>
 
             {/* Submit */}
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white border-0"
               disabled={loading}
             >
@@ -212,22 +255,24 @@ export function ScoreForm() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {CATEGORIES.map(cat => (
-              <Button 
-                key={cat.slug} 
-                variant="outline" 
-                size="sm" 
-                asChild
-                className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200"
-              >
-                <a href={cat.external_url} target="_blank" rel="noopener noreferrer">
-                  <span className="flex items-center gap-1.5">
-                    {CATEGORY_ICONS[cat.slug]}
-                    {cat.name.split(' ')[0]}
-                  </span>
-                </a>
-              </Button>
-            ))}
+            {manualCategories
+              .filter(cat => cat.external_url && !cat.external_url.startsWith('/'))
+              .map(cat => (
+                <Button
+                  key={cat.slug}
+                  variant="outline"
+                  size="sm"
+                  asChild
+                  className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+                >
+                  <a href={cat.external_url!} target="_blank" rel="noopener noreferrer">
+                    <span className="flex items-center gap-1.5">
+                      {getIcon(cat.icon)}
+                      {cat.name.split(' ')[0]}
+                    </span>
+                  </a>
+                </Button>
+              ))}
           </div>
         </CardContent>
       </Card>

@@ -1,6 +1,5 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-import { upsertUser } from './supabase'
 
 // Only these emails can log in
 export const ALLOWED_EMAILS = [
@@ -33,19 +32,6 @@ export const authOptions: NextAuthOptions = {
       if (!user.email || !ALLOWED_EMAILS.includes(user.email.toLowerCase())) {
         return false
       }
-
-      // Sync user to Supabase
-      try {
-        await upsertUser({
-          email: user.email.toLowerCase(),
-          name: EMAIL_TO_NAME[user.email.toLowerCase()] || user.name || 'Unknown',
-          avatar_url: user.image || null,
-        })
-      } catch (error) {
-        console.error('Failed to sync user to Supabase:', error)
-        // Still allow sign in even if sync fails
-      }
-
       return true
     },
     async session({ session, token }) {

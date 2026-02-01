@@ -9,17 +9,38 @@ const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default),
   loading: () => <LoadingFallback />
 })
 
-const DAY_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg'
-const NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg'
+// Texture quality levels
+export type TextureQuality = 'low' | 'medium' | 'high'
+
+const TEXTURES = {
+  low: {
+    day: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg',
+    night: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg',
+  },
+  medium: {
+    day: 'https://eoimages.gsfc.nasa.gov/images/imagerecords/74000/74092/world.200408.3x5400x2700.jpg',
+    night: 'https://eoimages.gsfc.nasa.gov/images/imagerecords/144000/144898/BlackMarble_2016_01deg.jpg',
+  },
+  high: {
+    day: 'https://eoimages.gsfc.nasa.gov/images/imagerecords/74000/74092/world.200408.3x21600x10800.jpg',
+    night: 'https://eoimages.gsfc.nasa.gov/images/imagerecords/144000/144898/BlackMarble_2016_3km.jpg',
+  },
+}
+
+// Default quality by user email (Gabe gets high, others medium)
+const USER_DEFAULT_QUALITY: Record<string, TextureQuality> = {
+  'gbouslov@gmail.com': 'high',
+}
+
 const NIGHT_SKY = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png'
 const COUNTRIES_GEOJSON = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson'
 
-// User colors matching the family member theme
+// Cool blue/grey map palette - non-adjacent colors
 export const USER_COLORS: Record<string, string> = {
-  'gbouslov@gmail.com': '#3b82f6', // Gabe - blue
-  'dbouslov@gmail.com': '#8b5cf6', // David - purple
-  'jbouslov@gmail.com': '#06b6d4', // Jonathan - cyan
-  'bouslovd@gmail.com': '#10b981', // Daniel - green
+  'gbouslov@gmail.com': '#64748b', // Gabe - slate-500
+  'dbouslov@gmail.com': '#475569', // David - slate-600
+  'jbouslov@gmail.com': '#94a3b8', // Jonathan - slate-400
+  'bouslovd@gmail.com': '#334155', // Daniel - slate-700
 }
 
 export const USER_NAMES: Record<string, string> = {
@@ -87,7 +108,7 @@ function getSunCoordinates(): { lng: number; lat: number } {
 function LoadingFallback() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-12 h-12 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
+      <div className="w-12 h-12 border-2 border-zinc-700 border-t-slate-400 rounded-full animate-spin" />
     </div>
   )
 }
@@ -103,23 +124,32 @@ interface TravelGlobeProps {
   selectedUser: string | null
   onCountryHover?: (country: { name: string; visitors: string[] } | null) => void
   onCountryClick?: (countryCode: string, countryName: string) => void
+  quality?: TextureQuality
+  userEmail?: string
 }
 
 export function TravelGlobe({
   travels,
   selectedUser,
   onCountryHover,
-  onCountryClick
+  onCountryClick,
+  quality,
+  userEmail
 }: TravelGlobeProps) {
   const globeRef = useRef<any>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [globeReady, setGlobeReady] = useState(false)
   const [countries, setCountries] = useState<any[]>([])
   const [hoveredCountry, setHoveredCountry] = useState<any>(null)
   const materialRef = useRef<THREE.ShaderMaterial | null>(null)
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
 
-  const dayTexture = useMemo(() => new THREE.TextureLoader().load(DAY_TEXTURE), [])
-  const nightTexture = useMemo(() => new THREE.TextureLoader().load(NIGHT_TEXTURE), [])
+  // Determine texture quality - prop > user default > medium fallback
+  const textureQuality = quality || (userEmail && USER_DEFAULT_QUALITY[userEmail]) || 'medium'
+  const textures = TEXTURES[textureQuality]
+
+  const dayTexture = useMemo(() => new THREE.TextureLoader().load(textures.day), [textures.day])
+  const nightTexture = useMemo(() => new THREE.TextureLoader().load(textures.night), [textures.night])
 
   // Load GeoJSON
   useEffect(() => {
@@ -131,17 +161,33 @@ export function TravelGlobe({
       .catch(err => console.error('Failed to load countries:', err))
   }, [])
 
-  // Track window dimensions
+  // Track container dimensions for proper centering
   useEffect(() => {
     const updateDimensions = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      })
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect()
+        setDimensions({
+          width: rect.width,
+          height: rect.height
+        })
+      } else {
+        setDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight
+        })
+      }
     }
     updateDimensions()
     window.addEventListener('resize', updateDimensions)
-    return () => window.removeEventListener('resize', updateDimensions)
+    // Also observe container size changes
+    const resizeObserver = new ResizeObserver(updateDimensions)
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+    return () => {
+      window.removeEventListener('resize', updateDimensions)
+      resizeObserver.disconnect()
+    }
   }, [])
 
   // Build lookup of visited countries
@@ -273,15 +319,15 @@ export function TravelGlobe({
   }, [])
 
   return (
-    <div className="w-full h-full relative">
+    <div ref={containerRef} className="w-full h-full relative flex items-center justify-center">
       <GlobeGL
         ref={globeRef}
         onGlobeReady={() => setGlobeReady(true)}
         globeMaterial={createGlobeMaterial()}
         backgroundColor="rgba(0,0,0,0)"
         backgroundImageUrl={NIGHT_SKY}
-        atmosphereColor="#3b82f6"
-        atmosphereAltitude={0.15}
+        atmosphereColor="#64748b"
+        atmosphereAltitude={0.12}
         polygonsData={polygonData}
         polygonAltitude={d => hoveredCountry === d ? 0.06 : 0.01}
         polygonCapColor={getPolygonColor}

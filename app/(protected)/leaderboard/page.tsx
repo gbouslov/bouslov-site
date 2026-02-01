@@ -2,35 +2,16 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { Leaderboard } from '@/components/leaderboard'
-import { getTopScoresByCategory, getRecentActivity, getAllTravels, getAllStates } from '@/lib/supabase'
-import { headers } from 'next/headers'
+import {
+  getCategories,
+  getAllBestScores,
+  getRecentScores,
+  getAllTravels,
+  getAllStates,
+  FAMILY,
+} from '@/lib/supabase'
 
 export const revalidate = 60
-
-// Allowed family members
-const FAMILY = [
-  { email: 'gbouslov@gmail.com', name: 'Gabe' },
-  { email: 'dbouslov@gmail.com', name: 'David' },
-  { email: 'jbouslov@gmail.com', name: 'Jonathan' },
-  { email: 'bouslovd@gmail.com', name: 'Daniel' },
-  { email: 'bouslovb@gmail.com', name: 'Dad' },
-]
-
-async function fetchChessData() {
-  try {
-    const headersList = await headers()
-    const host = headersList.get('host') || 'localhost:3000'
-    const protocol = host.includes('localhost') ? 'http' : 'https'
-    const res = await fetch(`${protocol}://${host}/api/chess`, {
-      next: { revalidate: 300 },
-    })
-    if (!res.ok) return null
-    return await res.json()
-  } catch (error) {
-    console.error('Failed to fetch chess data:', error)
-    return null
-  }
-}
 
 export default async function LeaderboardPage() {
   const session = await getServerSession(authOptions)
@@ -39,109 +20,95 @@ export default async function LeaderboardPage() {
     redirect('/login')
   }
 
-  let scoresByCategory: Record<string, any[]> = {}
-  let recentActivity: any[] = []
+  let categories: Awaited<ReturnType<typeof getCategories>> = []
+  let scoresByCategory: Record<string, Awaited<ReturnType<typeof getRecentScores>>> = {}
+  let recentActivity: Awaited<ReturnType<typeof getRecentScores>> = []
+  let travelScores = {
+    countries: [] as { email: string; name: string; count: number }[],
+    states: [] as { email: string; name: string; count: number }[],
+  }
 
   try {
-    scoresByCategory = await getTopScoresByCategory()
-    recentActivity = await getRecentActivity(10)
+    // Fetch all data in parallel
+    const [
+      categoriesData,
+      bestScoresData,
+      recentScoresData,
+      travelsData,
+      statesData,
+    ] = await Promise.all([
+      getCategories(),
+      getAllBestScores(),
+      getRecentScores(15),
+      getAllTravels(),
+      getAllStates(),
+    ])
 
-    // Fetch chess data from API
-    const chessData = await fetchChessData()
-    if (chessData?.leaderboards) {
-      const { leaderboards } = chessData
-      const chessCategories = [
-        { key: 'bullet', slug: 'chess-bullet', name: 'Bullet' },
-        { key: 'blitz', slug: 'chess-blitz', name: 'Blitz' },
-        { key: 'rapid', slug: 'chess-rapid', name: 'Rapid' },
-        { key: 'daily', slug: 'chess-daily', name: 'Daily' },
-        { key: 'puzzleRush', slug: 'puzzle-rush', name: 'Puzzle Rush' },
-      ]
+    categories = categoriesData
+    scoresByCategory = bestScoresData
+    recentActivity = recentScoresData
 
-      for (const cat of chessCategories) {
-        const entries = leaderboards[cat.key] || []
-        scoresByCategory[cat.slug] = entries.map((entry: any, idx: number) => ({
-          id: `${cat.slug}-${entry.email}`,
-          score: entry.rating,
-          created_at: chessData.fetchedAt,
-          user: {
-            id: entry.email,
-            name: entry.name,
-            email: entry.email,
-            avatar_url: null,
-          },
-          category: {
-            slug: cat.slug,
-            name: cat.name,
-            unit: '',
-            score_type: 'higher_better',
-          },
-        }))
-      }
-    }
-
-    // Fetch travel data and create synthetic scores
-    const travels = await getAllTravels()
-    const states = await getAllStates()
-
-    // Count countries per user
+    // Calculate travel counts per user
     const countryCounts: Record<string, number> = {}
-    for (const travel of travels) {
+    for (const travel of travelsData) {
       countryCounts[travel.user_email] = (countryCounts[travel.user_email] || 0) + 1
     }
 
-    // Count states per user
     const stateCounts: Record<string, number> = {}
-    for (const state of states) {
+    for (const state of statesData) {
       stateCounts[state.user_email] = (stateCounts[state.user_email] || 0) + 1
     }
 
-    // Create synthetic scores for countries
-    const countryScores = FAMILY
+    // Convert to sorted arrays for ranking
+    travelScores.countries = FAMILY
       .filter(f => countryCounts[f.email] > 0)
       .map(f => ({
-        id: `countries-${f.email}`,
-        score: countryCounts[f.email] || 0,
-        created_at: new Date().toISOString(),
-        user: {
-          id: f.email,
-          name: f.name,
-          email: f.email,
-          avatar_url: null,
-        },
-        category: {
-          slug: 'countries',
-          name: 'Countries',
-          unit: '',
-          score_type: 'higher_better',
-        },
+        email: f.email,
+        name: f.name,
+        count: countryCounts[f.email] || 0,
       }))
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => b.count - a.count)
 
-    // Create synthetic scores for states
-    const stateScores = FAMILY
+    travelScores.states = FAMILY
       .filter(f => stateCounts[f.email] > 0)
       .map(f => ({
-        id: `states-${f.email}`,
-        score: stateCounts[f.email] || 0,
-        created_at: new Date().toISOString(),
-        user: {
-          id: f.email,
-          name: f.name,
-          email: f.email,
-          avatar_url: null,
-        },
-        category: {
-          slug: 'states',
-          name: 'US States',
-          unit: '',
-          score_type: 'higher_better',
-        },
+        email: f.email,
+        name: f.name,
+        count: stateCounts[f.email] || 0,
       }))
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => b.count - a.count)
 
-    scoresByCategory['countries'] = countryScores
-    scoresByCategory['states'] = stateScores
+    // Create synthetic scores for travel categories so they show in the grid
+    const countriesCategory = categories.find(c => c.slug === 'countries_visited')
+    const statesCategory = categories.find(c => c.slug === 'us_states')
+
+    if (countriesCategory) {
+      scoresByCategory['countries_visited'] = travelScores.countries.map(entry => ({
+        id: `countries-${entry.email}`,
+        user_email: entry.email,
+        user_name: entry.name,
+        category_id: countriesCategory.id,
+        value: entry.count,
+        proof_url: null,
+        source: 'travel',
+        created_at: new Date().toISOString(),
+        category: countriesCategory,
+      }))
+    }
+
+    if (statesCategory) {
+      scoresByCategory['us_states'] = travelScores.states.map(entry => ({
+        id: `states-${entry.email}`,
+        user_email: entry.email,
+        user_name: entry.name,
+        category_id: statesCategory.id,
+        value: entry.count,
+        proof_url: null,
+        source: 'travel',
+        created_at: new Date().toISOString(),
+        category: statesCategory,
+      }))
+    }
   } catch (error) {
     console.error('Failed to fetch leaderboard data:', error)
   }
@@ -152,14 +119,14 @@ export default async function LeaderboardPage() {
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
           Leaderboard
         </h1>
-        <p className="text-zinc-400">
-          Track the competition
-        </p>
+        <p className="text-zinc-400">Track the competition</p>
       </div>
 
       <Leaderboard
-        initialScores={scoresByCategory}
+        categories={categories}
+        scoresByCategory={scoresByCategory}
         recentActivity={recentActivity}
+        travelScores={travelScores}
       />
     </div>
   )

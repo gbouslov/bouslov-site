@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { AddCountryDialog } from '@/components/add-country-dialog'
-import { USER_COLORS, USER_NAMES } from '@/components/travel-globe'
+import { USER_COLORS, USER_NAMES, TextureQuality } from '@/components/travel-globe'
 import { cn } from '@/lib/utils'
 import { Globe, List, MapPin, Trash2, ChevronDown } from 'lucide-react'
 import { toast } from 'sonner'
@@ -74,7 +74,7 @@ const TravelGlobe = dynamic(
 function GlobeLoading() {
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/50">
-      <div className="w-12 h-12 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
+      <div className="w-12 h-12 border-2 border-zinc-700 border-t-slate-400 rounded-full animate-spin" />
     </div>
   )
 }
@@ -285,11 +285,12 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
 
       {/* Content */}
       {viewMode === 'globe' ? (
-        <div className="relative h-[600px] -mx-4 md:-mx-8 lg:-mx-16">
+        <div className="relative h-[600px] w-full flex items-center justify-center overflow-hidden">
           <TravelGlobe
             travels={filteredTravels}
             selectedUser={selectedUser}
             onCountryHover={setHoveredCountry}
+            userEmail={userEmail}
           />
         </div>
       ) : (
