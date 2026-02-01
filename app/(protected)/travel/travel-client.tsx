@@ -5,12 +5,66 @@ import dynamic from 'next/dynamic'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { AddCountryDialog } from '@/components/add-country-dialog'
 import { USER_COLORS, USER_NAMES } from '@/components/travel-globe'
 import { cn } from '@/lib/utils'
-import { Globe, List, MapPin, Trash2 } from 'lucide-react'
+import { Globe, List, MapPin, Trash2, ChevronDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+
+// Country to continent mapping
+const COUNTRY_CONTINENTS: Record<string, string> = {
+  // Europe
+  'AL': 'Europe', 'AD': 'Europe', 'AT': 'Europe', 'BY': 'Europe', 'BE': 'Europe',
+  'BA': 'Europe', 'BG': 'Europe', 'HR': 'Europe', 'CY': 'Europe', 'CZ': 'Europe',
+  'DK': 'Europe', 'EE': 'Europe', 'FI': 'Europe', 'FR': 'Europe', 'DE': 'Europe',
+  'GR': 'Europe', 'HU': 'Europe', 'IS': 'Europe', 'IE': 'Europe', 'IT': 'Europe',
+  'XK': 'Europe', 'LV': 'Europe', 'LI': 'Europe', 'LT': 'Europe', 'LU': 'Europe',
+  'MT': 'Europe', 'MD': 'Europe', 'MC': 'Europe', 'ME': 'Europe', 'NL': 'Europe',
+  'MK': 'Europe', 'NO': 'Europe', 'PL': 'Europe', 'PT': 'Europe', 'RO': 'Europe',
+  'RU': 'Europe', 'SM': 'Europe', 'RS': 'Europe', 'SK': 'Europe', 'SI': 'Europe',
+  'ES': 'Europe', 'SE': 'Europe', 'CH': 'Europe', 'UA': 'Europe', 'GB': 'Europe',
+  'VA': 'Europe',
+  // North America
+  'AG': 'North America', 'BS': 'North America', 'BB': 'North America', 'BZ': 'North America',
+  'CA': 'North America', 'CR': 'North America', 'CU': 'North America', 'DM': 'North America',
+  'DO': 'North America', 'SV': 'North America', 'GD': 'North America', 'GT': 'North America',
+  'HT': 'North America', 'HN': 'North America', 'JM': 'North America', 'MX': 'North America',
+  'NI': 'North America', 'PA': 'North America', 'KN': 'North America', 'LC': 'North America',
+  'VC': 'North America', 'TT': 'North America', 'US': 'North America',
+  // South America
+  'AR': 'South America', 'BO': 'South America', 'BR': 'South America', 'CL': 'South America',
+  'CO': 'South America', 'EC': 'South America', 'GY': 'South America', 'PY': 'South America',
+  'PE': 'South America', 'SR': 'South America', 'UY': 'South America', 'VE': 'South America',
+  // Asia
+  'AF': 'Asia', 'AM': 'Asia', 'AZ': 'Asia', 'BH': 'Asia', 'BD': 'Asia', 'BT': 'Asia',
+  'BN': 'Asia', 'KH': 'Asia', 'CN': 'Asia', 'GE': 'Asia', 'IN': 'Asia', 'ID': 'Asia',
+  'IR': 'Asia', 'IQ': 'Asia', 'IL': 'Asia', 'JP': 'Asia', 'JO': 'Asia', 'KZ': 'Asia',
+  'KW': 'Asia', 'KG': 'Asia', 'LA': 'Asia', 'LB': 'Asia', 'MY': 'Asia', 'MV': 'Asia',
+  'MN': 'Asia', 'MM': 'Asia', 'NP': 'Asia', 'KP': 'Asia', 'OM': 'Asia', 'PK': 'Asia',
+  'PS': 'Asia', 'PH': 'Asia', 'QA': 'Asia', 'SA': 'Asia', 'SG': 'Asia', 'KR': 'Asia',
+  'LK': 'Asia', 'SY': 'Asia', 'TW': 'Asia', 'TJ': 'Asia', 'TH': 'Asia', 'TL': 'Asia',
+  'TR': 'Asia', 'TM': 'Asia', 'AE': 'Asia', 'UZ': 'Asia', 'VN': 'Asia', 'YE': 'Asia',
+  // Africa
+  'DZ': 'Africa', 'AO': 'Africa', 'BJ': 'Africa', 'BW': 'Africa', 'BF': 'Africa',
+  'BI': 'Africa', 'CV': 'Africa', 'CM': 'Africa', 'CF': 'Africa', 'TD': 'Africa',
+  'KM': 'Africa', 'CG': 'Africa', 'CD': 'Africa', 'CI': 'Africa', 'DJ': 'Africa',
+  'EG': 'Africa', 'GQ': 'Africa', 'ER': 'Africa', 'SZ': 'Africa', 'ET': 'Africa',
+  'GA': 'Africa', 'GM': 'Africa', 'GH': 'Africa', 'GN': 'Africa', 'GW': 'Africa',
+  'KE': 'Africa', 'LS': 'Africa', 'LR': 'Africa', 'LY': 'Africa', 'MG': 'Africa',
+  'MW': 'Africa', 'ML': 'Africa', 'MR': 'Africa', 'MU': 'Africa', 'MA': 'Africa',
+  'MZ': 'Africa', 'NA': 'Africa', 'NE': 'Africa', 'NG': 'Africa', 'RW': 'Africa',
+  'ST': 'Africa', 'SN': 'Africa', 'SC': 'Africa', 'SL': 'Africa', 'SO': 'Africa',
+  'ZA': 'Africa', 'SS': 'Africa', 'SD': 'Africa', 'TZ': 'Africa', 'TG': 'Africa',
+  'TN': 'Africa', 'UG': 'Africa', 'ZM': 'Africa', 'ZW': 'Africa',
+  // Oceania
+  'AU': 'Oceania', 'FJ': 'Oceania', 'KI': 'Oceania', 'MH': 'Oceania', 'FM': 'Oceania',
+  'NR': 'Oceania', 'NZ': 'Oceania', 'PW': 'Oceania', 'PG': 'Oceania', 'WS': 'Oceania',
+  'SB': 'Oceania', 'TO': 'Oceania', 'TV': 'Oceania', 'VU': 'Oceania',
+}
+
+const CONTINENT_ORDER = ['Europe', 'North America', 'South America', 'Asia', 'Africa', 'Oceania']
 
 const TravelGlobe = dynamic(
   () => import('@/components/travel-globe').then(mod => mod.TravelGlobe),
@@ -220,6 +274,15 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
         </div>
       )}
 
+      {/* Running Total */}
+      {viewMode === 'list' && filteredTravels.length > 0 && (
+        <div className="flex items-center gap-2 text-sm text-zinc-400">
+          <Globe className="h-4 w-4" />
+          <span className="font-medium text-white">{filteredTravels.length}</span>
+          <span>countries visited</span>
+        </div>
+      )}
+
       {/* Content */}
       {viewMode === 'globe' ? (
         <div className="relative h-[600px] -mx-4 md:-mx-8 lg:-mx-16">
@@ -230,9 +293,9 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
           />
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="space-y-4">
           {filteredTravels.length === 0 ? (
-            <div className="col-span-full text-center py-12">
+            <div className="text-center py-12">
               <MapPin className="h-12 w-12 mx-auto text-zinc-700 mb-4" />
               <p className="text-zinc-400">
                 {selectedUser
@@ -241,48 +304,103 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
               </p>
             </div>
           ) : (
-            filteredTravels.map((travel) => {
-              const isOwn = travel.user_email === userEmail
+            CONTINENT_ORDER.map((continent) => {
+              const continentTravels = filteredTravels.filter(
+                t => COUNTRY_CONTINENTS[t.country_code] === continent
+              )
+              if (continentTravels.length === 0) return null
+
               return (
-                <Card key={travel.id} className="bg-zinc-900/50 border-zinc-800 group">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold"
-                          style={{
-                            backgroundColor: USER_COLORS[travel.user_email] + '20',
-                            color: USER_COLORS[travel.user_email],
-                          }}
-                        >
-                          {travel.country_code}
-                        </div>
-                        <div>
-                          <p className="font-medium text-white">{travel.country_name}</p>
-                          <p className="text-xs text-zinc-500">
-                            {USER_NAMES[travel.user_email]}
-                          </p>
-                        </div>
-                      </div>
-                      {isOwn && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteTravel(travel.id)}
-                          disabled={deletingId === travel.id}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-500 hover:text-red-400 hover:bg-zinc-800/50 h-8 w-8 p-0"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <ContinentSection
+                  key={continent}
+                  continent={continent}
+                  travels={continentTravels}
+                  userEmail={userEmail}
+                  deletingId={deletingId}
+                  onDelete={handleDeleteTravel}
+                />
               )
             })
           )}
         </div>
       )}
     </div>
+  )
+}
+
+interface ContinentSectionProps {
+  continent: string
+  travels: Travel[]
+  userEmail: string
+  deletingId: string | null
+  onDelete: (id: string) => void
+}
+
+function ContinentSection({ continent, travels, userEmail, deletingId, onDelete }: ContinentSectionProps) {
+  const [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger asChild>
+        <button className="flex items-center justify-between w-full py-3 px-4 rounded-lg bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-colors">
+          <div className="flex items-center gap-3">
+            <span className="font-medium text-white">{continent}</span>
+            <Badge variant="secondary" className="bg-zinc-800 text-zinc-300 text-xs">
+              {travels.length}
+            </Badge>
+          </div>
+          <ChevronDown className={cn(
+            "h-4 w-4 text-zinc-400 transition-transform",
+            isOpen && "rotate-180"
+          )} />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="pt-3">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {travels.map((travel) => {
+            const isOwn = travel.user_email === userEmail
+            return (
+              <Card key={travel.id} className="bg-zinc-900/50 border-zinc-800 group">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold"
+                        style={{
+                          backgroundColor: USER_COLORS[travel.user_email] + '20',
+                          color: USER_COLORS[travel.user_email],
+                        }}
+                      >
+                        {travel.country_code}
+                      </div>
+                      <div>
+                        <p className="font-medium text-white">{travel.country_name}</p>
+                        <p className="text-xs text-zinc-500">
+                          {USER_NAMES[travel.user_email]}
+                        </p>
+                      </div>
+                    </div>
+                    {isOwn && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onDelete(travel.id)
+                        }}
+                        disabled={deletingId === travel.id}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-500 hover:text-red-400 hover:bg-zinc-800/50 h-8 w-8 p-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   )
 }

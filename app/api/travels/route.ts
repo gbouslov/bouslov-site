@@ -2,12 +2,22 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getAllTravels, addTravel, removeTravel, getTravelsByUser } from '@/lib/supabase'
+import { apiLimiters } from '@/lib/security'
 
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit
+    const rateLimit = apiLimiters.general.check(session.user.email)
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter || 60) } }
+      )
     }
 
     const { searchParams } = new URL(req.url)
@@ -49,6 +59,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'Invalid country code format' },
         { status: 400 }
+      )
+    }
+
+    // Rate limit writes
+    const rateLimit = apiLimiters.write.check(session.user.email)
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter || 60) } }
       )
     }
 

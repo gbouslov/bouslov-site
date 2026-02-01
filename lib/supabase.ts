@@ -70,6 +70,44 @@ export interface StateVisited {
   visited_at: string
 }
 
+export type PinType = 'bucket_list' | 'trip_planned' | 'been_there' | 'home_base'
+
+export interface PinLink {
+  title: string
+  url: string
+}
+
+export interface PinImage {
+  url: string
+  caption?: string
+}
+
+export interface Pin {
+  id: string
+  user_email: string
+  user_name: string
+  lat: number
+  lng: number
+  location_name: string | null
+  pin_type: PinType
+  title: string
+  description: string | null
+  links: PinLink[]
+  images: PinImage[]
+  trip_date: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface PinComment {
+  id: string
+  pin_id: string
+  user_email: string
+  user_name: string
+  content: string
+  created_at: string
+}
+
 // Helper functions
 export async function getCategories(): Promise<Category[]> {
   const { data, error } = await supabase
@@ -343,4 +381,150 @@ export async function getStateCounts(): Promise<Record<string, number>> {
     counts[state.user_email] = (counts[state.user_email] || 0) + 1
   }
   return counts
+}
+
+// Pin functions
+export async function getAllPins(): Promise<Pin[]> {
+  const { data, error } = await supabase
+    .from('pins')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function getPinById(id: string): Promise<Pin | null> {
+  const { data, error } = await supabase
+    .from('pins')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error && error.code !== 'PGRST116') throw error
+  return data
+}
+
+export async function createPin(pin: {
+  user_email: string
+  user_name: string
+  lat: number
+  lng: number
+  location_name?: string
+  pin_type: PinType
+  title: string
+  description?: string
+  links?: PinLink[]
+  images?: PinImage[]
+  trip_date?: string
+}): Promise<Pin> {
+  const { data, error } = await supabase
+    .from('pins')
+    .insert({
+      user_email: pin.user_email,
+      user_name: pin.user_name,
+      lat: pin.lat,
+      lng: pin.lng,
+      location_name: pin.location_name || null,
+      pin_type: pin.pin_type,
+      title: pin.title,
+      description: pin.description || null,
+      links: pin.links || [],
+      images: pin.images || [],
+      trip_date: pin.trip_date || null,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function updatePin(
+  id: string,
+  userEmail: string,
+  updates: Partial<Omit<Pin, 'id' | 'user_email' | 'user_name' | 'created_at'>>
+): Promise<Pin> {
+  const { data, error } = await supabase
+    .from('pins')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('user_email', userEmail)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deletePin(id: string, userEmail: string): Promise<void> {
+  const { error } = await supabase
+    .from('pins')
+    .delete()
+    .eq('id', id)
+    .eq('user_email', userEmail)
+
+  if (error) throw error
+}
+
+// Pin comments functions
+export async function getCommentsByPinId(pinId: string): Promise<PinComment[]> {
+  const { data, error } = await supabase
+    .from('pin_comments')
+    .select('*')
+    .eq('pin_id', pinId)
+    .order('created_at', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createComment(comment: {
+  pin_id: string
+  user_email: string
+  user_name: string
+  content: string
+}): Promise<PinComment> {
+  const { data, error } = await supabase
+    .from('pin_comments')
+    .insert(comment)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteComment(id: string, userEmail: string): Promise<void> {
+  const { error } = await supabase
+    .from('pin_comments')
+    .delete()
+    .eq('id', id)
+    .eq('user_email', userEmail)
+
+  if (error) throw error
+}
+
+// Image upload to Supabase storage
+export async function uploadPinImage(
+  file: File,
+  userId: string
+): Promise<string> {
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`
+  
+  const { error } = await supabase.storage
+    .from('pin-images')
+    .upload(fileName, file)
+
+  if (error) throw error
+  
+  const { data: { publicUrl } } = supabase.storage
+    .from('pin-images')
+    .getPublicUrl(fileName)
+  
+  return publicUrl
 }

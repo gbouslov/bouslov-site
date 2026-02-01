@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions, ALLOWED_EMAILS } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
 import { CATEGORIES } from '@/lib/constants'
+import { apiLimiters } from '@/lib/security'
 
 // Rate limit: 1 score per category per 5 minutes
 const rateLimitMap = new Map<string, Map<string, number>>()
@@ -158,8 +159,27 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    // Require authentication
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit by IP or email
+    const identifier = session.user.email
+    const rateLimit = apiLimiters.general.check(identifier)
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { message: 'Too many requests' },
+        { 
+          status: 429,
+          headers: { 'Retry-After': String(rateLimit.retryAfter || 60) }
+        }
+      )
+    }
+
     const { data, error } = await supabase
       .from('scores')
       .select(`

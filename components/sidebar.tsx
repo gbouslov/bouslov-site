@@ -16,12 +16,16 @@ import {
   ChevronRight,
   Zap,
   Plus,
+  Link2,
+  MapPin,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 const NAV_ITEMS = [
   { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   { href: '/travel', label: 'Travel', icon: Plane },
+  { href: '/pins', label: 'Pins', icon: MapPin },
+  { href: '/quicklinks', label: 'Quicklinks', icon: Link2 },
   { href: '/stats', label: 'Stats', icon: BarChart3, disabled: true },
   { href: '/settings', label: 'Settings', icon: Settings, disabled: true },
 ]

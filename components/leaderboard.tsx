@@ -14,7 +14,11 @@ import { formatDistanceToNow } from 'date-fns'
 // Category icons mapping
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   wpm: <Keyboard className="h-4 w-4" />,
-  chess: <Crown className="h-4 w-4" />,
+  'chess-bullet': <Crown className="h-4 w-4" />,
+  'chess-blitz': <Crown className="h-4 w-4" />,
+  'chess-rapid': <Crown className="h-4 w-4" />,
+  'chess-daily': <Crown className="h-4 w-4" />,
+  'puzzle-rush': <Crown className="h-4 w-4" />,
   reaction: <Zap className="h-4 w-4" />,
   memory: <Brain className="h-4 w-4" />,
   accuracy: <Target className="h-4 w-4" />,
@@ -108,16 +112,16 @@ export function Leaderboard({ initialScores = {}, recentActivity = [] }: Leaderb
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-6 bg-zinc-800/50 p-1">
+            <TabsList className="flex flex-wrap gap-1 mb-6 bg-zinc-800/50 p-1 h-auto">
               {CATEGORIES.map(cat => (
-                <TabsTrigger 
-                  key={cat.slug} 
-                  value={cat.slug} 
-                  className="text-xs data-[state=active]:bg-zinc-700 data-[state=active]:text-zinc-100 text-zinc-400"
+                <TabsTrigger
+                  key={cat.slug}
+                  value={cat.slug}
+                  className="text-xs data-[state=active]:bg-zinc-700 data-[state=active]:text-zinc-100 text-zinc-400 px-2 py-1.5"
                 >
                   <span className="flex items-center gap-1.5">
                     {CATEGORY_ICONS[cat.slug]}
-                    <span className="hidden sm:inline">{cat.name.split(' ')[0]}</span>
+                    <span className="hidden sm:inline">{cat.name}</span>
                   </span>
                 </TabsTrigger>
               ))}
