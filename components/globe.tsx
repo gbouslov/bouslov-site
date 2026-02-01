@@ -1,14 +1,12 @@
 'use client'
 
-import { useRef, useEffect, useState, useMemo, useCallback, memo } from 'react'
+import { useRef, useEffect, useState, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import * as THREE from 'three'
-import { vertexShader, fragmentShader, TEXTURES, getCachedSunCoordinates } from '@/lib/globe-shaders'
-import { isWebGLSupported, detectPerformanceTier } from '@/lib/webgl-utils'
 
 const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default), {
   ssr: false,
-  loading: () => <GlobeLoadingFallback />
+  loading: () => <LoadingFallback />
 })
 
 const FAMILY_MEMBERS = [
@@ -18,91 +16,85 @@ const FAMILY_MEMBERS = [
   { name: 'Daniel', lat: 33.4484, lng: -112.0740, color: '#10b981' },
 ]
 
-// Memoized loading fallback
-const GlobeLoadingFallback = memo(function GlobeLoadingFallback() {
+const DAY_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg'
+const NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg'
+const NIGHT_SKY = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png'
+
+const vertexShader = `
+  varying vec3 vNormal;
+  varying vec2 vUv;
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`
+
+const fragmentShader = `
+  #define PI 3.141592653589793
+  uniform sampler2D dayTexture;
+  uniform sampler2D nightTexture;
+  uniform vec2 sunPosition;
+  uniform vec2 globeRotation;
+  varying vec3 vNormal;
+  varying vec2 vUv;
+
+  float toRad(in float a) {
+    return a * PI / 180.0;
+  }
+
+  vec3 Polar2Cartesian(in vec2 c) {
+    float theta = toRad(90.0 - c.x);
+    float phi = toRad(90.0 - c.y);
+    return vec3(
+      sin(phi) * cos(theta),
+      cos(phi),
+      sin(phi) * sin(theta)
+    );
+  }
+
+  void main() {
+    float invLon = toRad(globeRotation.x);
+    float invLat = -toRad(globeRotation.y);
+    mat3 rotX = mat3(1, 0, 0, 0, cos(invLat), -sin(invLat), 0, sin(invLat), cos(invLat));
+    mat3 rotY = mat3(cos(invLon), 0, sin(invLon), 0, 1, 0, -sin(invLon), 0, cos(invLon));
+    vec3 rotatedSunDirection = rotX * rotY * Polar2Cartesian(sunPosition);
+    float intensity = dot(normalize(vNormal), normalize(rotatedSunDirection));
+    vec4 dayColor = texture2D(dayTexture, vUv);
+    vec4 nightColor = texture2D(nightTexture, vUv);
+    float blendFactor = smoothstep(-0.1, 0.1, intensity);
+    gl_FragColor = mix(nightColor, dayColor, blendFactor);
+  }
+`
+
+function getSunCoordinates(): { lng: number; lat: number } {
+  const now = new Date()
+  const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000)
+  const declination = 23.45 * Math.sin((360 / 365) * (dayOfYear - 81) * (Math.PI / 180))
+  const hourAngle = ((now.getUTCHours() + now.getUTCMinutes() / 60) / 24) * 360 - 180
+  return { lng: -hourAngle, lat: declination }
+}
+
+function LoadingFallback() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-gradient-radial from-zinc-900 to-black">
-      <div className="relative">
-        {/* Animated spinner */}
-        <div className="w-16 h-16 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
-        {/* Pulsing center */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-4 h-4 bg-blue-500/20 rounded-full animate-pulse" />
-        </div>
-      </div>
-      <span className="sr-only">Loading globe...</span>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-12 h-12 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
     </div>
   )
-})
+}
 
-// WebGL not supported fallback
-const WebGLFallback = memo(function WebGLFallback() {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-radial from-zinc-900 to-black">
-      <div className="text-center space-y-4 px-4">
-        <div className="w-24 h-24 mx-auto rounded-full bg-zinc-800 flex items-center justify-center">
-          <svg className="w-12 h-12 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 10h.01M15 10h.01M9.5 15.5c.83.83 2.17.83 3 0" />
-          </svg>
-        </div>
-        <p className="text-zinc-400 text-sm">
-          3D globe requires WebGL support
-        </p>
-      </div>
-    </div>
-  )
-})
-
-function GlobeInner() {
+export function Globe() {
   const globeRef = useRef<any>(null)
   const [globeReady, setGlobeReady] = useState(false)
   const [hoveredMember, setHoveredMember] = useState<string | null>(null)
   const materialRef = useRef<THREE.ShaderMaterial | null>(null)
   const rotationRef = useRef({ lng: 0, lat: 0 })
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
 
-  // Load textures with memoization
-  const dayTexture = useMemo(() => {
-    const loader = new THREE.TextureLoader()
-    const texture = loader.load(TEXTURES.day.high)
-    texture.colorSpace = THREE.SRGBColorSpace
-    return texture
-  }, [])
-  
-  const nightTexture = useMemo(() => {
-    const loader = new THREE.TextureLoader()
-    const texture = loader.load(TEXTURES.night.high)
-    texture.colorSpace = THREE.SRGBColorSpace
-    return texture
-  }, [])
-
-  // Track window dimensions efficiently
-  useEffect(() => {
-    const updateDimensions = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      })
-    }
-    updateDimensions()
-    
-    // Debounce resize handler
-    let timeoutId: NodeJS.Timeout
-    const handleResize = () => {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(updateDimensions, 100)
-    }
-    
-    window.addEventListener('resize', handleResize, { passive: true })
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      clearTimeout(timeoutId)
-    }
-  }, [])
+  const dayTexture = useMemo(() => new THREE.TextureLoader().load(DAY_TEXTURE), [])
+  const nightTexture = useMemo(() => new THREE.TextureLoader().load(NIGHT_TEXTURE), [])
 
   const createGlobeMaterial = useCallback(() => {
-    const sunCoords = getCachedSunCoordinates()
+    const sunCoords = getSunCoordinates()
     const material = new THREE.ShaderMaterial({
       uniforms: {
         dayTexture: { value: dayTexture },
@@ -121,31 +113,23 @@ function GlobeInner() {
     if (!globeRef.current) return
 
     const globe = globeRef.current
-    const controls = globe.controls()
-    
-    controls.autoRotate = true
-    controls.autoRotateSpeed = 0.3
-    controls.enableZoom = false
+
+    globe.controls().autoRotate = true
+    globe.controls().autoRotateSpeed = 0.3
+    globe.controls().enableZoom = false
 
     globe.pointOfView({ lat: 20, lng: -40, altitude: 2.5 })
 
     let frameId: number
-    let lastSunUpdate = 0
-    
     const animate = () => {
-      if (materialRef.current && controls) {
-        const azimuth = controls.getAzimuthalAngle() * (180 / Math.PI)
-        const polar = controls.getPolarAngle() * (180 / Math.PI) - 90
+      if (materialRef.current && globe.controls()) {
+        const azimuth = globe.controls().getAzimuthalAngle() * (180 / Math.PI)
+        const polar = globe.controls().getPolarAngle() * (180 / Math.PI) - 90
         rotationRef.current = { lng: azimuth, lat: polar }
         materialRef.current.uniforms.globeRotation.value.set(azimuth, polar)
 
-        // Update sun position less frequently (every second)
-        const now = Date.now()
-        if (now - lastSunUpdate > 1000) {
-          const sunCoords = getCachedSunCoordinates()
-          materialRef.current.uniforms.sunPosition.value.set(sunCoords.lng, sunCoords.lat)
-          lastSunUpdate = now
-        }
+        const sunCoords = getSunCoordinates()
+        materialRef.current.uniforms.sunPosition.value.set(sunCoords.lng, sunCoords.lat)
       }
       frameId = requestAnimationFrame(animate)
     }
@@ -156,7 +140,6 @@ function GlobeInner() {
     }
   }, [globeReady])
 
-  // Memoized point data
   const pointData = useMemo(() => {
     return FAMILY_MEMBERS.map(m => ({
       ...m,
@@ -165,7 +148,6 @@ function GlobeInner() {
     }))
   }, [hoveredMember])
 
-  // Memoized arc data (static, never changes)
   const arcData = useMemo(() => {
     const arcs: Array<{
       startLat: number
@@ -199,7 +181,7 @@ function GlobeInner() {
         onGlobeReady={() => setGlobeReady(true)}
         globeMaterial={createGlobeMaterial()}
         backgroundColor="rgba(0,0,0,0)"
-        backgroundImageUrl={TEXTURES.sky}
+        backgroundImageUrl={NIGHT_SKY}
         atmosphereColor="#3b82f6"
         atmosphereAltitude={0.15}
         pointsData={pointData}
@@ -221,55 +203,9 @@ function GlobeInner() {
         arcDashLength={0.5}
         arcDashGap={0.2}
         arcDashAnimateTime={2000}
-        width={dimensions.width}
-        height={dimensions.height}
+        width={typeof window !== 'undefined' ? window.innerWidth : 800}
+        height={typeof window !== 'undefined' ? window.innerHeight : 600}
       />
     </div>
   )
 }
-
-// Main export with WebGL check
-export const Globe = memo(function Globe() {
-  const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null)
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  // Check WebGL support on mount
-  useEffect(() => {
-    setWebGLSupported(isWebGLSupported())
-  }, [])
-
-  // Intersection observer for lazy loading
-  useEffect(() => {
-    if (!containerRef.current) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  // Show loading state while checking WebGL
-  if (webGLSupported === null) {
-    return <GlobeLoadingFallback />
-  }
-
-  // Show fallback if WebGL not supported
-  if (!webGLSupported) {
-    return <WebGLFallback />
-  }
-
-  return (
-    <div ref={containerRef} className="w-full h-full">
-      {isVisible ? <GlobeInner /> : <GlobeLoadingFallback />}
-    </div>
-  )
-})

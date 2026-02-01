@@ -1,16 +1,17 @@
 'use client'
 
-import { useRef, useEffect, useState, useMemo, useCallback, memo } from 'react'
+import { useRef, useEffect, useState, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import * as THREE from 'three'
-import { vertexShader, fragmentShader, TEXTURES, getCachedSunCoordinates } from '@/lib/globe-shaders'
-import { isWebGLSupported } from '@/lib/webgl-utils'
 
 const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default), {
   ssr: false,
   loading: () => <LoadingFallback />
 })
 
+const DAY_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg'
+const NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg'
+const NIGHT_SKY = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png'
 const COUNTRIES_GEOJSON = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson'
 
 // User colors matching the family member theme
@@ -28,21 +29,68 @@ export const USER_NAMES: Record<string, string> = {
   'bouslovd@gmail.com': 'Daniel',
 }
 
-const LoadingFallback = memo(function LoadingFallback() {
+const vertexShader = `
+  varying vec3 vNormal;
+  varying vec2 vUv;
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`
+
+const fragmentShader = `
+  #define PI 3.141592653589793
+  uniform sampler2D dayTexture;
+  uniform sampler2D nightTexture;
+  uniform vec2 sunPosition;
+  uniform vec2 globeRotation;
+  varying vec3 vNormal;
+  varying vec2 vUv;
+
+  float toRad(in float a) {
+    return a * PI / 180.0;
+  }
+
+  vec3 Polar2Cartesian(in vec2 c) {
+    float theta = toRad(90.0 - c.x);
+    float phi = toRad(90.0 - c.y);
+    return vec3(
+      sin(phi) * cos(theta),
+      cos(phi),
+      sin(phi) * sin(theta)
+    );
+  }
+
+  void main() {
+    float invLon = toRad(globeRotation.x);
+    float invLat = -toRad(globeRotation.y);
+    mat3 rotX = mat3(1, 0, 0, 0, cos(invLat), -sin(invLat), 0, sin(invLat), cos(invLat));
+    mat3 rotY = mat3(cos(invLon), 0, sin(invLon), 0, 1, 0, -sin(invLon), 0, cos(invLon));
+    vec3 rotatedSunDirection = rotX * rotY * Polar2Cartesian(sunPosition);
+    float intensity = dot(normalize(vNormal), normalize(rotatedSunDirection));
+    vec4 dayColor = texture2D(dayTexture, vUv);
+    vec4 nightColor = texture2D(nightTexture, vUv);
+    float blendFactor = smoothstep(-0.1, 0.1, intensity);
+    gl_FragColor = mix(nightColor, dayColor, blendFactor);
+  }
+`
+
+function getSunCoordinates(): { lng: number; lat: number } {
+  const now = new Date()
+  const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000)
+  const declination = 23.45 * Math.sin((360 / 365) * (dayOfYear - 81) * (Math.PI / 180))
+  const hourAngle = ((now.getUTCHours() + now.getUTCMinutes() / 60) / 24) * 360 - 180
+  return { lng: -hourAngle, lat: declination }
+}
+
+function LoadingFallback() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="w-12 h-12 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
     </div>
   )
-})
-
-const WebGLFallback = memo(function WebGLFallback() {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/50">
-      <p className="text-zinc-400 text-sm">3D globe requires WebGL support</p>
-    </div>
-  )
-})
+}
 
 interface Travel {
   country_code: string
@@ -57,31 +105,7 @@ interface TravelGlobeProps {
   onCountryClick?: (countryCode: string, countryName: string) => void
 }
 
-// Cache for GeoJSON data
-let countriesCache: any[] | null = null
-let countriesFetchPromise: Promise<any[]> | null = null
-
-async function fetchCountries(): Promise<any[]> {
-  if (countriesCache) return countriesCache
-  
-  if (!countriesFetchPromise) {
-    countriesFetchPromise = fetch(COUNTRIES_GEOJSON)
-      .then(res => res.json())
-      .then(data => {
-        countriesCache = data.features
-        return data.features
-      })
-      .catch(err => {
-        console.error('Failed to load countries:', err)
-        countriesFetchPromise = null
-        return []
-      })
-  }
-  
-  return countriesFetchPromise
-}
-
-function TravelGlobeInner({
+export function TravelGlobe({
   travels,
   selectedUser,
   onCountryHover,
@@ -89,36 +113,25 @@ function TravelGlobeInner({
 }: TravelGlobeProps) {
   const globeRef = useRef<any>(null)
   const [globeReady, setGlobeReady] = useState(false)
-  const [countries, setCountries] = useState<any[]>(countriesCache || [])
+  const [countries, setCountries] = useState<any[]>([])
   const [hoveredCountry, setHoveredCountry] = useState<any>(null)
   const materialRef = useRef<THREE.ShaderMaterial | null>(null)
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
 
-  // Load textures with memoization
-  const dayTexture = useMemo(() => {
-    const loader = new THREE.TextureLoader()
-    const texture = loader.load(TEXTURES.day.high)
-    texture.colorSpace = THREE.SRGBColorSpace
-    return texture
-  }, [])
-  
-  const nightTexture = useMemo(() => {
-    const loader = new THREE.TextureLoader()
-    const texture = loader.load(TEXTURES.night.high)
-    texture.colorSpace = THREE.SRGBColorSpace
-    return texture
-  }, [])
+  const dayTexture = useMemo(() => new THREE.TextureLoader().load(DAY_TEXTURE), [])
+  const nightTexture = useMemo(() => new THREE.TextureLoader().load(NIGHT_TEXTURE), [])
 
-  // Load GeoJSON with caching
+  // Load GeoJSON
   useEffect(() => {
-    if (countriesCache) {
-      setCountries(countriesCache)
-    } else {
-      fetchCountries().then(setCountries)
-    }
+    fetch(COUNTRIES_GEOJSON)
+      .then(res => res.json())
+      .then(data => {
+        setCountries(data.features)
+      })
+      .catch(err => console.error('Failed to load countries:', err))
   }, [])
 
-  // Track window dimensions with debounce
+  // Track window dimensions
   useEffect(() => {
     const updateDimensions = () => {
       setDimensions({
@@ -127,18 +140,8 @@ function TravelGlobeInner({
       })
     }
     updateDimensions()
-    
-    let timeoutId: NodeJS.Timeout
-    const handleResize = () => {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(updateDimensions, 100)
-    }
-    
-    window.addEventListener('resize', handleResize, { passive: true })
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      clearTimeout(timeoutId)
-    }
+    window.addEventListener('resize', updateDimensions)
+    return () => window.removeEventListener('resize', updateDimensions)
   }, [])
 
   // Build lookup of visited countries
@@ -157,7 +160,7 @@ function TravelGlobeInner({
   }, [travels, selectedUser])
 
   const createGlobeMaterial = useCallback(() => {
-    const sunCoords = getCachedSunCoordinates()
+    const sunCoords = getSunCoordinates()
     const material = new THREE.ShaderMaterial({
       uniforms: {
         dayTexture: { value: dayTexture },
@@ -176,32 +179,24 @@ function TravelGlobeInner({
     if (!globeRef.current) return
 
     const globe = globeRef.current
-    const controls = globe.controls()
 
-    controls.autoRotate = true
-    controls.autoRotateSpeed = 0.2
-    controls.enableZoom = true
-    controls.minDistance = 150
-    controls.maxDistance = 500
+    globe.controls().autoRotate = true
+    globe.controls().autoRotateSpeed = 0.2
+    globe.controls().enableZoom = true
+    globe.controls().minDistance = 150
+    globe.controls().maxDistance = 500
 
     globe.pointOfView({ lat: 20, lng: -40, altitude: 2.5 })
 
     let frameId: number
-    let lastSunUpdate = 0
-    
     const animate = () => {
-      if (materialRef.current && controls) {
-        const azimuth = controls.getAzimuthalAngle() * (180 / Math.PI)
-        const polar = controls.getPolarAngle() * (180 / Math.PI) - 90
+      if (materialRef.current && globe.controls()) {
+        const azimuth = globe.controls().getAzimuthalAngle() * (180 / Math.PI)
+        const polar = globe.controls().getPolarAngle() * (180 / Math.PI) - 90
         materialRef.current.uniforms.globeRotation.value.set(azimuth, polar)
 
-        // Update sun position less frequently
-        const now = Date.now()
-        if (now - lastSunUpdate > 1000) {
-          const sunCoords = getCachedSunCoordinates()
-          materialRef.current.uniforms.sunPosition.value.set(sunCoords.lng, sunCoords.lat)
-          lastSunUpdate = now
-        }
+        const sunCoords = getSunCoordinates()
+        materialRef.current.uniforms.sunPosition.value.set(sunCoords.lng, sunCoords.lat)
       }
       frameId = requestAnimationFrame(animate)
     }
@@ -238,12 +233,13 @@ function TravelGlobeInner({
       return USER_COLORS[visitors[0]] || '#3b82f6'
     }
 
-    // Multiple visitors - use white
+    // Multiple visitors - use a gradient effect with opacity
     return '#ffffff'
   }, [selectedUser])
 
   const getPolygonSideColor = useCallback((d: any) => {
     const baseColor = getPolygonColor(d)
+    // Make sides slightly darker
     return baseColor.replace(')', ', 0.8)').replace('rgb', 'rgba')
   }, [getPolygonColor])
 
@@ -276,10 +272,6 @@ function TravelGlobeInner({
     </div>`
   }, [])
 
-  const getPolygonAltitude = useCallback((d: any) => {
-    return hoveredCountry === d ? 0.06 : 0.01
-  }, [hoveredCountry])
-
   return (
     <div className="w-full h-full relative">
       <GlobeGL
@@ -287,11 +279,11 @@ function TravelGlobeInner({
         onGlobeReady={() => setGlobeReady(true)}
         globeMaterial={createGlobeMaterial()}
         backgroundColor="rgba(0,0,0,0)"
-        backgroundImageUrl={TEXTURES.sky}
+        backgroundImageUrl={NIGHT_SKY}
         atmosphereColor="#3b82f6"
         atmosphereAltitude={0.15}
         polygonsData={polygonData}
-        polygonAltitude={getPolygonAltitude}
+        polygonAltitude={d => hoveredCountry === d ? 0.06 : 0.01}
         polygonCapColor={getPolygonColor}
         polygonSideColor={getPolygonSideColor}
         polygonStrokeColor={() => 'rgba(255,255,255,0.2)'}
@@ -305,46 +297,3 @@ function TravelGlobeInner({
     </div>
   )
 }
-
-// Main export with WebGL check and lazy loading
-export const TravelGlobe = memo(function TravelGlobe(props: TravelGlobeProps) {
-  const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null)
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    setWebGLSupported(isWebGLSupported())
-  }, [])
-
-  // Intersection observer for lazy loading
-  useEffect(() => {
-    if (!containerRef.current) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  if (webGLSupported === null) {
-    return <LoadingFallback />
-  }
-
-  if (!webGLSupported) {
-    return <WebGLFallback />
-  }
-
-  return (
-    <div ref={containerRef} className="w-full h-full">
-      {isVisible ? <TravelGlobeInner {...props} /> : <LoadingFallback />}
-    </div>
-  )
-})
