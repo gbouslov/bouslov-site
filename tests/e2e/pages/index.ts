@@ -1,0 +1,7 @@
+export { BasePage } from './base.page'
+export { LoginPage } from './login.page'
+export { LeaderboardPage } from './leaderboard.page'
+export { TravelPage } from './travel.page'
+export { PinsPage } from './pins.page'
+export { ProfilePage } from './profile.page'
+export { QuicklinksPage } from './quicklinks.page'
