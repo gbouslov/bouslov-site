@@ -4,15 +4,30 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { ArrowRight } from 'lucide-react'
+import { memo } from 'react'
 
-const Globe = dynamic(() => import('@/components/globe').then(mod => ({ default: mod.Globe })), {
-  ssr: false,
-  loading: () => (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-12 h-12 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
+// Memoized loading state for better performance
+const GlobeLoading = memo(function GlobeLoading() {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center bg-gradient-radial from-zinc-900 to-[#09090b]">
+      <div className="relative">
+        <div className="w-16 h-16 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-4 h-4 bg-blue-500/20 rounded-full animate-pulse" />
+        </div>
+      </div>
     </div>
   )
 })
+
+// Dynamic import with loading state
+const Globe = dynamic(
+  () => import('@/components/globe').then(mod => ({ default: mod.Globe })),
+  {
+    ssr: false,
+    loading: () => <GlobeLoading />
+  }
+)
 
 export default function LandingPage() {
   const { data: session, status } = useSession()
