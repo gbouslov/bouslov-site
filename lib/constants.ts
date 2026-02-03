@@ -40,6 +40,16 @@ export const CATEGORY_GROUPS = {
     text: 'text-violet-400',
     hover: 'hover:border-violet-500/50',
   },
+  academic: {
+    name: 'Academic',
+    color: 'rose',
+    accent: 'rose-500',
+    accentLight: 'rose-400',
+    border: 'border-rose-500/30',
+    bg: 'bg-rose-500/10',
+    text: 'text-rose-400',
+    hover: 'hover:border-rose-500/50',
+  },
 } as const
 
 // Map category slugs to their groups
@@ -56,6 +66,8 @@ export const CATEGORY_TO_GROUP: Record<string, keyof typeof CATEGORY_GROUPS> = {
   aim_trainer: 'cognitive',
   countries_visited: 'travel',
   us_states: 'travel',
+  act_score: 'academic',
+  sat_score: 'academic',
 }
 
 // Helper function to get category group
@@ -78,6 +90,8 @@ export const CATEGORY_ICONS: Record<string, string> = {
   aim_trainer: 'Crosshair',
   countries_visited: 'Globe',
   us_states: 'Map',
+  act_score: 'GraduationCap',
+  sat_score: 'GraduationCap',
 }
 
 // Rank position labels
@@ -124,4 +138,6 @@ export const SCORE_LIMITS: Record<string, { min: number; max: number }> = {
   chess_puzzle_rush: { min: 0, max: 100 },
   countries_visited: { min: 0, max: 195 },
   us_states: { min: 0, max: 50 },
+  act_score: { min: 1, max: 36 },
+  sat_score: { min: 400, max: 1600 },
 }

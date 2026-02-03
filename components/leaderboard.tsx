@@ -95,6 +95,7 @@ export function Leaderboard({
             onClick={handleSync}
             disabled={syncing}
             className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-300"
+            data-testid="sync-chess-button"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
             Sync Chess
@@ -673,6 +674,7 @@ function LogScoreModal({
         <Button
           size="sm"
           className="bg-zinc-700 hover:bg-zinc-600 text-white border border-zinc-600"
+          data-testid="log-score-button"
         >
           <Plus className="h-4 w-4 mr-2" />
           Log Score

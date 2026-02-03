@@ -73,7 +73,8 @@ test.describe('Authentication - Unauthenticated', () => {
     // Check all key elements are present
     await expect(page.locator('h1:has-text("Bouslov Bros")')).toBeVisible()
     await expect(page.locator('text=Family competition tracker')).toBeVisible()
-    await expect(page.locator('text=Sign In')).toBeVisible()
+    // Use role to be more specific about the card title
+    await expect(page.locator('[data-slot="card-title"]:has-text("Sign In")')).toBeVisible()
     await expect(page.locator('button:has-text("Sign in with Google")')).toBeVisible()
     await expect(page.locator('text=Authorized accounts only')).toBeVisible()
 

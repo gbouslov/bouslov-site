@@ -41,7 +41,7 @@ function LoginContent() {
       </div>
 
       {/* Login Card */}
-      <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/50">
+      <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/50" data-testid="login-card">
         <CardHeader className="text-center">
           <CardTitle className="text-zinc-100">Sign In</CardTitle>
           <CardDescription className="text-zinc-500">
@@ -50,9 +50,9 @@ function LoginContent() {
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-400 text-sm">
+            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-400 text-sm" data-testid="login-error">
               <AlertCircle className="h-4 w-4" />
-              {error === 'AccessDenied' 
+              {error === 'AccessDenied'
                 ? 'Access denied. This site is for Bouslov family members only.'
                 : 'Something went wrong. Please try again.'}
             </div>
