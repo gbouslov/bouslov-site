@@ -289,6 +289,12 @@ export function Leaderboard({
                         icon: 'bg-violet-500/10 text-violet-400',
                         score: 'text-violet-300',
                       },
+                      academic: {
+                        border: leader ? 'border-l-rose-400' : '',
+                        hover: 'hover:border-rose-500/40',
+                        icon: 'bg-rose-500/10 text-rose-400',
+                        score: 'text-rose-300',
+                      },
                     }[groupKey]
 
                     return (
