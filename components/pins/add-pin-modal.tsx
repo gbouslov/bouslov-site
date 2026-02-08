@@ -220,9 +220,9 @@ export function AddPinModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-800">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-popover border-border">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-white">
+          <DialogTitle className="text-xl font-semibold text-foreground">
             {editPin ? 'Edit Pin' : 'Add Pin'}
           </DialogTitle>
         </DialogHeader>
@@ -230,7 +230,7 @@ export function AddPinModal({
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Pin Type */}
           <div className="space-y-2">
-            <Label className="text-zinc-400">Pin Type</Label>
+            <Label className="text-muted-foreground">Pin Type</Label>
             <div className="grid grid-cols-2 gap-2">
               {(Object.entries(PIN_TYPES) as [PinType, typeof PIN_TYPES[PinType]][]).map(
                 ([type, config]) => {
@@ -244,7 +244,7 @@ export function AddPinModal({
                         'flex items-center gap-2 p-3 rounded-lg border transition-all text-left',
                         pinType === type
                           ? 'border-transparent'
-                          : 'border-zinc-800 hover:border-zinc-700'
+                          : 'border-border hover:border-border'
                       )}
                       style={{
                         backgroundColor: pinType === type ? config.bgColor : undefined,
@@ -270,33 +270,33 @@ export function AddPinModal({
 
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-zinc-400">Title *</Label>
+            <Label htmlFor="title" className="text-muted-foreground">Title *</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Tokyo Cherry Blossoms"
-              className="bg-zinc-800 border-zinc-700"
+              className="bg-muted border-border"
               required
             />
           </div>
 
           {/* Location Name */}
           <div className="space-y-2">
-            <Label htmlFor="locationName" className="text-zinc-400">Location Name</Label>
+            <Label htmlFor="locationName" className="text-muted-foreground">Location Name</Label>
             <Input
               id="locationName"
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
               placeholder="e.g., Tokyo, Japan"
-              className="bg-zinc-800 border-zinc-700"
+              className="bg-muted border-border"
             />
           </div>
 
           {/* Coordinates */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="lat" className="text-zinc-400">Latitude *</Label>
+              <Label htmlFor="lat" className="text-muted-foreground">Latitude *</Label>
               <Input
                 id="lat"
                 type="number"
@@ -304,12 +304,12 @@ export function AddPinModal({
                 value={lat}
                 onChange={(e) => setLat(e.target.value)}
                 placeholder="35.6762"
-                className="bg-zinc-800 border-zinc-700"
+                className="bg-muted border-border"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lng" className="text-zinc-400">Longitude *</Label>
+              <Label htmlFor="lng" className="text-muted-foreground">Longitude *</Label>
               <Input
                 id="lng"
                 type="number"
@@ -317,7 +317,7 @@ export function AddPinModal({
                 value={lng}
                 onChange={(e) => setLng(e.target.value)}
                 placeholder="139.6503"
-                className="bg-zinc-800 border-zinc-700"
+                className="bg-muted border-border"
                 required
               />
             </div>
@@ -326,32 +326,32 @@ export function AddPinModal({
           {/* Trip Date (for planned trips) */}
           {(pinType === 'trip_planned') && (
             <div className="space-y-2">
-              <Label htmlFor="tripDate" className="text-zinc-400">Trip Date</Label>
+              <Label htmlFor="tripDate" className="text-muted-foreground">Trip Date</Label>
               <Input
                 id="tripDate"
                 type="date"
                 value={tripDate}
                 onChange={(e) => setTripDate(e.target.value)}
-                className="bg-zinc-800 border-zinc-700"
+                className="bg-muted border-border"
               />
             </div>
           )}
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-zinc-400">Description</Label>
+            <Label htmlFor="description" className="text-muted-foreground">Description</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Share your thoughts about this place..."
-              className="bg-zinc-800 border-zinc-700 min-h-[100px]"
+              className="bg-muted border-border min-h-[100px]"
             />
           </div>
 
           {/* Images */}
           <div className="space-y-3">
-            <Label className="text-zinc-400 flex items-center gap-2">
+            <Label className="text-muted-foreground flex items-center gap-2">
               <ImageIcon className="h-4 w-4" />
               Images
             </Label>
@@ -377,9 +377,9 @@ export function AddPinModal({
                   </button>
                 </div>
               ))}
-              <label className="aspect-square border-2 border-dashed border-zinc-700 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-zinc-500 transition-colors">
-                <Upload className="h-6 w-6 text-zinc-500" />
-                <span className="text-xs text-zinc-500 mt-1">Upload</span>
+              <label className="aspect-square border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-muted-foreground transition-colors">
+                <Upload className="h-6 w-6 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground mt-1">Upload</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -393,7 +393,7 @@ export function AddPinModal({
 
           {/* Links */}
           <div className="space-y-3">
-            <Label className="text-zinc-400 flex items-center gap-2">
+            <Label className="text-muted-foreground flex items-center gap-2">
               <LinkIcon className="h-4 w-4" />
               Links
             </Label>
@@ -403,20 +403,20 @@ export function AddPinModal({
                   value={link.title}
                   onChange={(e) => handleLinkChange(index, 'title', e.target.value)}
                   placeholder="Title"
-                  className="bg-zinc-800 border-zinc-700 flex-1"
+                  className="bg-muted border-border flex-1"
                 />
                 <Input
                   value={link.url}
                   onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
                   placeholder="https://..."
-                  className="bg-zinc-800 border-zinc-700 flex-[2]"
+                  className="bg-muted border-border flex-[2]"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => handleRemoveLink(index)}
-                  className="text-zinc-500 hover:text-red-400"
+                  className="text-muted-foreground hover:text-red-400"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -427,7 +427,7 @@ export function AddPinModal({
               variant="outline"
               size="sm"
               onClick={handleAddLink}
-              className="border-zinc-700 text-zinc-400 hover:text-white"
+              className="border-border text-muted-foreground hover:text-foreground"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Link
@@ -435,12 +435,12 @@ export function AddPinModal({
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex justify-end gap-3 pt-4 border-t border-border">
             <Button
               type="button"
               variant="ghost"
               onClick={handleClose}
-              className="text-zinc-400"
+              className="text-muted-foreground"
             >
               Cancel
             </Button>

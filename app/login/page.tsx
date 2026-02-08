@@ -34,17 +34,17 @@ function LoginContent() {
         <div className="flex items-center justify-center gap-2">
           <Zap className="h-10 w-10 text-blue-500" />
         </div>
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-3xl font-bold text-foreground">
           Bouslov Bros
         </h1>
-        <p className="text-zinc-500">Family competition tracker</p>
+        <p className="text-muted-foreground">Family competition tracker</p>
       </div>
 
       {/* Login Card */}
-      <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/50" data-testid="login-card">
+      <Card className="w-full max-w-md border-border bg-card/50" data-testid="login-card">
         <CardHeader className="text-center">
-          <CardTitle className="text-zinc-100">Sign In</CardTitle>
-          <CardDescription className="text-zinc-500">
+          <CardTitle className="text-foreground">Sign In</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Family members only
           </CardDescription>
         </CardHeader>
@@ -59,7 +59,7 @@ function LoginContent() {
           )}
 
           <Button
-            className="w-full bg-white hover:bg-zinc-100 text-zinc-900 border-0"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground border-0"
             onClick={() => signIn('google', { callbackUrl: '/leaderboard' })}
           >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -83,12 +83,9 @@ function LoginContent() {
             Sign in with Google
           </Button>
 
-          <div className="text-center text-xs text-zinc-600">
-            <p>Authorized accounts only</p>
-            <p className="font-mono mt-1 text-zinc-500">
-              gbouslov, dbouslov, jbouslov, bouslovd
-            </p>
-          </div>
+          <p className="text-center text-xs text-muted-foreground/60">
+            Authorized accounts only
+          </p>
         </CardContent>
       </Card>
     </div>

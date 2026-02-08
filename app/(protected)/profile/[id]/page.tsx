@@ -99,60 +99,60 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Card className="border-zinc-800 bg-zinc-900/50">
+      <Card className="border-border bg-card/50">
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row items-center gap-6">
             <Avatar className="h-20 w-20">
-              <AvatarFallback className="text-3xl bg-zinc-800 text-zinc-300">
+              <AvatarFallback className="text-3xl bg-muted text-foreground/80">
                 {displayName[0]}
               </AvatarFallback>
             </Avatar>
             <div className="text-center md:text-left flex-1">
-              <h1 className="text-2xl font-bold text-zinc-100">{displayName}</h1>
-              <p className="text-zinc-500 text-sm">{email}</p>
+              <h1 className="text-2xl font-bold text-foreground">{displayName}</h1>
+              <p className="text-muted-foreground text-sm">{email}</p>
             </div>
             <div className="flex gap-8 text-center">
               <div>
-                <p className="text-3xl font-bold text-zinc-100 font-mono">{totalSubmissions}</p>
-                <p className="text-xs text-zinc-500">Scores</p>
+                <p className="text-3xl font-bold text-foreground font-mono">{totalSubmissions}</p>
+                <p className="text-xs text-muted-foreground">Scores</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-zinc-100 font-mono">{categoriesPlayed}</p>
-                <p className="text-xs text-zinc-500">Categories</p>
+                <p className="text-3xl font-bold text-foreground font-mono">{categoriesPlayed}</p>
+                <p className="text-xs text-muted-foreground">Categories</p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-zinc-800 bg-zinc-900/50">
+      <Card className="border-border bg-card/50">
         <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-zinc-100">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <Trophy className="h-5 w-5 text-amber-400" />
             Personal Bests
           </CardTitle>
         </CardHeader>
         <CardContent>
           {Object.keys(personalBests).length === 0 ? (
-            <p className="text-zinc-500 text-center py-12 text-sm">No scores recorded yet</p>
+            <p className="text-muted-foreground text-center py-12 text-sm">No scores recorded yet</p>
           ) : (
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {Object.values(personalBests).map(({ score, category }) => (
                 <div
                   key={category.slug}
-                  className="p-4 rounded-lg border border-zinc-800 bg-zinc-900/30"
+                  className="p-4 rounded-lg border border-border bg-card/30"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-zinc-400">{getIcon(category.icon)}</span>
-                    <Badge variant="outline" className="border-zinc-700 text-zinc-400 text-xs">
+                    <span className="text-muted-foreground">{getIcon(category.icon)}</span>
+                    <Badge variant="outline" className="border-border text-muted-foreground text-xs">
                       {category.name}
                     </Badge>
                   </div>
-                  <p className="text-2xl font-bold font-mono text-zinc-100">
+                  <p className="text-2xl font-bold font-mono text-foreground">
                     {score.value}
-                    <span className="text-sm text-zinc-500 ml-1">{category.unit}</span>
+                    <span className="text-sm text-muted-foreground ml-1">{category.unit}</span>
                   </p>
-                  <p className="text-xs text-zinc-600 mt-1">
+                  <p className="text-xs text-muted-foreground/60 mt-1">
                     {formatDistanceToNow(new Date(score.created_at), { addSuffix: true })}
                   </p>
                 </div>
@@ -162,16 +162,16 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         </CardContent>
       </Card>
 
-      <Card className="border-zinc-800 bg-zinc-900/50">
+      <Card className="border-border bg-card/50">
         <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-zinc-100">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <TrendingUp className="h-5 w-5 text-blue-400" />
             History
           </CardTitle>
         </CardHeader>
         <CardContent>
           {sortedScores.length === 0 ? (
-            <p className="text-zinc-500 text-center py-12 text-sm">No scores recorded yet</p>
+            <p className="text-muted-foreground text-center py-12 text-sm">No scores recorded yet</p>
           ) : (
             <div className="space-y-2">
               {sortedScores.slice(0, 20).map(score => {
@@ -179,21 +179,21 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 return (
                   <div
                     key={score.id}
-                    className="flex items-center gap-4 p-3 rounded-lg border border-zinc-800/50 hover:bg-zinc-800/30 transition-colors"
+                    className="flex items-center gap-4 p-3 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors"
                   >
-                    <span className="text-zinc-500">
+                    <span className="text-muted-foreground">
                       {category ? getIcon(category.icon) : <Trophy className="h-4 w-4" />}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-zinc-200 text-sm">{category?.name}</p>
-                      <p className="text-xs text-zinc-600">
+                      <p className="font-medium text-foreground/80 text-sm">{category?.name}</p>
+                      <p className="text-xs text-muted-foreground/60">
                         {format(new Date(score.created_at), 'MMM d, yyyy')}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-mono text-zinc-100">
+                      <p className="font-mono text-foreground">
                         {score.value}
-                        <span className="text-xs text-zinc-500 ml-1">{category?.unit}</span>
+                        <span className="text-xs text-muted-foreground ml-1">{category?.unit}</span>
                       </p>
                       {score.proof_url && (
                         <a
@@ -210,7 +210,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 )
               })}
               {sortedScores.length > 20 && (
-                <p className="text-sm text-zinc-600 text-center py-2">
+                <p className="text-sm text-muted-foreground/60 text-center py-2">
                   Showing 20 of {sortedScores.length} scores
                 </p>
               )}

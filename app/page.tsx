@@ -33,7 +33,7 @@ export default function LandingPage() {
   const { data: session, status } = useSession()
 
   return (
-    <div className="fixed inset-0 bg-[#09090b] overflow-hidden">
+    <div className="fixed inset-0 bg-[#09090b] overflow-hidden dark">
       <div className="absolute inset-0">
         <Globe />
       </div>

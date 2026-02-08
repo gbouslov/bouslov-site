@@ -18,7 +18,7 @@ A private family competition site for the Bouslov brothers to track and compete 
 - **Domain:** bouslov.com
 
 ## Design Requirements (IMPORTANT)
-- **Dark mode ONLY** - Background #09090b, zinc color palette
+- **Light and dark mode** - Managed via next-themes, defaultTheme="dark". Use semantic CSS variable classes (bg-background, text-foreground, border-border, bg-muted, etc.) instead of hardcoded zinc colors. Landing page is always dark.
 - **NO EMOJIS** - Use Lucide icons if needed
 - **Sleek, modern aesthetic** - Think Linear, Vercel, Raycast
 - **Not cringey** - No "Supreme Champion" titles, no playful copy

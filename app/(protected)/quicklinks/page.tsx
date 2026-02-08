@@ -86,18 +86,18 @@ export default async function QuicklinksPage() {
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4 py-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
           Quicklinks
         </h1>
-        <p className="text-zinc-400">
+        <p className="text-muted-foreground">
           Resources and games for the family
         </p>
       </div>
 
       {/* Dev / Resources */}
-      <Card className="border-zinc-800 bg-zinc-900/50">
+      <Card className="border-border bg-card/50">
         <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-zinc-100">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <Code className="h-5 w-5 text-blue-400" />
             Dev / Resources
           </CardTitle>
@@ -112,17 +112,17 @@ export default async function QuicklinksPage() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-4 p-4 rounded-lg border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-800/50 transition-all"
+                  className="group flex items-center gap-4 p-4 rounded-lg border border-border bg-card/30 hover:border-border hover:bg-muted/50 transition-all"
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
-                    <Icon className="h-5 w-5 text-zinc-400 group-hover:text-zinc-200" />
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+                    <Icon className="h-5 w-5 text-muted-foreground group-hover:text-foreground/80" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-zinc-100 flex items-center gap-2">
+                    <p className="font-medium text-foreground flex items-center gap-2">
                       {link.name}
-                      <ExternalLink className="h-3 w-3 text-zinc-500 group-hover:text-zinc-400" />
+                      <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-muted-foreground" />
                     </p>
-                    <p className="text-sm text-zinc-500 truncate">{link.description}</p>
+                    <p className="text-sm text-muted-foreground truncate">{link.description}</p>
                   </div>
                 </a>
               )
@@ -132,9 +132,9 @@ export default async function QuicklinksPage() {
       </Card>
 
       {/* Games */}
-      <Card className="border-zinc-800 bg-zinc-900/50">
+      <Card className="border-border bg-card/50">
         <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-zinc-100">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <Gamepad2 className="h-5 w-5 text-green-400" />
             Games
           </CardTitle>
@@ -149,17 +149,17 @@ export default async function QuicklinksPage() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-4 p-4 rounded-lg border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-800/50 transition-all"
+                  className="group flex items-center gap-4 p-4 rounded-lg border border-border bg-card/30 hover:border-border hover:bg-muted/50 transition-all"
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
-                    <Icon className="h-5 w-5 text-zinc-400 group-hover:text-zinc-200" />
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+                    <Icon className="h-5 w-5 text-muted-foreground group-hover:text-foreground/80" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-zinc-100 flex items-center gap-2">
+                    <p className="font-medium text-foreground flex items-center gap-2">
                       {link.name}
-                      <ExternalLink className="h-3 w-3 text-zinc-500 group-hover:text-zinc-400" />
+                      <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-muted-foreground" />
                     </p>
-                    <p className="text-sm text-zinc-500 truncate">{link.description}</p>
+                    <p className="text-sm text-muted-foreground truncate">{link.description}</p>
                   </div>
                 </a>
               )

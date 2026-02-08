@@ -22,8 +22,8 @@ const PinsGlobe = dynamic(
 
 function GlobeLoading() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/50">
-      <div className="w-12 h-12 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
+    <div className="absolute inset-0 flex items-center justify-center bg-card/50">
+      <div className="w-12 h-12 border-2 border-border border-t-blue-500 rounded-full animate-spin" />
     </div>
   )
 }
@@ -132,11 +132,11 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Pins</h1>
-          <p className="text-zinc-400 mt-1">Places to visit and memories to share</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Pins</h1>
+          <p className="text-muted-foreground mt-1">Places to visit and memories to share</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex border border-zinc-800 rounded-lg overflow-hidden">
+          <div className="flex border border-border rounded-lg overflow-hidden">
             <Button
               variant="ghost"
               size="sm"
@@ -144,8 +144,8 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
               className={cn(
                 "rounded-none px-3",
                 viewMode === 'globe'
-                  ? "bg-zinc-800 text-white"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
               <Globe className="h-4 w-4" />
@@ -157,8 +157,8 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
               className={cn(
                 "rounded-none px-3",
                 viewMode === 'list'
-                  ? "bg-zinc-800 text-white"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
               <List className="h-4 w-4" />
@@ -178,14 +178,14 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
           size="sm"
           onClick={() => setSelectedUser(null)}
           className={cn(
-            "border-zinc-700",
+            "border-border",
             selectedUser === null
-              ? "bg-zinc-800 text-white border-zinc-600"
-              : "bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+              ? "bg-muted text-foreground border-border"
+              : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
           )}
         >
           All
-          <Badge variant="secondary" className="ml-2 bg-zinc-700 text-zinc-300 text-xs">
+          <Badge variant="secondary" className="ml-2 bg-muted text-foreground/80 text-xs">
             {pins.length}
           </Badge>
         </Button>
@@ -196,10 +196,10 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
             size="sm"
             onClick={() => setSelectedUser(selectedUser === user.email ? null : user.email)}
             className={cn(
-              "border-zinc-700 gap-2",
+              "border-border gap-2",
               selectedUser === user.email
-                ? "border-zinc-600"
-                : "bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                ? "border-border"
+                : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
             style={{
               backgroundColor: selectedUser === user.email ? USER_COLORS[user.email] + '20' : undefined,
@@ -212,7 +212,7 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
               style={{ backgroundColor: USER_COLORS[user.email] }}
             />
             {user.name}
-            <Badge variant="secondary" className="bg-zinc-700 text-zinc-300 text-xs">
+            <Badge variant="secondary" className="bg-muted text-foreground/80 text-xs">
               {pinCounts[user.email] || 0}
             </Badge>
           </Button>
@@ -226,7 +226,7 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
             const Icon = config.icon
             const count = typeCounts[type] || 0
             const isSelected = selectedPinType === type
-            
+
             return (
               <Button
                 key={type}
@@ -234,10 +234,10 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
                 size="sm"
                 onClick={() => setSelectedPinType(isSelected ? null : type)}
                 className={cn(
-                  "border-zinc-700 gap-2",
+                  "border-border gap-2",
                   isSelected
-                    ? "border-zinc-600"
-                    : "bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                    ? "border-border"
+                    : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
                 style={{
                   backgroundColor: isSelected ? config.bgColor : undefined,
@@ -247,9 +247,9 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
               >
                 <Icon className="h-4 w-4" style={{ color: isSelected ? config.color : undefined }} />
                 {config.label}
-                <Badge 
-                  variant="secondary" 
-                  className="bg-zinc-700 text-zinc-300 text-xs"
+                <Badge
+                  variant="secondary"
+                  className="bg-muted text-foreground/80 text-xs"
                   style={{ 
                     backgroundColor: isSelected ? config.color + '30' : undefined,
                     color: isSelected ? config.color : undefined,
@@ -266,7 +266,7 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
       {/* Hovered Pin Info */}
       {hoveredPin && viewMode === 'globe' && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
-          <Card className="bg-zinc-900/95 border-zinc-700 backdrop-blur-sm">
+          <Card className="bg-card/95 border-border backdrop-blur-sm">
             <CardContent className="py-3 px-4">
               <div className="flex items-center gap-3">
                 <div
@@ -279,8 +279,8 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
                   })()}
                 </div>
                 <div>
-                  <p className="font-medium text-white">{hoveredPin.title}</p>
-                  <p className="text-xs text-zinc-400">
+                  <p className="font-medium text-foreground">{hoveredPin.title}</p>
+                  <p className="text-xs text-muted-foreground">
                     {hoveredPin.user_name} {hoveredPin.location_name && `· ${hoveredPin.location_name}`}
                   </p>
                 </div>
@@ -301,7 +301,7 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
             onGlobeClick={handleGlobeClick}
             onPinHover={setHoveredPin}
           />
-          <div className="absolute bottom-4 left-4 text-sm text-zinc-500">
+          <div className="absolute bottom-4 left-4 text-sm text-muted-foreground">
             Click on the globe to add a pin
           </div>
         </div>
@@ -309,8 +309,8 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
         <div className="space-y-4">
           {filteredPins.length === 0 ? (
             <div className="text-center py-12">
-              <MapPin className="h-12 w-12 mx-auto text-zinc-700 mb-4" />
-              <p className="text-zinc-400">No pins yet</p>
+              <MapPin className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">No pins yet</p>
               <Button onClick={handleAddPin} className="mt-4 bg-blue-600 hover:bg-blue-700">
                 <Plus className="h-4 w-4 mr-2" />
                 Add your first pin
@@ -325,13 +325,13 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
                 return (
                   <Card
                     key={pin.id}
-                    className="bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer group"
+                    className="bg-card/50 border-border hover:border-border transition-colors cursor-pointer group"
                     onClick={() => handlePinClick(pin)}
                   >
                     <CardContent className="p-4">
                       {/* Image preview */}
                       {pin.images && pin.images.length > 0 && (
-                        <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-zinc-800">
+                        <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-muted">
                           <img
                             src={pin.images[0].url}
                             alt={pin.title}
@@ -348,8 +348,8 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
                           <Icon className="h-5 w-5" style={{ color: config.color }} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium text-white truncate">{pin.title}</p>
-                          <p className="text-sm text-zinc-500 truncate">
+                          <p className="font-medium text-foreground truncate">{pin.title}</p>
+                          <p className="text-sm text-muted-foreground truncate">
                             {pin.location_name || `${pin.lat.toFixed(2)}, ${pin.lng.toFixed(2)}`}
                           </p>
                           <div className="flex items-center gap-2 mt-2">
@@ -357,9 +357,9 @@ export function PinsClient({ initialPins, userEmail, userName }: PinsClientProps
                               className="w-2 h-2 rounded-full"
                               style={{ backgroundColor: USER_COLORS[pin.user_email] }}
                             />
-                            <span className="text-xs text-zinc-500">{pin.user_name}</span>
-                            <span className="text-xs text-zinc-600">·</span>
-                            <span className="text-xs text-zinc-500">
+                            <span className="text-xs text-muted-foreground">{pin.user_name}</span>
+                            <span className="text-xs text-muted-foreground/60">·</span>
+                            <span className="text-xs text-muted-foreground">
                               {format(new Date(pin.created_at), 'MMM d, yyyy')}
                             </span>
                           </div>

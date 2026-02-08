@@ -73,8 +73,8 @@ const TravelGlobe = dynamic(
 
 function GlobeLoading() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/50">
-      <div className="w-12 h-12 border-2 border-zinc-700 border-t-slate-400 rounded-full animate-spin" />
+    <div className="absolute inset-0 flex items-center justify-center bg-card/50">
+      <div className="w-12 h-12 border-2 border-border border-t-slate-400 rounded-full animate-spin" />
     </div>
   )
 }
@@ -171,11 +171,11 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Travel</h1>
-          <p className="text-zinc-400 mt-1">Countries visited by the Bouslovs</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Travel</h1>
+          <p className="text-muted-foreground mt-1">Countries visited by the Bouslovs</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex border border-zinc-800 rounded-lg overflow-hidden">
+          <div className="flex border border-border rounded-lg overflow-hidden">
             <Button
               variant="ghost"
               size="sm"
@@ -183,8 +183,8 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
               className={cn(
                 "rounded-none px-3",
                 viewMode === 'globe'
-                  ? "bg-zinc-800 text-white"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
               <Globe className="h-4 w-4" />
@@ -196,8 +196,8 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
               className={cn(
                 "rounded-none px-3",
                 viewMode === 'list'
-                  ? "bg-zinc-800 text-white"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
               <List className="h-4 w-4" />
@@ -214,14 +214,14 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
           size="sm"
           onClick={() => setSelectedUser(null)}
           className={cn(
-            "border-zinc-700",
+            "border-border",
             selectedUser === null
-              ? "bg-zinc-800 text-white border-zinc-600"
-              : "bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+              ? "bg-muted text-foreground border-border"
+              : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
           )}
         >
           All
-          <Badge variant="secondary" className="ml-2 bg-zinc-700 text-zinc-300 text-xs">
+          <Badge variant="secondary" className="ml-2 bg-muted text-foreground/80 text-xs">
             {travels.length}
           </Badge>
         </Button>
@@ -232,10 +232,10 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
             size="sm"
             onClick={() => setSelectedUser(selectedUser === user.email ? null : user.email)}
             className={cn(
-              "border-zinc-700 gap-2",
+              "border-border gap-2",
               selectedUser === user.email
-                ? "border-zinc-600"
-                : "bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                ? "border-border"
+                : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
             style={{
               backgroundColor: selectedUser === user.email ? USER_COLORS[user.email] + '20' : undefined,
@@ -248,7 +248,7 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
               style={{ backgroundColor: USER_COLORS[user.email] }}
             />
             {user.name}
-            <Badge variant="secondary" className="bg-zinc-700 text-zinc-300 text-xs">
+            <Badge variant="secondary" className="bg-muted text-foreground/80 text-xs">
               {counts[user.email] || 0}
             </Badge>
           </Button>
@@ -258,13 +258,13 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
       {/* Hovered Country Info */}
       {hoveredCountry && viewMode === 'globe' && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-          <Card className="bg-zinc-900/95 border-zinc-700 backdrop-blur-sm">
+          <Card className="bg-card/95 border-border backdrop-blur-sm">
             <CardContent className="py-3 px-4">
               <div className="flex items-center gap-3">
-                <MapPin className="h-4 w-4 text-zinc-400" />
+                <MapPin className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="font-medium text-white">{hoveredCountry.name}</p>
-                  <p className="text-xs text-zinc-400">
+                  <p className="font-medium text-foreground">{hoveredCountry.name}</p>
+                  <p className="text-xs text-muted-foreground">
                     Visited by: {hoveredCountry.visitors.map(e => USER_NAMES[e] || e).join(', ')}
                   </p>
                 </div>
@@ -276,9 +276,9 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
 
       {/* Running Total */}
       {viewMode === 'list' && filteredTravels.length > 0 && (
-        <div className="flex items-center gap-2 text-sm text-zinc-400">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Globe className="h-4 w-4" />
-          <span className="font-medium text-white">{filteredTravels.length}</span>
+          <span className="font-medium text-foreground">{filteredTravels.length}</span>
           <span>countries visited</span>
         </div>
       )}
@@ -297,8 +297,8 @@ export function TravelClient({ initialTravels, initialCounts, userEmail }: Trave
         <div className="space-y-4">
           {filteredTravels.length === 0 ? (
             <div className="text-center py-12">
-              <MapPin className="h-12 w-12 mx-auto text-zinc-700 mb-4" />
-              <p className="text-zinc-400">
+              <MapPin className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">
                 {selectedUser
                   ? `${USER_NAMES[selectedUser]} hasn't added any countries yet`
                   : 'No countries have been added yet'}
@@ -343,15 +343,15 @@ function ContinentSection({ continent, travels, userEmail, deletingId, onDelete 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger asChild>
-        <button className="flex items-center justify-between w-full py-3 px-4 rounded-lg bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-colors">
+        <button className="flex items-center justify-between w-full py-3 px-4 rounded-lg bg-card/50 border border-border hover:border-border transition-colors">
           <div className="flex items-center gap-3">
-            <span className="font-medium text-white">{continent}</span>
-            <Badge variant="secondary" className="bg-zinc-800 text-zinc-300 text-xs">
+            <span className="font-medium text-foreground">{continent}</span>
+            <Badge variant="secondary" className="bg-muted text-foreground/80 text-xs">
               {travels.length}
             </Badge>
           </div>
           <ChevronDown className={cn(
-            "h-4 w-4 text-zinc-400 transition-transform",
+            "h-4 w-4 text-muted-foreground transition-transform",
             isOpen && "rotate-180"
           )} />
         </button>
@@ -361,7 +361,7 @@ function ContinentSection({ continent, travels, userEmail, deletingId, onDelete 
           {travels.map((travel) => {
             const isOwn = travel.user_email === userEmail
             return (
-              <Card key={travel.id} className="bg-zinc-900/50 border-zinc-800 group">
+              <Card key={travel.id} className="bg-card/50 border-border group">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -375,8 +375,8 @@ function ContinentSection({ continent, travels, userEmail, deletingId, onDelete 
                         {travel.country_code}
                       </div>
                       <div>
-                        <p className="font-medium text-white">{travel.country_name}</p>
-                        <p className="text-xs text-zinc-500">
+                        <p className="font-medium text-foreground">{travel.country_name}</p>
+                        <p className="text-xs text-muted-foreground">
                           {USER_NAMES[travel.user_email]}
                         </p>
                       </div>
@@ -390,7 +390,7 @@ function ContinentSection({ continent, travels, userEmail, deletingId, onDelete 
                           onDelete(travel.id)
                         }}
                         disabled={deletingId === travel.id}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-500 hover:text-red-400 hover:bg-zinc-800/50 h-8 w-8 p-0"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-400 hover:bg-muted/50 h-8 w-8 p-0"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

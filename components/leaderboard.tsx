@@ -94,7 +94,7 @@ export function Leaderboard({
             size="sm"
             onClick={handleSync}
             disabled={syncing}
-            className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-300"
+            className="border-border bg-transparent hover:bg-muted text-foreground/80"
             data-testid="sync-chess-button"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
@@ -109,16 +109,16 @@ export function Leaderboard({
       </div>
 
       {/* Overall Rankings */}
-      <Card className="border-zinc-800 bg-zinc-900/50">
+      <Card className="border-border bg-card/50">
         <CardHeader className="pb-4">
           <div className="space-y-2">
-            <CardTitle className="flex items-center gap-2 text-zinc-100">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <Trophy className="h-5 w-5 text-amber-400" />
               Overall Standings
             </CardTitle>
             <div className="h-0.5 w-16 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full" />
           </div>
-          <p className="text-sm text-zinc-500 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             Points = Sum of category placements (1st=4pts, 2nd=3pts, 3rd=2pts, 4th=1pt)
           </p>
         </CardHeader>
@@ -134,7 +134,7 @@ export function Leaderboard({
                     ? 'border-zinc-400/40 bg-gradient-to-br from-zinc-400/10 to-zinc-500/5 hover:border-zinc-400/60 hover:from-zinc-400/15'
                     : index === 2
                     ? 'border-orange-500/40 bg-gradient-to-br from-orange-500/10 to-orange-700/5 hover:border-orange-500/60 hover:from-orange-500/15'
-                    : 'border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-800/50'
+                    : 'border-border bg-card/30 hover:border-border hover:bg-muted/50'
                 }`}
               >
                 {/* Rank badge for top 3 */}
@@ -157,16 +157,16 @@ export function Leaderboard({
                       ? 'ring-zinc-400/50'
                       : index === 2
                       ? 'ring-orange-500/50'
-                      : 'ring-zinc-700/50'
+                      : 'ring-border/50'
                   }`}>
-                    <AvatarFallback className={`text-zinc-100 font-medium ${
+                    <AvatarFallback className={`text-foreground font-medium ${
                       index === 0
                         ? 'bg-amber-400/20'
                         : index === 1
                         ? 'bg-zinc-400/20'
                         : index === 2
                         ? 'bg-orange-500/20'
-                        : 'bg-zinc-800'
+                        : 'bg-muted'
                     }`}>
                       {player.name[0]}
                     </AvatarFallback>
@@ -176,24 +176,24 @@ export function Leaderboard({
                       index === 0
                         ? 'text-amber-100'
                         : index === 1
-                        ? 'text-zinc-100'
+                        ? 'text-foreground'
                         : index === 2
                         ? 'text-orange-100'
-                        : 'text-zinc-300'
+                        : 'text-foreground/80'
                     }`}>{player.name}</h3>
                     <p className={`text-lg font-mono font-semibold ${
                       index === 0
                         ? 'text-amber-400'
                         : index === 1
-                        ? 'text-zinc-300'
+                        ? 'text-foreground/80'
                         : index === 2
                         ? 'text-orange-400'
-                        : 'text-zinc-500'
+                        : 'text-muted-foreground'
                     }`}>{player.points} <span className="text-xs font-normal opacity-70">pts</span></p>
                   </div>
                 </div>
                 {/* Progress bar */}
-                <div className="mt-3 h-1.5 bg-zinc-800/80 rounded-full overflow-hidden">
+                <div className="mt-3 h-1.5 bg-muted/80 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       index === 0
@@ -219,10 +219,10 @@ export function Leaderboard({
       </Card>
 
       {/* Category Grid */}
-      <Card className="border-zinc-800 bg-zinc-900/50">
+      <Card className="border-border bg-card/50">
         <CardHeader className="pb-4">
           <div className="space-y-2">
-            <CardTitle className="flex items-center gap-2 text-zinc-100">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <TrendingUp className="h-5 w-5 text-blue-400" />
               Categories
             </CardTitle>
@@ -253,7 +253,7 @@ export function Leaderboard({
                     groupKey === 'travel' ? 'text-emerald-400' :
                     'text-violet-400'
                   }`}>{group.name}</h3>
-                  <div className="flex-1 h-px bg-zinc-800" />
+                  <div className="flex-1 h-px bg-border" />
                 </div>
 
                 {/* Group cards */}
@@ -302,8 +302,8 @@ export function Leaderboard({
                         key={category.id}
                         className={`group relative p-4 rounded-lg border transition-all duration-200 cursor-pointer ${
                           leader
-                            ? `border-zinc-800 border-l-2 ${accentClasses.border} bg-zinc-900/30 hover:bg-zinc-800/50 ${accentClasses.hover}`
-                            : 'border-zinc-800 border-dashed bg-zinc-900/20 hover:border-zinc-700 hover:bg-zinc-800/30 opacity-70'
+                            ? `border-border border-l-2 ${accentClasses.border} bg-card/30 hover:bg-muted/50 ${accentClasses.hover}`
+                            : 'border-border border-dashed bg-card/20 hover:border-border hover:bg-muted/30 opacity-70'
                         }`}
                         onClick={() => setSelectedCategory(category)}
                       >
@@ -313,31 +313,31 @@ export function Leaderboard({
                               {getIcon(category.icon)}
                             </div>
                             <div>
-                              <h3 className="font-medium text-zinc-100 text-sm">{category.name}</h3>
-                              <p className="text-xs text-zinc-500">{category.description}</p>
+                              <h3 className="font-medium text-foreground text-sm">{category.name}</h3>
+                              <p className="text-xs text-muted-foreground">{category.description}</p>
                             </div>
                           </div>
                         </div>
 
                         {leader ? (
                           <div className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6 ring-1 ring-zinc-700">
-                              <AvatarFallback className="bg-zinc-800 text-zinc-400 text-xs">
+                            <Avatar className="h-6 w-6 ring-1 ring-border">
+                              <AvatarFallback className="bg-muted text-muted-foreground text-xs">
                                 {leader.user_name[0]}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="text-sm text-zinc-300">{leader.user_name}</span>
+                            <span className="text-sm text-foreground/80">{leader.user_name}</span>
                             <span className={`ml-auto font-mono text-base font-semibold ${accentClasses.score}`}>
                               {leader.value}
-                              <span className="text-zinc-500 ml-0.5 text-xs font-normal">{category.unit}</span>
+                              <span className="text-muted-foreground ml-0.5 text-xs font-normal">{category.unit}</span>
                             </span>
                           </div>
                         ) : (
-                          <p className="text-sm text-zinc-600 italic">No scores yet</p>
+                          <p className="text-sm text-muted-foreground/60 italic">No scores yet</p>
                         )}
 
                         {category.external_url && (
-                          <div className={`mt-3 pt-3 border-t ${leader ? 'border-zinc-800' : 'border-zinc-800/50'}`}>
+                          <div className={`mt-3 pt-3 border-t ${leader ? 'border-border' : 'border-border/50'}`}>
                             {isInternal ? (
                               <Link
                                 href={category.external_url}
@@ -387,11 +387,11 @@ export function Leaderboard({
       />
 
       {/* Recent Activity */}
-      <Card className="border-zinc-800 bg-zinc-900/50">
+      <Card className="border-border bg-card/50">
         <CardHeader className="pb-4">
           <div className="space-y-2">
-            <CardTitle className="flex items-center gap-2 text-zinc-100">
-              <Clock className="h-5 w-5 text-zinc-400" />
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <Clock className="h-5 w-5 text-muted-foreground" />
               Recent Activity
             </CardTitle>
             <div className="h-0.5 w-16 bg-gradient-to-r from-zinc-500 to-zinc-700 rounded-full" />
@@ -399,7 +399,7 @@ export function Leaderboard({
         </CardHeader>
         <CardContent>
           {recentActivity.length === 0 ? (
-            <p className="text-zinc-500 text-center py-12 text-sm">No activity yet</p>
+            <p className="text-muted-foreground text-center py-12 text-sm">No activity yet</p>
           ) : (
             <div className="space-y-1">
               {recentActivity.map(score => {
@@ -413,27 +413,27 @@ export function Leaderboard({
                                  groupKey === 'cognitive' ? 'text-blue-400' :
                                  groupKey === 'travel' ? 'text-emerald-400' :
                                  groupKey === 'typing' ? 'text-violet-400' :
-                                 'text-zinc-400'
+                                 'text-muted-foreground'
 
                 return (
                   <div
                     key={score.id}
-                    className={`flex items-center gap-3 py-2.5 px-3 rounded-lg border-l-2 ${borderColor} hover:bg-zinc-800/30 transition-colors`}
+                    className={`flex items-center gap-3 py-2.5 px-3 rounded-lg border-l-2 ${borderColor} hover:bg-muted/30 transition-colors`}
                   >
                     <Avatar className="h-7 w-7">
-                      <AvatarFallback className="text-xs bg-zinc-800 text-zinc-400">
+                      <AvatarFallback className="text-xs bg-muted text-muted-foreground">
                         {score.user_name[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-zinc-200 text-sm">{score.user_name}</span>
-                    <span className="font-mono text-sm bg-zinc-800 text-zinc-100 px-2 py-0.5 rounded font-semibold">
-                      {score.value} <span className="text-zinc-500 font-normal">{score.category?.unit}</span>
+                    <span className="font-medium text-foreground/80 text-sm">{score.user_name}</span>
+                    <span className="font-mono text-sm bg-muted text-foreground px-2 py-0.5 rounded font-semibold">
+                      {score.value} <span className="text-muted-foreground font-normal">{score.category?.unit}</span>
                     </span>
                     <span className={`text-sm flex items-center gap-1.5 ${iconColor}`}>
                       {score.category && getIcon(score.category.icon)}
-                      <span className="text-zinc-400">{score.category?.name}</span>
+                      <span className="text-muted-foreground">{score.category?.name}</span>
                     </span>
-                    <span className="text-zinc-600 ml-auto text-xs">
+                    <span className="text-muted-foreground/60 ml-auto text-xs">
                       {formatDistanceToNow(new Date(score.created_at), { addSuffix: true })}
                     </span>
                   </div>
@@ -467,15 +467,15 @@ function CategoryDetailModal({
 
   return (
     <Dialog open={!!category} onOpenChange={() => onClose()}>
-      <DialogContent className="bg-zinc-900 border-zinc-800 max-w-lg">
+      <DialogContent className="bg-popover border-border max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-zinc-100">
+          <DialogTitle className="flex items-center gap-2 text-foreground">
             <div className={`p-2 rounded-lg ${
               groupKey === 'chess' ? 'bg-amber-500/10 text-amber-400' :
               groupKey === 'cognitive' ? 'bg-blue-500/10 text-blue-400' :
               groupKey === 'travel' ? 'bg-emerald-500/10 text-emerald-400' :
               groupKey === 'typing' ? 'bg-violet-500/10 text-violet-400' :
-              'bg-zinc-800 text-zinc-400'
+              'bg-muted text-muted-foreground'
             }`}>
               {getIcon(category.icon)}
             </div>
@@ -484,12 +484,12 @@ function CategoryDetailModal({
           <div className={`h-0.5 w-12 rounded-full mt-2 ${headerBorderClass}`} />
         </DialogHeader>
         <div className="space-y-4">
-          <p className="text-sm text-zinc-400">{category.description}</p>
+          <p className="text-sm text-muted-foreground">{category.description}</p>
 
           {scores.length === 0 ? (
-            <div className="text-center py-8 border border-dashed border-zinc-800 rounded-lg">
-              <p className="text-zinc-500 text-sm">No scores yet</p>
-              <p className="text-zinc-600 text-xs mt-1">Be the first to compete!</p>
+            <div className="text-center py-8 border border-dashed border-border rounded-lg">
+              <p className="text-muted-foreground text-sm">No scores yet</p>
+              <p className="text-muted-foreground/60 text-xs mt-1">Be the first to compete!</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -502,8 +502,8 @@ function CategoryDetailModal({
                         groupKey === 'cognitive' ? 'border-blue-400/30 bg-blue-400/5' :
                         groupKey === 'travel' ? 'border-emerald-400/30 bg-emerald-400/5' :
                         groupKey === 'typing' ? 'border-violet-400/30 bg-violet-400/5' :
-                        'border-zinc-700 bg-zinc-800/30'
-                      : RANK_BG[index] || 'border-zinc-800/50 bg-transparent'
+                        'border-border bg-muted/30'
+                      : RANK_BG[index] || 'border-border/50 bg-transparent'
                   }`}
                 >
                   <span
@@ -513,8 +513,8 @@ function CategoryDetailModal({
                           groupKey === 'cognitive' ? 'text-blue-400' :
                           groupKey === 'travel' ? 'text-emerald-400' :
                           groupKey === 'typing' ? 'text-violet-400' :
-                          'text-zinc-300'
-                        : RANK_COLORS[index] || 'text-zinc-600'
+                          'text-foreground/80'
+                        : RANK_COLORS[index] || 'text-muted-foreground/60'
                     }`}
                   >
                     {RANK_LABELS[index] || `#${index + 1}`}
@@ -528,13 +528,13 @@ function CategoryDetailModal({
                         'ring-zinc-600/50'
                       : ''
                   }`}>
-                    <AvatarFallback className="bg-zinc-800 text-zinc-400 text-sm">
+                    <AvatarFallback className="bg-muted text-muted-foreground text-sm">
                       {score.user_name[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-zinc-200 text-sm">{score.user_name}</p>
-                    <p className="text-xs text-zinc-600">
+                    <p className="font-medium text-foreground/80 text-sm">{score.user_name}</p>
+                    <p className="text-xs text-muted-foreground/60">
                       {formatDistanceToNow(new Date(score.created_at), { addSuffix: true })}
                     </p>
                   </div>
@@ -545,11 +545,11 @@ function CategoryDetailModal({
                           groupKey === 'cognitive' ? 'text-blue-300' :
                           groupKey === 'travel' ? 'text-emerald-300' :
                           groupKey === 'typing' ? 'text-violet-300' :
-                          'text-zinc-100'
-                        : 'text-zinc-100'
+                          'text-foreground'
+                        : 'text-foreground'
                     }`}>
                       {score.value}
-                      <span className="text-xs text-zinc-500 ml-1 font-normal">{category.unit}</span>
+                      <span className="text-xs text-muted-foreground ml-1 font-normal">{category.unit}</span>
                     </p>
                     {score.proof_url && (
                       <a
@@ -561,7 +561,7 @@ function CategoryDetailModal({
                           groupKey === 'cognitive' ? 'text-blue-400 hover:text-blue-300' :
                           groupKey === 'travel' ? 'text-emerald-400 hover:text-emerald-300' :
                           groupKey === 'typing' ? 'text-violet-400 hover:text-violet-300' :
-                          'text-zinc-400 hover:text-zinc-300'
+                          'text-muted-foreground hover:text-foreground/80'
                         }`}
                       >
                         proof
@@ -574,7 +574,7 @@ function CategoryDetailModal({
           )}
 
           {category.external_url && (
-            <div className="pt-4 border-t border-zinc-800">
+            <div className="pt-4 border-t border-border">
               {category.external_url.startsWith('/') ? (
                 <Link
                   href={category.external_url}
@@ -583,7 +583,7 @@ function CategoryDetailModal({
                     groupKey === 'cognitive' ? 'text-blue-400 hover:text-blue-300' :
                     groupKey === 'travel' ? 'text-emerald-400 hover:text-emerald-300' :
                     groupKey === 'typing' ? 'text-violet-400 hover:text-violet-300' :
-                    'text-zinc-400 hover:text-zinc-300'
+                    'text-muted-foreground hover:text-foreground/80'
                   }`}
                 >
                   View Map <Globe className="h-4 w-4" />
@@ -598,7 +598,7 @@ function CategoryDetailModal({
                     groupKey === 'cognitive' ? 'text-blue-400 hover:text-blue-300' :
                     groupKey === 'travel' ? 'text-emerald-400 hover:text-emerald-300' :
                     groupKey === 'typing' ? 'text-violet-400 hover:text-violet-300' :
-                    'text-zinc-400 hover:text-zinc-300'
+                    'text-muted-foreground hover:text-foreground/80'
                   }`}
                 >
                   Take Test <ExternalLink className="h-4 w-4" />
@@ -667,7 +667,7 @@ function LogScoreModal({
                       groupKey === 'cognitive' ? 'bg-blue-500 hover:bg-blue-600' :
                       groupKey === 'travel' ? 'bg-emerald-500 hover:bg-emerald-600' :
                       groupKey === 'typing' ? 'bg-violet-500 hover:bg-violet-600' :
-                      'bg-zinc-600 hover:bg-zinc-500'
+                      'bg-muted-foreground hover:bg-muted-foreground/80'
   const accentBorder = groupKey === 'chess' ? 'bg-gradient-to-r from-amber-400 to-amber-600' :
                        groupKey === 'cognitive' ? 'bg-gradient-to-r from-blue-400 to-blue-600' :
                        groupKey === 'travel' ? 'bg-gradient-to-r from-emerald-400 to-emerald-600' :
@@ -679,43 +679,43 @@ function LogScoreModal({
       <DialogTrigger asChild>
         <Button
           size="sm"
-          className="bg-zinc-700 hover:bg-zinc-600 text-white border border-zinc-600"
+          className="bg-muted hover:bg-muted/80 text-foreground border border-border"
           data-testid="log-score-button"
         >
           <Plus className="h-4 w-4 mr-2" />
           Log Score
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-zinc-900 border-zinc-800 max-w-md">
+      <DialogContent className="bg-popover border-border max-w-md">
         <DialogHeader>
           <div className="space-y-2">
-            <DialogTitle className="text-zinc-100">Log a Score</DialogTitle>
+            <DialogTitle className="text-foreground">Log a Score</DialogTitle>
             <div className={`h-0.5 w-12 rounded-full transition-all duration-300 ${accentBorder}`} />
           </div>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="category" className="text-zinc-300">
+            <Label htmlFor="category" className="text-foreground/80">
               Category
             </Label>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className={`bg-zinc-800 border-zinc-700 text-zinc-100 transition-all ${
+              <SelectTrigger className={`bg-muted border-border text-foreground transition-all ${
                 groupKey === 'chess' ? 'focus:border-amber-500/50' :
                 groupKey === 'cognitive' ? 'focus:border-blue-500/50' :
                 groupKey === 'travel' ? 'focus:border-emerald-500/50' :
                 groupKey === 'typing' ? 'focus:border-violet-500/50' :
-                'focus:border-zinc-500'
+                'focus:border-border'
               }`}>
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
-              <SelectContent className="bg-zinc-800 border-zinc-700">
+              <SelectContent className="bg-popover border-border">
                 {manualCategories.map(cat => {
                   const catGroup = CATEGORY_TO_GROUP[cat.slug]
                   return (
                     <SelectItem
                       key={cat.id}
                       value={cat.slug}
-                      className={`text-zinc-100 focus:bg-zinc-700 ${
+                      className={`text-foreground focus:bg-muted ${
                         catGroup === 'chess' ? 'focus:text-amber-400' :
                         catGroup === 'cognitive' ? 'focus:text-blue-400' :
                         catGroup === 'travel' ? 'focus:text-emerald-400' :
@@ -741,7 +741,7 @@ function LogScoreModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="value" className="text-zinc-300">
+            <Label htmlFor="value" className="text-foreground/80">
               Score
             </Label>
             <Input
@@ -751,7 +751,7 @@ function LogScoreModal({
               placeholder="Enter your score"
               value={value}
               onChange={e => setValue(e.target.value)}
-              className={`bg-zinc-800 border-zinc-700 text-zinc-100 transition-all ${
+              className={`bg-muted border-border text-foreground transition-all ${
                 groupKey === 'chess' ? 'focus:border-amber-500/50' :
                 groupKey === 'cognitive' ? 'focus:border-blue-500/50' :
                 groupKey === 'travel' ? 'focus:border-emerald-500/50' :
@@ -763,8 +763,8 @@ function LogScoreModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="proof" className="text-zinc-300">
-              Proof URL <span className="text-zinc-500">(optional)</span>
+            <Label htmlFor="proof" className="text-foreground/80">
+              Proof URL <span className="text-muted-foreground">(optional)</span>
             </Label>
             <Input
               id="proof"
@@ -772,7 +772,7 @@ function LogScoreModal({
               placeholder="https://..."
               value={proofUrl}
               onChange={e => setProofUrl(e.target.value)}
-              className="bg-zinc-800 border-zinc-700 text-zinc-100"
+              className="bg-muted border-border text-foreground"
             />
           </div>
 

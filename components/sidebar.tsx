@@ -20,6 +20,7 @@ import {
   MapPin,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const NAV_ITEMS = [
   { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
@@ -51,7 +52,7 @@ export function Sidebar() {
   if (status === 'loading') {
     return (
       <aside className={cn(
-        "h-screen bg-zinc-900/50 border-r border-zinc-800/50 flex flex-col",
+        "h-screen bg-sidebar border-r border-sidebar-border flex flex-col",
         collapsed ? "w-16" : "w-64"
       )}>
         <div className="flex-1 animate-pulse" />
@@ -62,19 +63,19 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "h-screen bg-zinc-900/50 border-r border-zinc-800/50 flex flex-col transition-all duration-300 ease-in-out",
+        "h-screen bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ease-in-out",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Header */}
       <div className={cn(
-        "h-14 flex items-center border-b border-zinc-800/50 px-4",
+        "h-14 flex items-center border-b border-sidebar-border px-4",
         collapsed ? "justify-center" : "justify-between"
       )}>
         {!collapsed && (
           <Link
             href="/leaderboard"
-            className="flex items-center gap-2 font-semibold text-lg text-white hover:text-zinc-300 transition-colors"
+            className="flex items-center gap-2 font-semibold text-lg text-foreground hover:text-foreground/80 transition-colors"
           >
             <Zap className="h-5 w-5 text-blue-500 flex-shrink-0" />
             <span>Bouslov</span>
@@ -96,7 +97,7 @@ export function Sidebar() {
               <div
                 key={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-zinc-600 cursor-not-allowed",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground/50 cursor-not-allowed",
                   collapsed && "justify-center px-2"
                 )}
                 title={collapsed ? `${item.label} (Coming soon)` : undefined}
@@ -105,7 +106,7 @@ export function Sidebar() {
                 {!collapsed && (
                   <>
                     <span className="text-sm font-medium">{item.label}</span>
-                    <span className="ml-auto text-xs text-zinc-700">Soon</span>
+                    <span className="ml-auto text-xs text-muted-foreground/40">Soon</span>
                   </>
                 )}
               </div>
@@ -119,8 +120,8 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
                 isActive
-                  ? "bg-zinc-800 text-white"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/50",
+                  ? "bg-sidebar-accent text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50",
                 collapsed && "justify-center px-2"
               )}
               title={collapsed ? item.label : undefined}
@@ -138,7 +139,7 @@ export function Sidebar() {
           <Button
             variant="outline"
             className={cn(
-              "w-full border-zinc-700 bg-transparent hover:bg-zinc-800 hover:border-zinc-600 text-zinc-300",
+              "w-full border-border bg-transparent hover:bg-muted hover:border-border text-muted-foreground",
               collapsed ? "px-2" : "gap-2"
             )}
           >
@@ -150,23 +151,23 @@ export function Sidebar() {
 
       {/* User Section */}
       {session && (
-        <div className="border-t border-zinc-800/50 p-3">
+        <div className="border-t border-sidebar-border p-3">
           <div className={cn(
             "flex items-center gap-3",
             collapsed && "justify-center"
           )}>
             <Avatar className="h-8 w-8 flex-shrink-0">
               <AvatarImage src={session.user?.image || ''} alt={session.user?.name || ''} />
-              <AvatarFallback className="bg-zinc-800 text-zinc-300 text-xs">
+              <AvatarFallback className="bg-muted text-muted-foreground text-xs">
                 {session.user?.name?.[0]?.toUpperCase() || '?'}
               </AvatarFallback>
             </Avatar>
             {!collapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-zinc-100 truncate">
+                <p className="text-sm font-medium text-foreground truncate">
                   {session.user?.name}
                 </p>
-                <p className="text-xs text-zinc-500 truncate">
+                <p className="text-xs text-muted-foreground truncate">
                   {session.user?.email}
                 </p>
               </div>
@@ -177,7 +178,7 @@ export function Sidebar() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full mt-2 text-zinc-400 hover:text-red-400 hover:bg-zinc-800/50 justify-start gap-2"
+              className="w-full mt-2 text-muted-foreground hover:text-red-400 hover:bg-muted/50 justify-start gap-2"
               onClick={() => signOut()}
             >
               <LogOut className="h-4 w-4" />
@@ -187,15 +188,16 @@ export function Sidebar() {
         </div>
       )}
 
-      {/* Collapse Toggle */}
+      {/* Bottom Controls */}
       {!isMobile && (
-        <div className="border-t border-zinc-800/50 p-2">
+        <div className="border-t border-sidebar-border p-2 flex items-center justify-between">
+          <ThemeToggle />
           <Button
             variant="ghost"
             size="sm"
             className={cn(
-              "w-full text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50",
-              collapsed ? "justify-center" : "justify-end"
+              "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+              collapsed && "w-full justify-center"
             )}
             onClick={() => setCollapsed(!collapsed)}
           >

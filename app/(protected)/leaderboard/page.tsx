@@ -116,10 +116,10 @@ export default async function LeaderboardPage() {
   return (
     <div className="space-y-12">
       <div className="text-center space-y-4 py-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
           Leaderboard
         </h1>
-        <p className="text-zinc-400">Track the competition</p>
+        <p className="text-muted-foreground">Track the competition</p>
       </div>
 
       <Leaderboard

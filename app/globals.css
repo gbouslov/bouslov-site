@@ -48,37 +48,36 @@
 
 :root {
   --radius: 0.5rem;
-  /* Force dark mode colors as root */
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #18181b;
-  --card-foreground: #fafafa;
-  --popover: #18181b;
-  --popover-foreground: #fafafa;
-  --primary: #fafafa;
-  --primary-foreground: #18181b;
-  --secondary: #27272a;
-  --secondary-foreground: #fafafa;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --accent: #27272a;
-  --accent-foreground: #fafafa;
+  --background: #ffffff;
+  --foreground: #09090b;
+  --card: #fafafa;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --primary: #18181b;
+  --primary-foreground: #fafafa;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
   --destructive: #ef4444;
-  --border: #27272a;
-  --input: #27272a;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
   --ring: #3b82f6;
   --chart-1: #3b82f6;
   --chart-2: #22c55e;
   --chart-3: #eab308;
   --chart-4: #a855f7;
   --chart-5: #f43f5e;
-  --sidebar: #0a0a0a;
-  --sidebar-foreground: #fafafa;
+  --sidebar: #fafafa;
+  --sidebar-foreground: #09090b;
   --sidebar-primary: #3b82f6;
   --sidebar-primary-foreground: #fafafa;
-  --sidebar-accent: #27272a;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #27272a;
+  --sidebar-accent: #f4f4f5;
+  --sidebar-accent-foreground: #18181b;
+  --sidebar-border: #e4e4e7;
   --sidebar-ring: #3b82f6;
 }
 
@@ -128,9 +127,12 @@
 /* Custom utilities */
 @layer utilities {
   .glass {
-    background: rgba(24, 24, 27, 0.8);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+  }
+  .dark .glass {
+    background: rgba(24, 24, 27, 0.8);
   }
   
   .glow {
@@ -176,16 +178,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: var(--border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: var(--muted-foreground);
 }
 
 /* Landing page animations */

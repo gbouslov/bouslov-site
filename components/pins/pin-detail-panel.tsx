@@ -125,18 +125,18 @@ export function PinDetailPanel({
       {/* Panel */}
       <div
         className={cn(
-          'fixed top-0 right-0 h-full w-full max-w-md bg-zinc-900 border-l border-zinc-800 z-50 overflow-y-auto',
+          'fixed top-0 right-0 h-full w-full max-w-md bg-popover border-l border-border z-50 overflow-y-auto',
           'transform transition-transform duration-300 ease-out',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-zinc-900/95 backdrop-blur-sm border-b border-zinc-800 p-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-popover/95 backdrop-blur-sm border-b border-border p-4 flex items-center justify-between z-10">
           <button
             onClick={onClose}
-            className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
           >
-            <X className="h-5 w-5 text-zinc-400" />
+            <X className="h-5 w-5 text-muted-foreground" />
           </button>
           {isOwner && (
             <div className="flex items-center gap-2">
@@ -144,7 +144,7 @@ export function PinDetailPanel({
                 variant="ghost"
                 size="sm"
                 onClick={() => onEdit(pin)}
-                className="text-zinc-400 hover:text-white"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <Pencil className="h-4 w-4" />
               </Button>
@@ -153,7 +153,7 @@ export function PinDetailPanel({
                 size="sm"
                 onClick={handleDeletePin}
                 disabled={isDeleting}
-                className="text-zinc-400 hover:text-red-400"
+                className="text-muted-foreground hover:text-red-400"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -173,8 +173,8 @@ export function PinDetailPanel({
 
           {/* Title & Meta */}
           <div>
-            <h2 className="text-2xl font-bold text-white">{pin.title}</h2>
-            <div className="flex items-center gap-2 mt-2 text-sm text-zinc-400">
+            <h2 className="text-2xl font-bold text-foreground">{pin.title}</h2>
+            <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
               <div
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: USER_COLORS[pin.user_email] || '#3b82f6' }}
@@ -187,7 +187,7 @@ export function PinDetailPanel({
 
           {/* Location */}
           {pin.location_name && (
-            <div className="flex items-center gap-2 text-zinc-400">
+            <div className="flex items-center gap-2 text-muted-foreground">
               <MapPin className="h-4 w-4" />
               <span>{pin.location_name}</span>
             </div>
@@ -195,7 +195,7 @@ export function PinDetailPanel({
 
           {/* Trip Date */}
           {pin.trip_date && (
-            <div className="flex items-center gap-2 text-zinc-400">
+            <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="h-4 w-4" />
               <span>{format(new Date(pin.trip_date), 'MMMM d, yyyy')}</span>
             </div>
@@ -204,7 +204,7 @@ export function PinDetailPanel({
           {/* Image Carousel */}
           {images.length > 0 && (
             <div className="relative">
-              <div className="aspect-video rounded-lg overflow-hidden bg-zinc-800">
+              <div className="aspect-video rounded-lg overflow-hidden bg-muted">
                 <img
                   src={images[currentImageIndex].url}
                   alt={images[currentImageIndex].caption || pin.title}
@@ -240,7 +240,7 @@ export function PinDetailPanel({
                 </>
               )}
               {images[currentImageIndex].caption && (
-                <p className="text-sm text-zinc-400 mt-2">{images[currentImageIndex].caption}</p>
+                <p className="text-sm text-muted-foreground mt-2">{images[currentImageIndex].caption}</p>
               )}
             </div>
           )}
@@ -248,14 +248,14 @@ export function PinDetailPanel({
           {/* Description */}
           {pin.description && (
             <div className="prose prose-invert prose-sm max-w-none">
-              <p className="text-zinc-300 whitespace-pre-wrap">{pin.description}</p>
+              <p className="text-foreground/80 whitespace-pre-wrap">{pin.description}</p>
             </div>
           )}
 
           {/* Links */}
           {links.length > 0 && (
             <div className="space-y-2">
-              <h3 className="text-sm font-medium text-zinc-400 flex items-center gap-2">
+              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <ExternalLink className="h-4 w-4" />
                 Links
               </h3>
@@ -266,12 +266,12 @@ export function PinDetailPanel({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 p-3 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors group"
+                    className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group"
                   >
-                    <span className="text-white group-hover:text-blue-400 transition-colors">
+                    <span className="text-foreground group-hover:text-blue-400 transition-colors">
                       {link.title || link.url}
                     </span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500 group-hover:text-blue-400 transition-colors ml-auto" />
+                    <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-blue-400 transition-colors ml-auto" />
                   </a>
                 ))}
               </div>
@@ -279,8 +279,8 @@ export function PinDetailPanel({
           )}
 
           {/* Comments */}
-          <div className="space-y-4 pt-4 border-t border-zinc-800">
-            <h3 className="text-sm font-medium text-zinc-400 flex items-center gap-2">
+          <div className="space-y-4 pt-4 border-t border-border">
+            <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <MessageCircle className="h-4 w-4" />
               Comments ({comments.length})
             </h3>
@@ -300,20 +300,20 @@ export function PinDetailPanel({
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-white text-sm">{comment.user_name}</span>
-                        <span className="text-xs text-zinc-500">
+                        <span className="font-medium text-foreground text-sm">{comment.user_name}</span>
+                        <span className="text-xs text-muted-foreground">
                           {format(new Date(comment.created_at), 'MMM d')}
                         </span>
                         {comment.user_email === userEmail && (
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
-                            className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-400 transition-all ml-auto"
+                            className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-all ml-auto"
                           >
                             <Trash2 className="h-3 w-3" />
                           </button>
                         )}
                       </div>
-                      <p className="text-zinc-300 text-sm mt-0.5">{comment.content}</p>
+                      <p className="text-foreground/80 text-sm mt-0.5">{comment.content}</p>
                     </div>
                   </div>
                 ))}
@@ -325,7 +325,7 @@ export function PinDetailPanel({
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Add a comment..."
-                className="flex-1 bg-zinc-800 border-zinc-700"
+                className="flex-1 bg-muted border-border"
               />
               <Button
                 type="submit"

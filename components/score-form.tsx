@@ -113,31 +113,31 @@ export function ScoreForm({ categories }: ScoreFormProps) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Card className="border-zinc-800 bg-zinc-900/50">
+      <Card className="border-border bg-card/50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-zinc-100">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <Trophy className="h-5 w-5 text-amber-400" />
             Log Score
           </CardTitle>
-          <CardDescription className="text-zinc-500">Record your achievement</CardDescription>
+          <CardDescription className="text-muted-foreground">Record your achievement</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Category Selection */}
             <div className="space-y-2">
-              <Label htmlFor="category" className="text-zinc-300">
+              <Label htmlFor="category" className="text-foreground/80">
                 Category
               </Label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="border-zinc-700 bg-zinc-800/50 text-zinc-100">
+                <SelectTrigger className="border-border bg-muted/50 text-foreground">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-zinc-900">
+                <SelectContent className="border-border bg-popover">
                   {manualCategories.map(cat => (
                     <SelectItem
                       key={cat.slug}
                       value={cat.slug}
-                      className="text-zinc-300 focus:bg-zinc-800 focus:text-zinc-100"
+                      className="text-foreground/80 focus:bg-muted focus:text-foreground"
                     >
                       <span className="flex items-center gap-2">
                         {getIcon(cat.icon)}
@@ -151,15 +151,15 @@ export function ScoreForm({ categories }: ScoreFormProps) {
 
             {/* External Link */}
             {selectedCategory && (
-              <div className="p-4 rounded-lg border border-zinc-800 bg-zinc-900/30">
+              <div className="p-4 rounded-lg border border-border bg-card/30">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-zinc-200 flex items-center gap-2">
+                    <p className="font-medium text-foreground/80 flex items-center gap-2">
                       {getIcon(selectedCategory.icon)}
                       {selectedCategory.name}
                     </p>
-                    <p className="text-sm text-zinc-500">{selectedCategory.description}</p>
-                    <p className="text-xs text-zinc-600 mt-1 flex items-center gap-1">
+                    <p className="text-sm text-muted-foreground">{selectedCategory.description}</p>
+                    <p className="text-xs text-muted-foreground/60 mt-1 flex items-center gap-1">
                       {selectedCategory.higher_is_better ? (
                         <>
                           <ArrowUp className="h-3 w-3" /> Higher is better
@@ -176,7 +176,7 @@ export function ScoreForm({ categories }: ScoreFormProps) {
                       variant="outline"
                       size="sm"
                       asChild
-                      className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-300"
+                      className="border-border bg-transparent hover:bg-muted text-foreground/80"
                     >
                       <a
                         href={selectedCategory.external_url}
@@ -193,10 +193,10 @@ export function ScoreForm({ categories }: ScoreFormProps) {
 
             {/* Score Input */}
             <div className="space-y-2">
-              <Label htmlFor="score" className="text-zinc-300">
+              <Label htmlFor="score" className="text-foreground/80">
                 Score{' '}
                 {selectedCategory && (
-                  <span className="text-zinc-500">({selectedCategory.unit})</span>
+                  <span className="text-muted-foreground">({selectedCategory.unit})</span>
                 )}
               </Label>
               <Input
@@ -206,14 +206,14 @@ export function ScoreForm({ categories }: ScoreFormProps) {
                 placeholder={selectedCategory ? `Enter ${selectedCategory.unit}` : 'Enter score'}
                 value={score}
                 onChange={e => setScore(e.target.value)}
-                className="font-mono text-lg border-zinc-700 bg-zinc-800/50 text-zinc-100 placeholder:text-zinc-600"
+                className="font-mono text-lg border-border bg-muted/50 text-foreground placeholder:text-muted-foreground"
               />
             </div>
 
             {/* Proof URL */}
             <div className="space-y-2">
-              <Label htmlFor="proof" className="text-zinc-300">
-                Proof URL <span className="text-zinc-600">(optional)</span>
+              <Label htmlFor="proof" className="text-foreground/80">
+                Proof URL <span className="text-muted-foreground/60">(optional)</span>
               </Label>
               <Input
                 id="proof"
@@ -221,9 +221,9 @@ export function ScoreForm({ categories }: ScoreFormProps) {
                 placeholder="Link to screenshot or results"
                 value={proofUrl}
                 onChange={e => setProofUrl(e.target.value)}
-                className="border-zinc-700 bg-zinc-800/50 text-zinc-100 placeholder:text-zinc-600"
+                className="border-border bg-muted/50 text-foreground placeholder:text-muted-foreground"
               />
-              <p className="text-xs text-zinc-600">Screenshot or results page URL for verification</p>
+              <p className="text-xs text-muted-foreground/60">Screenshot or results page URL for verification</p>
             </div>
 
             {/* Submit */}
@@ -249,9 +249,9 @@ export function ScoreForm({ categories }: ScoreFormProps) {
       </Card>
 
       {/* Quick Links */}
-      <Card className="mt-6 border-zinc-800 bg-zinc-900/50">
+      <Card className="mt-6 border-border bg-card/50">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base text-zinc-100">Quick Links</CardTitle>
+          <CardTitle className="text-base text-foreground">Quick Links</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -263,7 +263,7 @@ export function ScoreForm({ categories }: ScoreFormProps) {
                   variant="outline"
                   size="sm"
                   asChild
-                  className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+                  className="border-border bg-transparent hover:bg-muted text-muted-foreground hover:text-foreground/80"
                 >
                   <a href={cat.external_url!} target="_blank" rel="noopener noreferrer">
                     <span className="flex items-center gap-1.5">
