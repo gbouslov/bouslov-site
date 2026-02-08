@@ -16,11 +16,8 @@ test.describe('Authentication - Unauthenticated', () => {
     // Should show sign in button
     await expect(page.locator('button:has-text("Sign in with Google")')).toBeVisible()
 
-    // Should show family members only message
-    await expect(page.locator('text=Family members only')).toBeVisible()
-
-    // Should show authorized emails
-    await expect(page.locator('text=gbouslov')).toBeVisible()
+    // Should show authorized accounts only message
+    await expect(page.locator('text=Authorized accounts only')).toBeVisible()
   })
 
   test('should redirect protected routes to login', async ({ page }) => {
