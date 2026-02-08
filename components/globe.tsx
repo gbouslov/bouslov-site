@@ -3,10 +3,15 @@
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import * as THREE from 'three'
+import { vertexShader, fragmentShader, getSunCoordinates, DAY_TEXTURE, NIGHT_TEXTURE, NIGHT_SKY } from '@/lib/globe-shaders'
 
 const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default), {
   ssr: false,
-  loading: () => <LoadingFallback />
+  loading: () => (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-12 h-12 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
+    </div>
+  )
 })
 
 const FAMILY_MEMBERS = [
@@ -15,73 +20,6 @@ const FAMILY_MEMBERS = [
   { name: 'Jonathan', lat: 33.4484, lng: -112.0740, color: '#06b6d4' },
   { name: 'Daniel', lat: 33.4484, lng: -112.0740, color: '#10b981' },
 ]
-
-const DAY_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg'
-const NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg'
-const NIGHT_SKY = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png'
-
-const vertexShader = `
-  varying vec3 vNormal;
-  varying vec2 vUv;
-  void main() {
-    vNormal = normalize(normalMatrix * normal);
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`
-
-const fragmentShader = `
-  #define PI 3.141592653589793
-  uniform sampler2D dayTexture;
-  uniform sampler2D nightTexture;
-  uniform vec2 sunPosition;
-  uniform vec2 globeRotation;
-  varying vec3 vNormal;
-  varying vec2 vUv;
-
-  float toRad(in float a) {
-    return a * PI / 180.0;
-  }
-
-  vec3 Polar2Cartesian(in vec2 c) {
-    float theta = toRad(90.0 - c.x);
-    float phi = toRad(90.0 - c.y);
-    return vec3(
-      sin(phi) * cos(theta),
-      cos(phi),
-      sin(phi) * sin(theta)
-    );
-  }
-
-  void main() {
-    float invLon = toRad(globeRotation.x);
-    float invLat = -toRad(globeRotation.y);
-    mat3 rotX = mat3(1, 0, 0, 0, cos(invLat), -sin(invLat), 0, sin(invLat), cos(invLat));
-    mat3 rotY = mat3(cos(invLon), 0, sin(invLon), 0, 1, 0, -sin(invLon), 0, cos(invLon));
-    vec3 rotatedSunDirection = rotX * rotY * Polar2Cartesian(sunPosition);
-    float intensity = dot(normalize(vNormal), normalize(rotatedSunDirection));
-    vec4 dayColor = texture2D(dayTexture, vUv);
-    vec4 nightColor = texture2D(nightTexture, vUv);
-    float blendFactor = smoothstep(-0.1, 0.1, intensity);
-    gl_FragColor = mix(nightColor, dayColor, blendFactor);
-  }
-`
-
-function getSunCoordinates(): { lng: number; lat: number } {
-  const now = new Date()
-  const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000)
-  const declination = 23.45 * Math.sin((360 / 365) * (dayOfYear - 81) * (Math.PI / 180))
-  const hourAngle = ((now.getUTCHours() + now.getUTCMinutes() / 60) / 24) * 360 - 180
-  return { lng: -hourAngle, lat: declination }
-}
-
-function LoadingFallback() {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-12 h-12 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
-    </div>
-  )
-}
 
 export function Globe() {
   const globeRef = useRef<any>(null)
@@ -117,6 +55,8 @@ export function Globe() {
     globe.controls().autoRotate = true
     globe.controls().autoRotateSpeed = 0.3
     globe.controls().enableZoom = false
+    globe.controls().enableDamping = true
+    globe.controls().dampingFactor = 0.05
 
     globe.pointOfView({ lat: 20, lng: -40, altitude: 2.5 })
 
@@ -130,6 +70,8 @@ export function Globe() {
 
         const sunCoords = getSunCoordinates()
         materialRef.current.uniforms.sunPosition.value.set(sunCoords.lng, sunCoords.lat)
+
+        globe.controls().update()
       }
       frameId = requestAnimationFrame(animate)
     }
@@ -190,7 +132,7 @@ export function Globe() {
         pointColor="color"
         pointRadius="size"
         pointAltitude="altitude"
-        pointLabel={(d: any) => `<div class="bg-zinc-900/95 border border-zinc-700 px-3 py-1.5 rounded-lg text-sm text-white whitespace-nowrap backdrop-blur-sm shadow-xl">${d.name}</div>`}
+        pointLabel={(d: any) => `<div style="background: rgba(9, 9, 11, 0.95); border: 1px solid rgba(63, 63, 70, 0.8); padding: 6px 12px; border-radius: 8px; backdrop-filter: blur(8px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); color: white; font-size: 14px; white-space: nowrap;">${d.name}</div>`}
         onPointHover={handlePointHover}
         arcsData={arcData}
         arcStartLat="startLat"
