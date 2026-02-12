@@ -8,6 +8,8 @@ A private family competition site for the Bouslov brothers to track and compete 
 - **David** (dbouslov@gmail.com) - Med student (M2, surgery rotation)
 - **Jonathan** (jbouslov@gmail.com) - 16yo twin
 - **Daniel** (bouslovd@gmail.com) - 16yo twin
+- **Dad** (bouslovb@gmail.com)
+- **Mom** (lbouslov@gmail.com)
 
 ## Tech Stack
 - **Framework:** Next.js 15 (App Router)
@@ -47,6 +49,8 @@ ONLY these emails can access:
 - dbouslov@gmail.com
 - jbouslov@gmail.com
 - bouslovd@gmail.com
+- bouslovb@gmail.com
+- lbouslov@gmail.com
 
 ## File Structure
 ```

@@ -815,6 +815,7 @@ function calculateOverallRankings(
     { email: 'jbouslov@gmail.com', name: 'Jonathan' },
     { email: 'bouslovd@gmail.com', name: 'Daniel' },
     { email: 'bouslovb@gmail.com', name: 'Dad' },
+    { email: 'lbouslov@gmail.com', name: 'Mom' },
   ]
 
   familyEmails.forEach(({ email, name }) => {

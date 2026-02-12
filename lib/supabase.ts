@@ -111,6 +111,7 @@ export const FAMILY = [
   { email: 'jbouslov@gmail.com', name: 'Jonathan', chessUsername: 'jbouslov' },
   { email: 'bouslovd@gmail.com', name: 'Daniel', chessUsername: 'bouslovd' },
   { email: 'bouslovb@gmail.com', name: 'Dad', chessUsername: 'bouslovb' },
+  { email: 'lbouslov@gmail.com', name: 'Mom', chessUsername: '' },
 ]
 
 // Helper functions

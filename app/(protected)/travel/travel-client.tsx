@@ -98,6 +98,8 @@ const USERS = [
   { email: 'dbouslov@gmail.com', name: 'David' },
   { email: 'jbouslov@gmail.com', name: 'Jonathan' },
   { email: 'bouslovd@gmail.com', name: 'Daniel' },
+  { email: 'bouslovb@gmail.com', name: 'Dad' },
+  { email: 'lbouslov@gmail.com', name: 'Mom' },
 ]
 
 export function TravelClient({ initialTravels, initialCounts, userEmail }: TravelClientProps) {

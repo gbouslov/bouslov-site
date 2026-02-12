@@ -46,12 +46,16 @@ export const USER_COLORS: Record<string, string> = {
   'dbouslov@gmail.com': '#475569', // David - slate-600
   'jbouslov@gmail.com': '#94a3b8', // Jonathan - slate-400
   'bouslovd@gmail.com': '#334155', // Daniel - slate-700
+  'bouslovb@gmail.com': '#78716c', // Dad - stone-500
+  'lbouslov@gmail.com': '#a8a29e', // Mom - stone-400
 }
 
 export const USER_NAMES: Record<string, string> = {
   'gbouslov@gmail.com': 'Gabe',
   'dbouslov@gmail.com': 'David',
   'jbouslov@gmail.com': 'Jonathan',
+  'bouslovb@gmail.com': 'Dad',
+  'lbouslov@gmail.com': 'Mom',
   'bouslovd@gmail.com': 'Daniel',
 }
 
