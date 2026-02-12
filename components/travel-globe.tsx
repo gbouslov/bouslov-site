@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import * as THREE from 'three'
-import { vertexShader, fragmentShader, getSunCoordinates, DAY_TEXTURE, NIGHT_TEXTURE, NIGHT_SKY } from '@/lib/globe-shaders'
+import { vertexShader, fragmentShader, getCachedSunCoordinates, DAY_TEXTURE, NIGHT_TEXTURE, NIGHT_SKY } from '@/lib/globe-shaders'
 import { useGlobeResize } from '@/hooks/use-globe-resize'
 
 const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default), {
@@ -15,37 +15,17 @@ const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default),
   )
 })
 
-// Texture quality levels
 export type TextureQuality = 'low' | 'medium' | 'high'
-
-// Use the same reliable CDN textures as pins globe
-const TEXTURES = {
-  low: {
-    day: DAY_TEXTURE,
-    night: NIGHT_TEXTURE,
-  },
-  medium: {
-    day: DAY_TEXTURE,
-    night: NIGHT_TEXTURE,
-  },
-  high: {
-    day: DAY_TEXTURE,
-    night: NIGHT_TEXTURE,
-  },
-}
-
-const USER_DEFAULT_QUALITY: Record<string, TextureQuality> = {}
 
 const COUNTRIES_GEOJSON = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson'
 
-// Cool blue/grey map palette - non-adjacent colors
 export const USER_COLORS: Record<string, string> = {
-  'gbouslov@gmail.com': '#64748b', // Gabe - slate-500
-  'dbouslov@gmail.com': '#475569', // David - slate-600
-  'jbouslov@gmail.com': '#94a3b8', // Jonathan - slate-400
-  'bouslovd@gmail.com': '#334155', // Daniel - slate-700
-  'bouslovb@gmail.com': '#78716c', // Dad - stone-500
-  'lbouslov@gmail.com': '#a8a29e', // Mom - stone-400
+  'gbouslov@gmail.com': '#f97316',  // Gabe - orange
+  'dbouslov@gmail.com': '#a78bfa',  // David - violet
+  'jbouslov@gmail.com': '#22d3ee',  // Jonathan - cyan
+  'bouslovd@gmail.com': '#34d399',  // Daniel - emerald
+  'bouslovb@gmail.com': '#fbbf24',  // Dad - amber
+  'lbouslov@gmail.com': '#f472b6',  // Mom - pink
 }
 
 export const USER_NAMES: Record<string, string> = {
@@ -77,22 +57,16 @@ export function TravelGlobe({
   selectedUser,
   onCountryHover,
   onCountryClick,
-  quality,
   userEmail
 }: TravelGlobeProps) {
   const globeRef = useRef<any>(null)
   const [globeReady, setGlobeReady] = useState(false)
   const [countries, setCountries] = useState<any[]>([])
-  const [hoveredCountry, setHoveredCountry] = useState<any>(null)
   const materialRef = useRef<THREE.ShaderMaterial | null>(null)
   const { containerRef, dimensions } = useGlobeResize()
 
-  // Determine texture quality - prop > user default > medium fallback
-  const textureQuality = quality || (userEmail && USER_DEFAULT_QUALITY[userEmail]) || 'medium'
-  const textures = TEXTURES[textureQuality]
-
-  const dayTexture = useMemo(() => new THREE.TextureLoader().load(textures.day), [textures.day])
-  const nightTexture = useMemo(() => new THREE.TextureLoader().load(textures.night), [textures.night])
+  const dayTexture = useMemo(() => new THREE.TextureLoader().load(DAY_TEXTURE), [])
+  const nightTexture = useMemo(() => new THREE.TextureLoader().load(NIGHT_TEXTURE), [])
 
   // Load GeoJSON
   useEffect(() => {
@@ -120,7 +94,7 @@ export function TravelGlobe({
   }, [travels, selectedUser])
 
   const createGlobeMaterial = useCallback(() => {
-    const sunCoords = getSunCoordinates()
+    const sunCoords = getCachedSunCoordinates()
     const material = new THREE.ShaderMaterial({
       uniforms: {
         dayTexture: { value: dayTexture },
@@ -158,7 +132,7 @@ export function TravelGlobe({
         const polar = globe.controls().getPolarAngle() * (180 / Math.PI) - 90
         materialRef.current.uniforms.globeRotation.value.set(azimuth, polar)
 
-        const sunCoords = getSunCoordinates()
+        const sunCoords = getCachedSunCoordinates()
         materialRef.current.uniforms.sunPosition.value.set(sunCoords.lng, sunCoords.lat)
 
         globe.controls().update()
@@ -190,26 +164,18 @@ export function TravelGlobe({
     if (visitors.length === 0) return 'rgba(0,0,0,0)'
 
     if (selectedUser) {
-      return USER_COLORS[selectedUser] || '#3b82f6'
+      return USER_COLORS[selectedUser] || '#f97316'
     }
 
-    // Multiple visitors - blend or use first visitor's color
     if (visitors.length === 1) {
-      return USER_COLORS[visitors[0]] || '#3b82f6'
+      return USER_COLORS[visitors[0]] || '#f97316'
     }
 
-    // Multiple visitors - use a gradient effect with opacity
+    // Multiple visitors
     return '#ffffff'
   }, [selectedUser])
 
-  const getPolygonSideColor = useCallback((d: any) => {
-    const baseColor = getPolygonColor(d)
-    // Make sides slightly darker
-    return baseColor.replace(')', ', 0.8)').replace('rgb', 'rgba')
-  }, [getPolygonColor])
-
   const handlePolygonHover = useCallback((polygon: any) => {
-    setHoveredCountry(polygon)
     if (onCountryHover) {
       if (polygon) {
         onCountryHover({
@@ -245,17 +211,16 @@ export function TravelGlobe({
         globeMaterial={createGlobeMaterial()}
         backgroundColor="rgba(0,0,0,0)"
         backgroundImageUrl={NIGHT_SKY}
-        atmosphereColor="#64748b"
+        atmosphereColor="#f97316"
         atmosphereAltitude={0.12}
         polygonsData={polygonData}
-        polygonAltitude={d => hoveredCountry === d ? 0.06 : 0.01}
+        polygonAltitude={0.01}
         polygonCapColor={getPolygonColor}
-        polygonSideColor={getPolygonSideColor}
-        polygonStrokeColor={() => 'rgba(255,255,255,0.2)'}
+        polygonSideColor={() => 'rgba(0,0,0,0.3)'}
         polygonLabel={polygonLabel}
         onPolygonHover={handlePolygonHover}
         onPolygonClick={handlePolygonClick}
-        polygonsTransitionDuration={300}
+        polygonsTransitionDuration={0}
         width={dimensions.width}
         height={dimensions.height}
       />
