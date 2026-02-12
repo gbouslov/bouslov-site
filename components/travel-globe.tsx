@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import * as THREE from 'three'
-import { vertexShader, fragmentShader, getSunCoordinates, NIGHT_SKY } from '@/lib/globe-shaders'
+import { vertexShader, fragmentShader, getSunCoordinates, DAY_TEXTURE, NIGHT_TEXTURE, NIGHT_SKY } from '@/lib/globe-shaders'
 import { useGlobeResize } from '@/hooks/use-globe-resize'
 
 const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default), {
@@ -18,25 +18,23 @@ const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default),
 // Texture quality levels
 export type TextureQuality = 'low' | 'medium' | 'high'
 
+// Use the same reliable CDN textures as pins globe
 const TEXTURES = {
   low: {
-    day: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg',
-    night: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg',
+    day: DAY_TEXTURE,
+    night: NIGHT_TEXTURE,
   },
   medium: {
-    day: 'https://eoimages.gsfc.nasa.gov/images/imagerecords/74000/74092/world.200408.3x5400x2700.jpg',
-    night: 'https://eoimages.gsfc.nasa.gov/images/imagerecords/144000/144898/BlackMarble_2016_01deg.jpg',
+    day: DAY_TEXTURE,
+    night: NIGHT_TEXTURE,
   },
   high: {
-    day: 'https://eoimages.gsfc.nasa.gov/images/imagerecords/74000/74092/world.200408.3x21600x10800.jpg',
-    night: 'https://eoimages.gsfc.nasa.gov/images/imagerecords/144000/144898/BlackMarble_2016_3km.jpg',
+    day: DAY_TEXTURE,
+    night: NIGHT_TEXTURE,
   },
 }
 
-// Default quality by user email (Gabe gets high, others medium)
-const USER_DEFAULT_QUALITY: Record<string, TextureQuality> = {
-  'gbouslov@gmail.com': 'high',
-}
+const USER_DEFAULT_QUALITY: Record<string, TextureQuality> = {}
 
 const COUNTRIES_GEOJSON = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson'
 
