@@ -487,6 +487,380 @@ export async function deleteComment(id: string, userEmail: string): Promise<void
   if (error) throw error
 }
 
+// Poll types
+export interface Poll {
+  id: string
+  user_email: string
+  user_name: string
+  question: string
+  options: string[]
+  is_closed: boolean
+  created_at: string
+}
+
+export interface PollVote {
+  id: string
+  poll_id: string
+  user_email: string
+  user_name: string
+  option_index: number
+  created_at: string
+}
+
+// Wishlist types
+export type WishlistOccasion = 'birthday' | 'holiday' | 'general'
+
+export interface WishlistItem {
+  id: string
+  user_email: string
+  user_name: string
+  title: string
+  link: string | null
+  price: string | null
+  notes: string | null
+  priority: number
+  occasion: WishlistOccasion
+  claimed_by: string | null
+  claimed_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+// Recommendation types
+export type RecommendationCategory =
+  | 'restaurant' | 'show' | 'movie' | 'music'
+  | 'book' | 'game' | 'podcast' | 'other'
+
+export interface Recommendation {
+  id: string
+  user_email: string
+  user_name: string
+  title: string
+  category: RecommendationCategory
+  rating: number
+  notes: string | null
+  link: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface RecommendationComment {
+  id: string
+  recommendation_id: string
+  user_email: string
+  user_name: string
+  content: string
+  rating: number | null
+  created_at: string
+}
+
+// Poll functions
+export async function getAllPolls(): Promise<Poll[]> {
+  const { data, error } = await supabase
+    .from('polls')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function getPollVotes(pollId: string): Promise<PollVote[]> {
+  const { data, error } = await supabase
+    .from('poll_votes')
+    .select('*')
+    .eq('poll_id', pollId)
+
+  if (error) throw error
+  return data || []
+}
+
+export async function getAllPollVotes(): Promise<PollVote[]> {
+  const { data, error } = await supabase
+    .from('poll_votes')
+    .select('*')
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createPoll(poll: {
+  user_email: string
+  user_name: string
+  question: string
+  options: string[]
+}): Promise<Poll> {
+  const { data, error } = await supabase
+    .from('polls')
+    .insert(poll)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function closePoll(id: string, userEmail: string): Promise<Poll> {
+  const { data, error } = await supabase
+    .from('polls')
+    .update({ is_closed: true })
+    .eq('id', id)
+    .eq('user_email', userEmail)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deletePoll(id: string, userEmail: string): Promise<void> {
+  const { error } = await supabase
+    .from('polls')
+    .delete()
+    .eq('id', id)
+    .eq('user_email', userEmail)
+
+  if (error) throw error
+}
+
+export async function castVote(vote: {
+  poll_id: string
+  user_email: string
+  user_name: string
+  option_index: number
+}): Promise<PollVote> {
+  const { data, error } = await supabase
+    .from('poll_votes')
+    .insert(vote)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function removeVote(pollId: string, userEmail: string): Promise<void> {
+  const { error } = await supabase
+    .from('poll_votes')
+    .delete()
+    .eq('poll_id', pollId)
+    .eq('user_email', userEmail)
+
+  if (error) throw error
+}
+
+// Wishlist functions
+export async function getAllWishlistItems(): Promise<WishlistItem[]> {
+  const { data, error } = await supabase
+    .from('wishlist_items')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createWishlistItem(item: {
+  user_email: string
+  user_name: string
+  title: string
+  link?: string
+  price?: string
+  notes?: string
+  priority?: number
+  occasion?: WishlistOccasion
+}): Promise<WishlistItem> {
+  const { data, error } = await supabase
+    .from('wishlist_items')
+    .insert({
+      user_email: item.user_email,
+      user_name: item.user_name,
+      title: item.title,
+      link: item.link || null,
+      price: item.price || null,
+      notes: item.notes || null,
+      priority: item.priority || 2,
+      occasion: item.occasion || 'general',
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function updateWishlistItem(
+  id: string,
+  userEmail: string,
+  updates: Partial<Pick<WishlistItem, 'title' | 'link' | 'price' | 'notes' | 'priority' | 'occasion'>>
+): Promise<WishlistItem> {
+  const { data, error } = await supabase
+    .from('wishlist_items')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('user_email', userEmail)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteWishlistItem(id: string, userEmail: string): Promise<void> {
+  const { error } = await supabase
+    .from('wishlist_items')
+    .delete()
+    .eq('id', id)
+    .eq('user_email', userEmail)
+
+  if (error) throw error
+}
+
+export async function claimWishlistItem(id: string, claimerEmail: string): Promise<WishlistItem> {
+  const { data, error } = await supabase
+    .from('wishlist_items')
+    .update({ claimed_by: claimerEmail, claimed_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function unclaimWishlistItem(id: string, claimerEmail: string): Promise<WishlistItem> {
+  const { data, error } = await supabase
+    .from('wishlist_items')
+    .update({ claimed_by: null, claimed_at: null })
+    .eq('id', id)
+    .eq('claimed_by', claimerEmail)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+// Recommendation functions
+export async function getAllRecommendations(): Promise<Recommendation[]> {
+  const { data, error } = await supabase
+    .from('recommendations')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function getRecommendationById(id: string): Promise<Recommendation | null> {
+  const { data, error } = await supabase
+    .from('recommendations')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error && error.code !== 'PGRST116') throw error
+  return data
+}
+
+export async function createRecommendation(rec: {
+  user_email: string
+  user_name: string
+  title: string
+  category: RecommendationCategory
+  rating: number
+  notes?: string
+  link?: string
+}): Promise<Recommendation> {
+  const { data, error } = await supabase
+    .from('recommendations')
+    .insert({
+      user_email: rec.user_email,
+      user_name: rec.user_name,
+      title: rec.title,
+      category: rec.category,
+      rating: rec.rating,
+      notes: rec.notes || null,
+      link: rec.link || null,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function updateRecommendation(
+  id: string,
+  userEmail: string,
+  updates: Partial<Pick<Recommendation, 'title' | 'category' | 'rating' | 'notes' | 'link'>>
+): Promise<Recommendation> {
+  const { data, error } = await supabase
+    .from('recommendations')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('user_email', userEmail)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteRecommendation(id: string, userEmail: string): Promise<void> {
+  const { error } = await supabase
+    .from('recommendations')
+    .delete()
+    .eq('id', id)
+    .eq('user_email', userEmail)
+
+  if (error) throw error
+}
+
+export async function getRecommendationComments(recId: string): Promise<RecommendationComment[]> {
+  const { data, error } = await supabase
+    .from('recommendation_comments')
+    .select('*')
+    .eq('recommendation_id', recId)
+    .order('created_at', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createRecommendationComment(comment: {
+  recommendation_id: string
+  user_email: string
+  user_name: string
+  content: string
+  rating?: number
+}): Promise<RecommendationComment> {
+  const { data, error } = await supabase
+    .from('recommendation_comments')
+    .insert({
+      recommendation_id: comment.recommendation_id,
+      user_email: comment.user_email,
+      user_name: comment.user_name,
+      content: comment.content,
+      rating: comment.rating || null,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteRecommendationComment(id: string, userEmail: string): Promise<void> {
+  const { error } = await supabase
+    .from('recommendation_comments')
+    .delete()
+    .eq('id', id)
+    .eq('user_email', userEmail)
+
+  if (error) throw error
+}
+
 // Image upload to Supabase storage
 export async function uploadPinImage(
   file: File,

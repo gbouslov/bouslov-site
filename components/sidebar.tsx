@@ -18,6 +18,9 @@ import {
   Plus,
   Link2,
   MapPin,
+  Gift,
+  Vote,
+  ThumbsUp,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -26,6 +29,9 @@ const NAV_ITEMS = [
   { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   { href: '/travel', label: 'Travel', icon: Plane },
   { href: '/pins', label: 'Pins', icon: MapPin },
+  { href: '/wishlists', label: 'Wishlists', icon: Gift },
+  { href: '/polls', label: 'Polls', icon: Vote },
+  { href: '/recommendations', label: 'Recs', icon: ThumbsUp },
   { href: '/quicklinks', label: 'Quicklinks', icon: Link2 },
   { href: '/stats', label: 'Stats', icon: BarChart3, disabled: true },
   { href: '/settings', label: 'Settings', icon: Settings, disabled: true },
