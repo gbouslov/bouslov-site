@@ -68,6 +68,7 @@ export const CATEGORY_TO_GROUP: Record<string, keyof typeof CATEGORY_GROUPS> = {
   us_states: 'travel',
   act_score: 'academic',
   sat_score: 'academic',
+  geoguessr: 'cognitive',
 }
 
 // Helper function to get category group
@@ -92,6 +93,7 @@ export const CATEGORY_ICONS: Record<string, string> = {
   us_states: 'Map',
   act_score: 'GraduationCap',
   sat_score: 'GraduationCap',
+  geoguessr: 'Compass',
 }
 
 // Rank position labels
@@ -140,4 +142,5 @@ export const SCORE_LIMITS: Record<string, { min: number; max: number }> = {
   us_states: { min: 0, max: 50 },
   act_score: { min: 1, max: 36 },
   sat_score: { min: 400, max: 1600 },
+  geoguessr: { min: 0, max: 3000 },
 }

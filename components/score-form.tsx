@@ -30,6 +30,8 @@ import {
   Puzzle,
   Globe,
   Map,
+  GraduationCap,
+  Compass,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Category } from '@/lib/supabase'
@@ -45,6 +47,8 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Clock: <Clock className="h-4 w-4" />,
   Calendar: <Calendar className="h-4 w-4" />,
   Puzzle: <Puzzle className="h-4 w-4" />,
+  GraduationCap: <GraduationCap className="h-4 w-4" />,
+  Compass: <Compass className="h-4 w-4" />,
 }
 
 function getIcon(iconName: string): React.ReactNode {

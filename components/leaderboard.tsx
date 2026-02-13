@@ -25,6 +25,8 @@ import {
   Map,
   Calendar,
   Puzzle,
+  GraduationCap,
+  Compass,
 } from 'lucide-react'
 import { RANK_LABELS, RANK_COLORS, RANK_BG, CATEGORY_GROUPS, CATEGORY_TO_GROUP, getCategoryGroup } from '@/lib/constants'
 import { formatDistanceToNow } from 'date-fns'
@@ -42,6 +44,8 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Clock: <Clock className="h-4 w-4" />,
   Calendar: <Calendar className="h-4 w-4" />,
   Puzzle: <Puzzle className="h-4 w-4" />,
+  GraduationCap: <GraduationCap className="h-4 w-4" />,
+  Compass: <Compass className="h-4 w-4" />,
 }
 
 function getIcon(iconName: string): React.ReactNode {
