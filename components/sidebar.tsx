@@ -28,6 +28,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 const NAV_ITEMS = [
   { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   { href: '/travel', label: 'Travel', icon: Plane },
+  { href: '/trips', label: 'Trips', icon: Plane },
   { href: '/pins', label: 'Pins', icon: MapPin },
   { href: '/wishlists', label: 'Wishlists', icon: Gift },
   { href: '/polls', label: 'Polls', icon: Vote },
