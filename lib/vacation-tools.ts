@@ -66,34 +66,48 @@ export const FLIGHT_TOOLS: Anthropic.Tool[] = [
 ]
 
 /**
- * Execute a flight tool by calling the Python serverless function.
- * In production (Vercel), calls /api/flights.
- * Falls back to localhost for local dev.
+ * Execute a flight tool by calling the Flight Search API.
+ * Tries Railway API first, falls back to Vercel Python function.
  */
 export async function executeFlightTool(
   toolName: string,
   params: Record<string, unknown>,
   baseUrl?: string
 ): Promise<string> {
-  const url = baseUrl
-    ? `${baseUrl}/api/flights`
-    : `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/flights`
+  // Priority: Railway API → Vercel Python function → error
+  const endpoints = [
+    process.env.FLIGHT_API_URL ? `${process.env.FLIGHT_API_URL}/call` : null,
+    baseUrl ? `${baseUrl}/api/flights` : null,
+    `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/flights`,
+  ].filter(Boolean) as string[]
 
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tool: toolName, params }),
-    })
+  for (const url of endpoints) {
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }))
-      return `Error calling ${toolName}: ${error.error || response.statusText}`
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tool: toolName, params }),
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeout)
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: response.statusText }))
+        console.error(`Flight API ${url} returned ${response.status}:`, error)
+        continue // try next endpoint
+      }
+
+      const data = await response.json()
+      return data.result || 'No results found'
+    } catch (error) {
+      console.error(`Flight API ${url} failed:`, error instanceof Error ? error.message : error)
+      continue // try next endpoint
     }
-
-    const data = await response.json()
-    return data.result || 'No results found'
-  } catch (error) {
-    return `Error calling ${toolName}: ${error instanceof Error ? error.message : 'Unknown error'}`
   }
+
+  return `Flight search temporarily unavailable. Please try again or search directly on Google Flights: https://www.google.com/travel/flights?q=Flights+from+${params.origin || 'ORD'}+to+${params.destination || ''}+on+${params.departure_date || ''}`
 }

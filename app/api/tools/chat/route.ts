@@ -25,9 +25,9 @@ export async function POST(req: Request) {
   const systemPrompt = buildVacationSystemPrompt(userName)
 
   // Build the base URL for internal API calls
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const baseUrl = process.env.VERCEL
+    ? 'https://bouslov.com'
+    : 'http://localhost:3000'
 
   // Streaming SSE response
   const encoder = new TextEncoder()

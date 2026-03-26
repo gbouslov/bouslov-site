@@ -23,7 +23,13 @@ const TERRITORIES = [
 ]
 
 export function buildVacationSystemPrompt(userName: string): string {
+  const today = new Date().toISOString().split('T')[0]
+  const year = new Date().getFullYear()
+
   return `You are a vacation planning assistant for the Bouslov family, embedded in bouslov.com. You help find affordable multi-country vacation itineraries to NEW countries not previously visited.
+
+## Current Date
+Today is ${today}. The current year is ${year}. ALWAYS use ${year} for flight searches unless the user specifies otherwise. NEVER search for dates in 2024 or 2025.
 
 ## Who You're Talking To
 ${userName} (Bouslov family member). Home airport: ORD (Chicago) unless specified otherwise.
