@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barbados + St. Vincent &amp; Grenadines — May 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #06060a; color: #e0e0e8; font-family: 'Outfit', -apple-system, sans-serif; line-height: 1.6; }
+  .grain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9999; opacity: 0.5; }
+  a { color: #60a5fa; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 500; color: #4a4a5c; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; margin-top: 48px; }
+
+  /* Header */
+  .hero { padding: 60px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .hero h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em; background: linear-gradient(135deg, #fff 0%, #a0a0b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero .sub { font-size: 0.95rem; color: #6b6b80; margin-top: 8px; font-weight: 300; }
+  .hero .meta { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #4a4a5c; margin-top: 14px; }
+
+  /* Route viz */
+  .route { display: flex; align-items: center; gap: 0; margin: 32px 0; overflow-x: auto; padding-bottom: 8px; }
+  .rn { display: flex; flex-direction: column; align-items: center; min-width: 55px; }
+  .rn .code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; }
+  .rn .city { font-size: 0.63rem; color: #6b6b80; margin-top: 2px; }
+  .rl { flex: 1; min-width: 35px; height: 1px; margin: 0 4px; border-top: 1px dashed rgba(255,255,255,0.15); position: relative; }
+  .rl .stay { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: #4a4a5c; white-space: nowrap; background: #06060a; padding: 0 4px; }
+
+  /* Flight cards */
+  .flight { display: grid; grid-template-columns: 1fr 1fr 90px 70px 80px 70px; align-items: center; padding: 12px 16px; border-radius: 10px; background: rgba(255,255,255,0.02); gap: 10px; margin-bottom: 2px; }
+  .flight:hover { background: rgba(255,255,255,0.04); }
+  .flight .rt .codes { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #fff; font-weight: 600; }
+  .flight .rt .date { font-size: 0.73rem; color: #6b6b80; margin-top: 1px; }
+  .flight .detail .airline { font-size: 0.8rem; color: #c0c0d0; }
+  .flight .detail .times { font-family: 'JetBrains Mono', monospace; font-size: 0.73rem; color: #8888a0; margin-top: 1px; }
+  .flight .dur { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #8888a0; }
+  .flight .stops { font-size: 0.78rem; color: #6b6b80; }
+  .flight .stops.ns { color: #34d399; }
+  .flight .price { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 600; color: #fff; }
+  .flight .link { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; }
+
+  /* Day cards */
+  .day { display: grid; grid-template-columns: 90px 1fr; gap: 20px; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .day .d-label { font-family: 'JetBrains Mono', monospace; font-size: 0.73rem; font-weight: 600; }
+  .day .d-date { font-size: 0.78rem; color: #8888a0; }
+  .day .d-title { font-size: 1rem; color: #fff; font-weight: 600; }
+  .day .d-body { font-size: 0.84rem; color: #8888a0; margin-top: 4px; line-height: 1.7; }
+  .day .d-body strong { color: #c0c0d0; }
+  .day.travel { background: rgba(52,211,153,0.03); margin: 0 -16px; padding-left: 16px; padding-right: 16px; border-radius: 8px; }
+
+  /* Accommodation cards */
+  .acc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+  .acc { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 16px; }
+  .acc.pick { border-color: rgba(52,211,153,0.2); }
+  .acc .tag { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: #22d3ee; text-transform: uppercase; letter-spacing: 0.08em; }
+  .acc.pick .tag { color: #34d399; }
+  .acc .name { font-size: 0.92rem; color: #fff; font-weight: 600; margin-top: 4px; }
+  .acc .info { font-size: 0.76rem; color: #8888a0; margin-top: 2px; }
+  .acc .aprice { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: #fff; margin-top: 6px; }
+  .acc.pick .aprice { color: #34d399; }
+  .acc .stars { font-size: 0.73rem; color: #8888a0; margin-top: 2px; }
+
+  /* Location cards */
+  .loc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .loc { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 18px; }
+  .loc .loc-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+  .loc h3 { font-size: 0.92rem; color: #fff; margin-bottom: 6px; }
+  .loc p { font-size: 0.78rem; color: #8888a0; line-height: 1.6; }
+
+  /* Budget table */
+  .budget { width: 100%; border-collapse: collapse; }
+  .budget th { text-align: left; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.63rem; color: #4a4a5c; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .budget td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.84rem; color: #c0c0d0; }
+  .budget .r td { text-align: right; font-family: 'JetBrains Mono', monospace; color: #fff; }
+  .budget .total td { padding: 14px 12px; font-weight: 600; color: #fff; font-size: 0.95rem; border-top: 1px solid rgba(255,255,255,0.08); }
+  .budget .total .green { color: #34d399; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
+
+  /* Checklist */
+  .check-box { background: rgba(251,146,60,0.05); border: 1px solid rgba(251,146,60,0.15); border-radius: 12px; padding: 20px 24px; margin-top: 40px; }
+  .check-box h3 { font-size: 0.9rem; font-weight: 600; color: #fb923c; margin-bottom: 10px; }
+  .check-box ul { list-style: none; padding: 0; }
+  .check-box li { font-size: 0.84rem; color: #8888a0; line-height: 1.9; padding-left: 20px; position: relative; }
+  .check-box li::before { content: "\2610"; position: absolute; left: 0; }
+
+  @media (max-width: 700px) {
+    .flight { grid-template-columns: 1fr; gap: 4px; }
+    .day { grid-template-columns: 1fr; gap: 8px; }
+    .acc-grid, .loc-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Barbados + St. Vincent &amp; Grenadines</h1>
+  <div class="sub">May 14&ndash;23, 2026 &middot; 9 days &middot; 2 new countries &middot; Active couple trip</div>
+  <div class="meta">Water temp: 81&ndash;82F &middot; Shoulder season (fewer tourists, great weather) &middot; Prices as of March 25, 2026</div>
+</div>
+
+<!-- ROUTE -->
+<div class="route">
+  <div class="rn"><span class="code" style="color:#fff;">ORD</span><span class="city">Chicago</span></div>
+  <div class="rl"></div>
+  <div class="rn"><span class="code" style="color:#34d399;">BGI</span><span class="city">Barbados</span></div>
+  <div class="rl"><span class="stay">4 nights</span></div>
+  <div class="rn"><span class="code" style="color:#22d3ee;">SVD</span><span class="city">St. Vincent</span></div>
+  <div class="rl"><span class="stay">5 nights</span></div>
+  <div class="rn"><span class="code" style="color:#fff;">ORD</span><span class="city">Home</span></div>
+</div>
+
+<!-- FLIGHTS -->
+<div class="section-label">Flights</div>
+
+<div class="flight">
+  <div class="rt"><span class="codes">ORD &rarr; BGI</span><span class="date">Thu, May 14</span></div>
+  <div class="detail"><span class="airline">American Airlines</span><span class="times">via MIA or CLT</span></div>
+  <span class="dur">~8h</span>
+  <span class="stops">1 stop</span>
+  <span class="price">$269</span>
+  <span class="link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+BGI+on+2026-05-14+one+way" target="_blank">Book &rarr;</a></span>
+</div>
+<div class="flight">
+  <div class="rt"><span class="codes">BGI &rarr; SVD</span><span class="date">Mon, May 18</span></div>
+  <div class="detail"><span class="airline">Caribbean Airlines</span><span class="times">12:35 PM &rarr; 1:20 PM</span></div>
+  <span class="dur">45 min</span>
+  <span class="stops ns">Nonstop</span>
+  <span class="price">$152</span>
+  <span class="link"><a href="https://www.google.com/travel/flights?q=Flights+from+BGI+to+SVD+on+2026-05-18+one+way" target="_blank">Book &rarr;</a></span>
+</div>
+<div class="flight">
+  <div class="rt"><span class="codes">SVD &rarr; ORD</span><span class="date">Sat, May 23</span></div>
+  <div class="detail"><span class="airline">Delta</span><span class="times">3:27 PM &rarr; 12:07 AM+1</span></div>
+  <span class="dur">9h 40m</span>
+  <span class="stops">1 stop</span>
+  <span class="price">$412</span>
+  <span class="link"><a href="https://www.google.com/travel/flights?q=Flights+from+SVD+to+ORD+on+2026-05-23+one+way" target="_blank">Book &rarr;</a></span>
+</div>
+
+<div style="font-size:0.75rem;color:#4a4a5c;margin-top:8px;">Total flights: <span class="mono" style="color:#fff;">$833/pp</span> &middot; <span class="mono" style="color:#fff;">$1,666 for two</span> &middot; Open jaw: fly into BGI, fly out of SVD &middot; No backtracking</div>
+
+<!-- ACCOMMODATIONS -->
+<div class="section-label">Accommodations</div>
+
+<h3 style="font-size:0.88rem;color:#fff;margin-bottom:10px;">Barbados &mdash; 4 nights (May 14&ndash;18)</h3>
+<div class="acc pick" style="max-width:450px;">
+  <div class="tag" style="color:#34d399;">Booked</div>
+  <div class="name">Beach Villas &ndash; Ocean View</div>
+  <div class="info">Worthing Beach, south coast &middot; 1BR/1BA &middot; King bed &middot; Beachfront &middot; Ocean view balcony &middot; Kitchen &middot; Free parking</div>
+  <div class="aprice" style="color:#34d399;">$635 <span style="color:#6b6b80;font-size:0.7rem;">/ 4 nights total</span></div>
+  <div class="stars">4.66 stars &middot; 118 reviews &middot; Free cancellation before April 14</div>
+  <a href="https://www.airbnb.com/rooms/29684788?adults=2&check_in=2026-05-14&check_out=2026-05-18" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;display:inline-block;margin-top:6px;">View on Airbnb &rarr;</a>
+</div>
+
+<h3 style="font-size:0.88rem;color:#fff;margin-bottom:10px;margin-top:24px;">St. Vincent &mdash; 5 nights (May 18&ndash;23)</h3>
+<div class="acc-grid">
+  <div class="acc">
+    <div class="tag">Option A &mdash; Mountain Retreat</div>
+    <div class="name">Spirit of the Valley &ndash; Strong's House</div>
+    <div class="info">Vermont, St. Vincent &middot; Tiny home in the mountains &middot; 1BR/1BA &middot; Jungle views &middot; Amazing outdoor deck</div>
+    <div class="aprice">$617 <span style="color:#6b6b80;font-size:0.7rem;">/ 5 nights</span></div>
+    <div class="stars">4.91 stars &middot; 158 reviews &middot; Superhost &middot; Guest Favorite</div>
+    <a href="https://www.airbnb.com/rooms/22044927?adults=2&check_in=2026-05-18&check_out=2026-05-23" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;display:inline-block;margin-top:6px;">View on Airbnb &rarr;</a>
+  </div>
+  <div class="acc pick">
+    <div class="tag" style="color:#34d399;">Option B &mdash; Seaside &middot; Top 1%</div>
+    <div class="name">Sunset@Jenny's Place</div>
+    <div class="info">Ratho Mill, St. Vincent &middot; Steps to the sea &middot; 1BR/1BA &middot; Sunset views &middot; Great check-in &middot; Beautiful area</div>
+    <div class="aprice" style="color:#34d399;">$464 <span style="color:#6b6b80;font-size:0.7rem;">/ 5 nights</span></div>
+    <div class="stars">4.97 stars &middot; 227 reviews &middot; Superhost &middot; Top 1% &middot; Free cancellation before May 13</div>
+    <a href="https://www.airbnb.com/rooms/14290799?adults=2&check_in=2026-05-18&check_out=2026-05-23" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;display:inline-block;margin-top:6px;">View on Airbnb &rarr;</a>
+  </div>
+</div>
+
+<!-- DAY BY DAY -->
+<div class="section-label">Day-by-Day Itinerary</div>
+
+<div class="day travel">
+  <div><div class="d-label" style="color:#22d3ee;">DAY 1</div><div class="d-date">Thu, May 14</div></div>
+  <div>
+    <div class="d-title">Fly to Barbados</div>
+    <div class="d-body">ORD &rarr; BGI, American, ~8h. Arrive evening. Check into Beach Villas on Worthing Beach. Walk to a beach bar, rum punch, feet in the sand. You're here.</div>
+  </div>
+</div>
+
+<div class="day">
+  <div><div class="d-label" style="color:#34d399;">DAY 2</div><div class="d-date">Fri, May 15</div></div>
+  <div>
+    <div class="d-title">South Coast &amp; Shipwreck Snorkeling</div>
+    <div class="d-body">
+      <strong>Morning:</strong> Surf or swim at Worthing Beach (steps from your door) or Rockley Beach (5 min walk)<br>
+      <strong>Afternoon:</strong> Carlisle Bay shipwrecks &mdash; snorkel over 6 sunken ships in 15&ndash;40 ft of crystal water. Sea turtles, rays, tropical fish. Gear rental on the beach ~$15.<br>
+      <strong>Evening:</strong> Oistins Fish Fry &mdash; legendary Friday night market. Grilled mahi, flying fish, rum punch, live music. Don't miss this.
+    </div>
+  </div>
+</div>
+
+<div class="day">
+  <div><div class="d-label" style="color:#34d399;">DAY 3</div><div class="d-date">Sat, May 16</div></div>
+  <div>
+    <div class="d-title">East Coast Adventure Day</div>
+    <div class="d-body">
+      <strong>Morning:</strong> Drive to Bathsheba on the wild Atlantic coast. Soup Bowl surf break &mdash; watch or rent a board. Dramatic rock formations, tidal pools.<br>
+      <strong>Afternoon:</strong> Harrison's Cave &mdash; underground limestone caverns, stalactites, waterfall (~$30/pp). Then Welchman Hall Gully hike (collapsed cave turned tropical forest, 30 min trail).<br>
+      <strong>Evening:</strong> Dinner in Holetown &mdash; west coast restaurant strip.
+    </div>
+  </div>
+</div>
+
+<div class="day">
+  <div><div class="d-label" style="color:#34d399;">DAY 4</div><div class="d-date">Sun, May 17</div></div>
+  <div>
+    <div class="d-title">Catamaran Day Cruise</div>
+    <div class="d-body">
+      <strong>Full day:</strong> West coast catamaran cruise &mdash; sail along the platinum coast, multiple snorkel stops over reefs, swim with turtles, lunch &amp; unlimited rum punch on board. Book "Cool Runnings IV" or "Good Times" catamaran (~$80&ndash;100/pp).<br>
+      <strong>Alt:</strong> Folkestone Marine Park reef snorkeling + Animal Flower Cave at the northern tip (sea caves with natural pools).
+    </div>
+  </div>
+</div>
+
+<div class="day travel">
+  <div><div class="d-label" style="color:#22d3ee;">DAY 5</div><div class="d-date">Mon, May 18</div></div>
+  <div>
+    <div class="d-title">Fly to St. Vincent</div>
+    <div class="d-body">
+      Check out of Airbnb. Taxi to BGI airport (~$25).<br>
+      <strong>BGI &rarr; SVD</strong> &middot; Caribbean Airlines &middot; 12:35 PM &rarr; 1:20 PM &middot; 45 min nonstop.<br>
+      Pick up rental car at SVD airport ($55/day). Drive to your Airbnb. Explore Kingstown or hit a beach. Get groceries for the week.<br>
+      <strong>Note:</strong> You'll need a temporary SVG driving permit (~$65 total, get at airport or police station).
+    </div>
+  </div>
+</div>
+
+<div class="day">
+  <div><div class="d-label" style="color:#34d399;">DAY 6</div><div class="d-date">Tue, May 19</div></div>
+  <div>
+    <div class="d-title">La Soufriere Volcano Hike</div>
+    <div class="d-body">
+      <strong>Full day:</strong> Hike to the crater of an active volcano (4,049 ft). 2-hour climb through cloud forest to the rim. Last erupted 2021. Misty, dramatic, unforgettable. Book a local guide (~$40&ndash;50/pp). Start from Bamboo Range or Rabacca trailhead. Leave early &mdash; clearest skies are morning.<br>
+      <strong>Evening:</strong> You'll be tired. Cook at the Airbnb, watch the sunset, early bed.
+    </div>
+  </div>
+</div>
+
+<div class="day">
+  <div><div class="d-label" style="color:#34d399;">DAY 7</div><div class="d-date">Wed, May 20</div></div>
+  <div>
+    <div class="d-title">Waterfalls &amp; Dark View Falls</div>
+    <div class="d-body">
+      <strong>Morning:</strong> Trinity Falls &mdash; triple waterfall in the rainforest. Shorter hike than the volcano, great swimming hole at the base.<br>
+      <strong>Afternoon:</strong> Dark View Falls &mdash; twin waterfalls via suspension bridge. Easy access, swim under the falls.<br>
+      <strong>Detour:</strong> Vermont Nature Trail &mdash; birdwatching, spot the St. Vincent Parrot (national bird, endemic).
+    </div>
+  </div>
+</div>
+
+<div class="day">
+  <div><div class="d-label" style="color:#34d399;">DAY 8</div><div class="d-date">Thu, May 21</div></div>
+  <div>
+    <div class="d-title">Bequia Day Trip</div>
+    <div class="d-body">
+      <strong>Morning:</strong> Drive to Kingstown ferry terminal. 1-hour ferry to Bequia (~$5 each way). Walk to Princess Margaret Beach &mdash; one of the best in the Caribbean.<br>
+      <strong>Afternoon:</strong> Old Hegg Turtle Sanctuary. Explore Port Elizabeth harbor town. Lunch at a waterfront spot &mdash; fresh catch, cheap rum.<br>
+      <strong>Evening:</strong> Ferry back to St. Vincent. Or overnight in Bequia if you want more time.
+    </div>
+  </div>
+</div>
+
+<div class="day">
+  <div><div class="d-label" style="color:#34d399;">DAY 9</div><div class="d-date">Fri, May 22</div></div>
+  <div>
+    <div class="d-title">Tobago Cays &mdash; The Highlight</div>
+    <div class="d-body">
+      <strong>Full day sailing trip:</strong> This is the reason you came. Uninhabited islands in a marine park. Swim with green sea turtles in the clearest water you've ever seen. Snorkel Horseshoe Reef. Grilled lobster lunch on the beach. Book Friendship Rose schooner or a local charter from Bequia or Union Island (~$100&ndash;150/pp including lunch).<br>
+      <strong>Alt:</strong> If departing from St. Vincent mainland, book a power boat charter to the Cays (~$200&ndash;300 for the boat, split between groups).
+    </div>
+  </div>
+</div>
+
+<div class="day travel">
+  <div><div class="d-label" style="color:#60a5fa;">DAY 10</div><div class="d-date">Sat, May 23</div></div>
+  <div>
+    <div class="d-title">Fly Home</div>
+    <div class="d-body">
+      Morning: pack up, return rental car at SVD airport.<br>
+      <strong>SVD &rarr; ORD</strong> &middot; Delta &middot; 3:27 PM &rarr; 12:07 AM+1 &middot; 9h 40m, 1 stop &middot; <span class="mono" style="color:#fff;">$412/pp</span>
+      &mdash; <a href="https://www.google.com/travel/flights?q=Flights+from+SVD+to+ORD+on+2026-05-23+one+way" target="_blank" class="mono" style="font-size:0.68rem;">Book &rarr;</a><br>
+      <span style="font-size:0.78rem;color:#6b6b80;">Open jaw: flew into Barbados, flying out of St. Vincent. Home by midnight.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KEY LOCATIONS -->
+<div class="section-label">Key Locations</div>
+<div class="loc-grid">
+  <div class="loc">
+    <div class="loc-tag" style="color:#34d399;">Barbados</div>
+    <h3>Worthing Beach</h3>
+    <p>Your home base. South coast, calm water, walking distance to everything. Steps from your Airbnb balcony.</p>
+    <a href="https://maps.google.com/?q=Worthing+Beach+Barbados" target="_blank" class="mono" style="font-size:0.68rem;">Google Maps &rarr;</a>
+  </div>
+  <div class="loc">
+    <div class="loc-tag" style="color:#34d399;">Barbados</div>
+    <h3>Carlisle Bay Shipwrecks</h3>
+    <p>6 sunken ships in 15&ndash;40 ft of clear water. Sea turtles, rays. Best snorkeling on the island. 20 min from your Airbnb.</p>
+    <a href="https://maps.google.com/?q=Carlisle+Bay+Barbados" target="_blank" class="mono" style="font-size:0.68rem;">Google Maps &rarr;</a>
+  </div>
+  <div class="loc">
+    <div class="loc-tag" style="color:#34d399;">Barbados</div>
+    <h3>Bathsheba / Soup Bowl</h3>
+    <p>Wild Atlantic east coast. World-class surf break, dramatic rock formations, tidal pools. Totally different vibe.</p>
+    <a href="https://maps.google.com/?q=Bathsheba+Barbados" target="_blank" class="mono" style="font-size:0.68rem;">Google Maps &rarr;</a>
+  </div>
+  <div class="loc">
+    <div class="loc-tag" style="color:#34d399;">Barbados</div>
+    <h3>Harrison's Cave</h3>
+    <p>Underground limestone caverns. Stalactites, stalagmites, crystalline pools, waterfall. ~$30/pp entrance.</p>
+    <a href="https://maps.google.com/?q=Harrison's+Cave+Barbados" target="_blank" class="mono" style="font-size:0.68rem;">Google Maps &rarr;</a>
+  </div>
+  <div class="loc">
+    <div class="loc-tag" style="color:#22d3ee;">St. Vincent</div>
+    <h3>La Soufriere Volcano</h3>
+    <p>Active volcano, 4,049 ft. 2-hour hike to crater rim. Last erupted 2021. Book a local guide. Full day.</p>
+    <a href="https://maps.google.com/?q=La+Soufriere+St+Vincent" target="_blank" class="mono" style="font-size:0.68rem;">Google Maps &rarr;</a>
+  </div>
+  <div class="loc">
+    <div class="loc-tag" style="color:#22d3ee;">St. Vincent</div>
+    <h3>Dark View Falls</h3>
+    <p>Twin waterfalls via suspension bridge. Easy hike, swim under the falls. Great half-day trip.</p>
+    <a href="https://maps.google.com/?q=Dark+View+Falls+St+Vincent" target="_blank" class="mono" style="font-size:0.68rem;">Google Maps &rarr;</a>
+  </div>
+  <div class="loc">
+    <div class="loc-tag" style="color:#22d3ee;">Grenadines</div>
+    <h3>Tobago Cays</h3>
+    <p>THE highlight. Uninhabited islands, marine park, clearest water in the Caribbean. Swim with green sea turtles. Snorkel Horseshoe Reef. Grilled lobster on the beach.</p>
+    <a href="https://maps.google.com/?q=Tobago+Cays+Marine+Park" target="_blank" class="mono" style="font-size:0.68rem;">Google Maps &rarr;</a>
+  </div>
+  <div class="loc">
+    <div class="loc-tag" style="color:#22d3ee;">Grenadines</div>
+    <h3>Bequia</h3>
+    <p>1-hour ferry from Kingstown. Laid-back harbor, Princess Margaret Beach, turtle sanctuary. Great base for Tobago Cays day trips.</p>
+    <a href="https://maps.google.com/?q=Bequia+St+Vincent" target="_blank" class="mono" style="font-size:0.68rem;">Google Maps &rarr;</a>
+  </div>
+</div>
+
+<!-- ACTIVITIES COST GUIDE -->
+<div class="section-label">Activity Cost Guide</div>
+<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;">
+<table class="budget">
+  <thead><tr><th>Activity</th><th>Where</th><th style="text-align:right;">Cost (for 2)</th></tr></thead>
+  <tbody>
+    <tr><td>Carlisle Bay snorkel gear rental</td><td style="color:#8888a0;">Barbados</td><td class="r">$20&ndash;30</td></tr>
+    <tr><td>Catamaran day cruise (Cool Runnings)</td><td style="color:#8888a0;">Barbados</td><td class="r">$160&ndash;200</td></tr>
+    <tr><td>Harrison's Cave tour</td><td style="color:#8888a0;">Barbados</td><td class="r">$60&ndash;70</td></tr>
+    <tr><td>Oistins Fish Fry dinner</td><td style="color:#8888a0;">Barbados</td><td class="r">$30&ndash;40</td></tr>
+    <tr><td>La Soufriere volcano guide</td><td style="color:#8888a0;">St. Vincent</td><td class="r">$80&ndash;100</td></tr>
+    <tr><td>Tobago Cays sailing day trip</td><td style="color:#8888a0;">Grenadines</td><td class="r">$200&ndash;300</td></tr>
+    <tr><td>Bequia ferry (roundtrip)</td><td style="color:#8888a0;">St. Vincent</td><td class="r">$20</td></tr>
+    <tr><td>Snorkel gear rental (SVG)</td><td style="color:#8888a0;">St. Vincent</td><td class="r">$20&ndash;30</td></tr>
+    <tr class="total"><td>Activities total</td><td></td><td class="r" style="color:#fff;">$590&ndash;790</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- FULL BUDGET -->
+<div class="section-label">Full Trip Budget (for 2 people)</div>
+<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;">
+<table class="budget">
+  <thead><tr><th>Category</th><th style="text-align:right;">Low</th><th style="text-align:right;">High</th></tr></thead>
+  <tbody>
+    <tr><td>Flights (3 legs open jaw, for 2)</td><td class="r">$1,666</td><td class="r">$1,666</td></tr>
+    <tr><td>Barbados Airbnb (4 nights)</td><td class="r">$635</td><td class="r">$635</td></tr>
+    <tr><td>SVG Airbnb (5 nights)</td><td class="r">$464</td><td class="r">$617</td></tr>
+    <tr><td>Rental car SVG (5 days @ $55)</td><td class="r">$275</td><td class="r">$275</td></tr>
+    <tr><td>SVG driving permit</td><td class="r">$65</td><td class="r">$65</td></tr>
+    <tr><td>Food &amp; drink (9 days)</td><td class="r">$270</td><td class="r">$470</td></tr>
+    <tr><td>Activities</td><td class="r">$590</td><td class="r">$790</td></tr>
+    <tr><td>Barbados taxis (4 days)</td><td class="r">$65</td><td class="r">$95</td></tr>
+    <tr><td>SVG gas</td><td class="r">$40</td><td class="r">$60</td></tr>
+    <tr><td>ORD parking / Uber</td><td class="r">$80</td><td class="r">$140</td></tr>
+    <tr><td>Tips, rum, groceries, misc</td><td class="r">$110</td><td class="r">$180</td></tr>
+    <tr><td>Travel insurance</td><td class="r">$100</td><td class="r">$150</td></tr>
+    <tr class="total"><td>Grand Total (for 2)</td><td class="r green">$4,360</td><td class="r green">$5,143</td></tr>
+    <tr class="total"><td>Per Person</td><td class="r" style="color:#fff;">$2,180</td><td class="r" style="color:#fff;">$2,572</td></tr>
+  </tbody>
+</table>
+</div>
+<div style="font-size:0.73rem;color:#4a4a5c;margin-top:8px;">~$4,750 for two, give or take $400. Lower end = Jenny's Place + cooking most meals. Higher end = Spirit of Valley + eating out + every activity. The open jaw + Delta return saved $268/pp vs the split-via-Barbados routing.</div>
+
+<!-- CHECKLIST -->
+<div class="check-box">
+  <h3>Still Need to Book</h3>
+  <ul>
+    <li>SVG Airbnb &mdash; pick Jenny's Place ($464) or Spirit of the Valley ($617)</li>
+    <li>Tobago Cays day trip &mdash; Friendship Rose schooner or local charter</li>
+    <li>La Soufriere volcano guide &mdash; arrange through your Airbnb host or local operator</li>
+    <li>Barbados catamaran cruise &mdash; Cool Runnings IV or Good Times</li>
+    <li>Rental car at SVD airport &mdash; $55/day, book ahead for May</li>
+    <li>SVG temporary driving permit ($65) &mdash; get at airport on arrival</li>
+  </ul>
+</div>
+
+<div style="margin-top:48px;padding:20px 0;border-top:1px solid rgba(255,255,255,0.06);font-size:0.7rem;color:#4a4a5c;text-align:center;">
+  Generated with /find-vacation skill &middot; March 25, 2026 &middot; Prices subject to change &mdash; verify via flight links before booking
+</div>
+
+</div><!-- /wrap -->
+</body>
+</html>

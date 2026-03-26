@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Southern Caribbean Cruise — May 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #06060a;
+    color: #e0e0e8;
+    font-family: 'Outfit', -apple-system, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .grain {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.5;
+  }
+
+  .page-header {
+    max-width: 1100px; margin: 0 auto; padding: 60px 24px 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .page-header h1 {
+    font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 0%, #a0a0b8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .page-header .subtitle { font-size: 0.95rem; color: #6b6b80; margin-top: 8px; font-weight: 300; }
+  .page-header .note {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: #4a4a5c; margin-top: 16px; letter-spacing: 0.03em;
+  }
+
+  .nav-bar {
+    max-width: 1100px; margin: 0 auto; padding: 24px 24px 0;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    color: #8888a0; padding: 10px 16px; border-radius: 8px; cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 500;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: rgba(255,255,255,0.15); color: #c0c0d0; }
+  .nav-btn.active { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #fff; }
+  .nav-btn .price { font-family: 'JetBrains Mono', monospace; margin-left: 6px; }
+
+  .options { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  .option-card {
+    display: none; background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px; padding: 40px; margin-bottom: 24px;
+    position: relative; overflow: hidden;
+  }
+  .option-card.visible { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .option-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+
+  .card-title h2 { font-size: 1.5rem; font-weight: 600; color: #fff; letter-spacing: -0.02em; }
+  .card-title .route-text { font-size: 0.85rem; color: #6b6b80; margin-top: 4px; font-weight: 300; }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 500;
+    padding: 5px 12px; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .tag-green { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+  .tag-blue { background: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+
+  .total-price {
+    font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 700;
+    color: #fff; text-align: right;
+  }
+  .total-price .label { font-size: 0.7rem; color: #6b6b80; font-weight: 400; display: block; margin-bottom: 2px; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 500;
+    color: #4a4a5c; text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 12px; margin-top: 28px;
+  }
+
+  /* Itinerary table */
+  .itin-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+  .itin-table th {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    color: #4a4a5c; text-transform: uppercase; letter-spacing: 0.08em;
+    text-align: left; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .itin-table td {
+    padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 0.85rem; color: #c0c0d0;
+  }
+  .itin-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .itin-table .new-country td { color: #fff; }
+  .itin-table .new-country .port-name { color: #34d399; font-weight: 600; }
+  .itin-table .country-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
+    background: rgba(52,211,153,0.15); color: #34d399; padding: 2px 8px;
+    border-radius: 4px; margin-left: 8px;
+  }
+  .itin-table .territory-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
+    color: #4a4a5c; margin-left: 8px;
+  }
+  .itin-table .day-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #6b6b80;
+  }
+  .itin-table .date-cell {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #8888a0;
+  }
+  .itin-table .sea-day td { color: #4a4a5c; font-style: italic; }
+
+  /* Pricing grid */
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px; margin-top: 8px;
+  }
+  .price-card {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 14px; text-align: center;
+  }
+  .price-card .cabin-type {
+    font-size: 0.72rem; color: #6b6b80; margin-bottom: 4px;
+  }
+  .price-card .cabin-price {
+    font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: #fff;
+  }
+  .price-card.best { border-color: rgba(52,211,153,0.3); }
+  .price-card.best .cabin-price { color: #34d399; }
+
+  /* Flight legs */
+  .flight-row {
+    display: grid; grid-template-columns: 1fr 1fr 100px 80px 80px 80px;
+    align-items: center; padding: 12px 16px; border-radius: 10px;
+    background: rgba(255,255,255,0.02); gap: 12px; margin-bottom: 2px;
+  }
+  .flight-row:hover { background: rgba(255,255,255,0.04); }
+  .flight-route .codes {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #fff; font-weight: 600;
+  }
+  .flight-route .date { font-size: 0.75rem; color: #6b6b80; margin-top: 1px; }
+  .flight-detail .airline { font-size: 0.8rem; color: #c0c0d0; }
+  .flight-detail .times {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #8888a0; margin-top: 1px;
+  }
+  .flight-duration { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #8888a0; }
+  .flight-stops { font-size: 0.8rem; color: #6b6b80; }
+  .flight-stops.nonstop { color: #34d399; }
+  .flight-price { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 600; color: #fff; }
+  .flight-link a {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: #60a5fa; text-decoration: none; opacity: 0.7; transition: opacity 0.15s;
+  }
+  .flight-link a:hover { opacity: 1; text-decoration: underline; }
+
+  /* Summary */
+  .card-summary {
+    margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+  }
+  .summary-item .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    color: #4a4a5c; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .summary-item .value { font-size: 0.9rem; color: #c0c0d0; margin-top: 4px; }
+
+  /* Context box */
+  .context-box {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; padding: 20px 24px; margin-top: 32px;
+  }
+  .context-box h3 {
+    font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 8px;
+  }
+  .context-box p { font-size: 0.82rem; color: #8888a0; line-height: 1.7; }
+
+  .booking-links {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px;
+  }
+  .booking-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.2);
+    color: #60a5fa; padding: 10px 18px; border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 500;
+    text-decoration: none; transition: all 0.2s; letter-spacing: 0.02em;
+  }
+  .booking-link:hover { background: rgba(96,165,250,0.15); border-color: rgba(96,165,250,0.4); color: #93bbfc; }
+  .booking-link.primary {
+    background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3); color: #34d399;
+  }
+  .booking-link.primary:hover { background: rgba(52,211,153,0.2); color: #5eead4; }
+
+  @media (max-width: 800px) {
+    .flight-row { grid-template-columns: 1fr; gap: 4px; }
+    .card-header { flex-direction: column; }
+    .total-price { text-align: left; }
+    .option-card { padding: 24px; }
+    .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="page-header">
+  <h1>Southern Caribbean Cruise &mdash; May 2026</h1>
+  <div class="subtitle">Royal Caribbean Rhapsody of the Seas &middot; 7 nights from San Juan &middot; 2 new countries each sailing</div>
+  <div class="note">Only 2 cruises in May 2026 hit independent Southern Caribbean countries (vs territories). All other lines repositioned to Alaska/Europe by mid-May. &middot; Prices validated March 25, 2026.</div>
+</div>
+
+<div class="nav-bar">
+  <button class="nav-btn active" onclick="show(0)">May 16: Antigua + Dominica <span class="price">from $1,307</span></button>
+  <button class="nav-btn" onclick="show(1)">May 23: Antigua + St. Kitts <span class="price">from ~$1,376</span></button>
+</div>
+
+<div class="options">
+
+<!-- OPTION A: May 16 -->
+<div class="option-card visible" id="opt-0">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <h2>Antigua + Dominica</h2>
+        <span class="tag tag-green">Best Value</span>
+      </div>
+      <div class="route-text">Royal Caribbean Rhapsody of the Seas &middot; 7 nights &middot; San Juan roundtrip &middot; Sat May 16 &ndash; Sat May 23</div>
+    </div>
+    <div class="total-price"><span class="label">All-in from (cruise + flights)</span>$1,307</div>
+  </div>
+
+  <div class="section-label">Cruise Itinerary</div>
+  <table class="itin-table">
+    <thead><tr><th>Day</th><th>Date</th><th>Port</th><th>Schedule</th></tr></thead>
+    <tbody>
+      <tr><td class="day-num">1</td><td class="date-cell">Sat, May 16</td><td>San Juan, Puerto Rico<span class="territory-tag">territory</span></td><td>Departs 6:00 PM</td></tr>
+      <tr><td class="day-num">2</td><td class="date-cell">Sun, May 17</td><td>Charlotte Amalie, St. Thomas<span class="territory-tag">USVI</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr><td class="day-num">3</td><td class="date-cell">Mon, May 18</td><td>Frederiksted, St. Croix<span class="territory-tag">USVI</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr><td class="day-num">4</td><td class="date-cell">Tue, May 19</td><td>Philipsburg, St. Maarten<span class="territory-tag">Dutch</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr class="new-country"><td class="day-num">5</td><td class="date-cell">Wed, May 20</td><td><span class="port-name">St. John's, Antigua</span><span class="country-tag">NEW COUNTRY</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr class="new-country"><td class="day-num">6</td><td class="date-cell">Thu, May 21</td><td><span class="port-name">Roseau, Dominica</span><span class="country-tag">NEW COUNTRY</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr class="sea-day"><td class="day-num">7</td><td class="date-cell">Fri, May 22</td><td>At Sea</td><td>&mdash;</td></tr>
+      <tr><td class="day-num">8</td><td class="date-cell">Sat, May 23</td><td>San Juan, Puerto Rico</td><td>Arrives AM</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-label">Cruise Pricing (per person, double occupancy)</div>
+  <div class="pricing-grid">
+    <div class="price-card best">
+      <div class="cabin-type">Inside</div>
+      <div class="cabin-price">$1,100</div>
+    </div>
+    <div class="price-card">
+      <div class="cabin-type">Inside (Direct Line)</div>
+      <div class="cabin-price">$628*</div>
+    </div>
+    <div class="price-card">
+      <div class="cabin-type">Balcony</div>
+      <div class="cabin-price">$2,369</div>
+    </div>
+  </div>
+
+  <div class="section-label">Book This Cruise</div>
+  <div class="booking-links">
+    <a href="https://cruiseline.com/cruise/7-night-southern-caribbean-san-juan-roundtrip-196316?saildate=2026-05-16" target="_blank" class="booking-link primary">View on Cruiseline.com &rarr;</a>
+    <a href="https://cruiseline.com/check/directlinecruises.com/4732765?c=2" target="_blank" class="booking-link">Book via DirectLine &rarr;</a>
+    <a href="https://www.royalcaribbean.com/cruises?search=ship%3ARH&sailMonth=2026-05" target="_blank" class="booking-link">Royal Caribbean (search Rhapsody May) &rarr;</a>
+    <a href="https://www.google.com/search?q=%22Rhapsody+of+the+Seas%22+%22May+16%22+2026+San+Juan+cruise+book" target="_blank" class="booking-link">Search Other Deals &rarr;</a>
+  </div>
+
+  <div class="section-label">Flights (ORD &harr; SJU)</div>
+  <div class="flight-row">
+    <div class="flight-route"><span class="codes">ORD &rarr; SJU</span><span class="date">Fri, May 15 (day before cruise)</span></div>
+    <div class="flight-detail"><span class="airline">Frontier</span><span class="times">7:52 PM &rarr; 4:01 AM+1</span></div>
+    <span class="flight-duration">7h 09m</span>
+    <span class="flight-stops">1 stop</span>
+    <span class="flight-price">$98</span>
+    <span class="flight-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+SJU+on+2026-05-15+one+way" target="_blank">Book &rarr;</a></span>
+  </div>
+  <div class="flight-row">
+    <div class="flight-route"><span class="codes">ORD &rarr; SJU</span><span class="date">Fri, May 15 (better option)</span></div>
+    <div class="flight-detail"><span class="airline">United</span><span class="times">2:38 PM &rarr; 8:34 PM</span></div>
+    <span class="flight-duration">4h 56m</span>
+    <span class="flight-stops nonstop">Nonstop</span>
+    <span class="flight-price">$157</span>
+    <span class="flight-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+SJU+on+2026-05-15+one+way" target="_blank">Book &rarr;</a></span>
+  </div>
+  <div class="flight-row">
+    <div class="flight-route"><span class="codes">SJU &rarr; ORD</span><span class="date">Sat, May 23 (cruise returns AM)</span></div>
+    <div class="flight-detail"><span class="airline">Frontier</span><span class="times">7:04 PM &rarr; 11:26 PM</span></div>
+    <span class="flight-duration">5h 22m</span>
+    <span class="flight-stops nonstop">Nonstop</span>
+    <span class="flight-price">$109</span>
+    <span class="flight-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SJU+to+ORD+on+2026-05-23+one+way" target="_blank">Book &rarr;</a></span>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Total all-in (inside + cheapest flights)</span><div class="value" style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;color:#34d399;font-weight:700;">$1,307</div></div>
+    <div class="summary-item"><span class="label">Total all-in (inside + nonstop flights)</span><div class="value" style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;color:#fff;font-weight:700;">$1,366</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Antigua &amp; Barbuda, Dominica</div></div>
+    <div class="summary-item"><span class="label">Trip dates</span><div class="value">Fri May 15 &ndash; Sat May 23 (8 nights total)</div></div>
+  </div>
+
+  <div class="context-box">
+    <h3>About the ports</h3>
+    <p><strong>Antigua</strong> &mdash; Nelson's Dockyard (UNESCO), Shirley Heights lookout, 365 beaches (one for every day of the year). English Harbour is stunning.<br>
+    <strong>Dominica</strong> &mdash; "The Nature Island." Boiling Lake (world's 2nd largest), Trafalgar Falls, Champagne Reef (volcanic bubbles while snorkeling), Emerald Pool rainforest. Least touristy island in the Caribbean.</p>
+  </div>
+</div>
+
+<!-- OPTION B: May 23 -->
+<div class="option-card" id="opt-1">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <h2>Antigua + St. Kitts &amp; Nevis</h2>
+        <span class="tag tag-blue">Alternative Dates</span>
+      </div>
+      <div class="route-text">Royal Caribbean Rhapsody of the Seas &middot; 7 nights &middot; San Juan roundtrip &middot; Sat May 23 &ndash; Sat May 30</div>
+    </div>
+    <div class="total-price"><span class="label">All-in from (cruise + flights)</span>$1,180</div>
+  </div>
+
+  <div class="section-label">Cruise Itinerary</div>
+  <table class="itin-table">
+    <thead><tr><th>Day</th><th>Date</th><th>Port</th><th>Schedule</th></tr></thead>
+    <tbody>
+      <tr><td class="day-num">1</td><td class="date-cell">Sat, May 23</td><td>San Juan, Puerto Rico<span class="territory-tag">territory</span></td><td>Departs PM</td></tr>
+      <tr><td class="day-num">2</td><td class="date-cell">Sun, May 24</td><td>Tortola, BVI<span class="territory-tag">British</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr><td class="day-num">3</td><td class="date-cell">Mon, May 25</td><td>Philipsburg, St. Maarten<span class="territory-tag">Dutch</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr class="new-country"><td class="day-num">4</td><td class="date-cell">Tue, May 26</td><td><span class="port-name">St. John's, Antigua</span><span class="country-tag">NEW COUNTRY</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr class="new-country"><td class="day-num">5</td><td class="date-cell">Wed, May 27</td><td><span class="port-name">Basseterre, St. Kitts</span><span class="country-tag">NEW COUNTRY</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr><td class="day-num">6</td><td class="date-cell">Thu, May 28</td><td>Frederiksted, St. Croix<span class="territory-tag">USVI</span></td><td>8:00 AM &ndash; 5:00 PM</td></tr>
+      <tr class="sea-day"><td class="day-num">7</td><td class="date-cell">Fri, May 29</td><td>At Sea</td><td>&mdash;</td></tr>
+      <tr><td class="day-num">8</td><td class="date-cell">Sat, May 30</td><td>San Juan, Puerto Rico</td><td>Arrives AM</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-label">Cruise Pricing (per person, double occupancy)</div>
+  <div class="pricing-grid">
+    <div class="price-card best">
+      <div class="cabin-type">Inside (most agencies)</div>
+      <div class="cabin-price">~$1,100</div>
+    </div>
+    <div class="price-card">
+      <div class="cabin-type">Oceanview</div>
+      <div class="cabin-price">$897+</div>
+    </div>
+    <div class="price-card">
+      <div class="cabin-type">Balcony</div>
+      <div class="cabin-price">$1,699</div>
+    </div>
+    <div class="price-card">
+      <div class="cabin-type">Suite</div>
+      <div class="cabin-price">$2,070</div>
+    </div>
+  </div>
+
+  <div class="section-label">Book This Cruise</div>
+  <div class="booking-links">
+    <a href="https://cruiseline.com/cruise/7-night-southern-caribbean-san-juan-roundtrip-196313?saildate=2026-05-23" target="_blank" class="booking-link primary">View on Cruiseline.com &rarr;</a>
+    <a href="https://cruiseline.com/check/directlinecruises.com/4732845?c=2" target="_blank" class="booking-link">Book via DirectLine &rarr;</a>
+    <a href="https://www.royalcaribbean.com/cruises?search=ship%3ARH&sailMonth=2026-05" target="_blank" class="booking-link">Royal Caribbean (search Rhapsody May) &rarr;</a>
+    <a href="https://www.google.com/search?q=%22Rhapsody+of+the+Seas%22+%22May+23%22+2026+San+Juan+cruise+book" target="_blank" class="booking-link">Search Other Deals &rarr;</a>
+  </div>
+
+  <div class="section-label">Flights (ORD &harr; SJU)</div>
+  <div class="flight-row">
+    <div class="flight-route"><span class="codes">ORD &rarr; SJU</span><span class="date">Fri, May 22 (day before cruise)</span></div>
+    <div class="flight-detail"><span class="airline">United / Frontier</span><span class="times">Nonstop options available</span></div>
+    <span class="flight-duration">~5h</span>
+    <span class="flight-stops nonstop">Nonstop</span>
+    <span class="flight-price">$157</span>
+    <span class="flight-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+SJU+on+2026-05-22+one+way" target="_blank">Book &rarr;</a></span>
+  </div>
+  <div class="flight-row">
+    <div class="flight-route"><span class="codes">SJU &rarr; ORD</span><span class="date">Sat, May 30 (cruise returns AM)</span></div>
+    <div class="flight-detail"><span class="airline">Frontier / Spirit</span><span class="times">Nonstop options available</span></div>
+    <span class="flight-duration">~5h</span>
+    <span class="flight-stops nonstop">Nonstop</span>
+    <span class="flight-price">$119</span>
+    <span class="flight-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SJU+to+ORD+on+2026-05-30+one+way" target="_blank">Book &rarr;</a></span>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Total all-in (inside + flights, estimated)</span><div class="value" style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;color:#60a5fa;font-weight:700;">~$1,376</div></div>
+    <div class="summary-item"><span class="label">Verify pricing</span><div class="value">Click Cruiseline.com link above to confirm current rates</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Antigua &amp; Barbuda, St. Kitts &amp; Nevis</div></div>
+    <div class="summary-item"><span class="label">Trip dates</span><div class="value">Fri May 22 &ndash; Sat May 30 (8 nights total)</div></div>
+  </div>
+
+  <div class="context-box">
+    <h3>About the ports</h3>
+    <p><strong>Antigua</strong> &mdash; Nelson's Dockyard (UNESCO), Shirley Heights lookout, 365 beaches. English Harbour is stunning.<br>
+    <strong>St. Kitts</strong> &mdash; Brimstone Hill Fortress (UNESCO), scenic railway circling the island, rainforest zip-lining, quiet beaches. Basseterre has great colonial architecture. Nevis (sister island) is a short ferry ride &mdash; even more peaceful.</p>
+  </div>
+
+  <div class="context-box" style="margin-top:12px;">
+    <h3>Oddity: Oceanview cheaper than Inside ($897 vs $904)</h3>
+    <p>This sometimes happens when inside cabins sell out and only higher-category insides remain. The $897 oceanview is actually the better deal here &mdash; more space, a window, and $7 cheaper.</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+function show(idx) {
+  document.querySelectorAll('.option-card').forEach(c => c.classList.remove('visible'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('opt-' + idx).classList.add('visible');
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+}
+</script>
+</body>
+</html>

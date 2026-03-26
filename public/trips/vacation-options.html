@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hawaii + Asia — Summer 2026 Flight Options</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #06060a;
+    color: #e0e0e8;
+    font-family: 'Outfit', -apple-system, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .grain {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.5;
+  }
+
+  .page-header {
+    max-width: 1100px; margin: 0 auto; padding: 60px 24px 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .page-header h1 {
+    font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 0%, #a0a0b8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.95rem; color: #6b6b80; margin-top: 8px; font-weight: 300;
+  }
+
+  .page-header .note {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: #4a4a5c; margin-top: 16px; letter-spacing: 0.03em;
+  }
+
+  /* Nav */
+  .nav-bar {
+    max-width: 1100px; margin: 0 auto; padding: 24px 24px 0;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    color: #8888a0; padding: 10px 16px; border-radius: 8px; cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 500;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: rgba(255,255,255,0.15); color: #c0c0d0; }
+  .nav-btn.active { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #fff; }
+  .nav-btn .price { font-family: 'JetBrains Mono', monospace; margin-left: 6px; }
+
+  /* Cards */
+  .options { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  .option-card {
+    display: none;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px; padding: 40px; margin-bottom: 24px;
+    position: relative; overflow: hidden;
+  }
+  .option-card.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .option-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+
+  .card-title h2 {
+    font-size: 1.5rem; font-weight: 600; color: #fff; letter-spacing: -0.02em;
+  }
+
+  .card-title .route-text {
+    font-size: 0.85rem; color: #6b6b80; margin-top: 4px; font-weight: 300;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 500;
+    padding: 5px 12px; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .tag-green { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+  .tag-blue { background: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+  .tag-purple { background: rgba(167,139,250,0.1); color: #a78bfa; border: 1px solid rgba(167,139,250,0.2); }
+  .tag-orange { background: rgba(251,146,60,0.1); color: #fb923c; border: 1px solid rgba(251,146,60,0.2); }
+  .tag-cyan { background: rgba(34,211,238,0.1); color: #22d3ee; border: 1px solid rgba(34,211,238,0.2); }
+
+  .total-price {
+    font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 700;
+    color: #fff; text-align: right;
+  }
+  .total-price .label { font-size: 0.7rem; color: #6b6b80; font-weight: 400; display: block; margin-bottom: 2px; }
+
+  /* Weather */
+  .weather-bar {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; padding: 8px 14px; margin-bottom: 28px;
+    font-size: 0.8rem; color: #8888a0;
+  }
+  .weather-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .weather-dot.good { background: #34d399; }
+  .weather-dot.ok { background: #fbbf24; }
+  .weather-dot.great { background: #22d3ee; }
+
+  /* Route visualization */
+  .route-viz {
+    display: flex; align-items: center; gap: 0; margin-bottom: 32px;
+    overflow-x: auto; padding-bottom: 8px;
+  }
+
+  .route-node {
+    display: flex; flex-direction: column; align-items: center; min-width: 60px;
+  }
+  .route-node .code {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; color: #fff;
+  }
+  .route-node .city {
+    font-size: 0.65rem; color: #6b6b80; margin-top: 2px; white-space: nowrap;
+  }
+
+  .route-line {
+    flex: 1; min-width: 40px; height: 1px; position: relative; margin: 0 4px;
+    border-top: 1px dashed rgba(255,255,255,0.15);
+  }
+  .route-line .stay {
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: #4a4a5c;
+    white-space: nowrap; background: #06060a; padding: 0 4px;
+  }
+
+  /* Flight legs */
+  .legs { display: flex; flex-direction: column; gap: 2px; }
+
+  .leg {
+    display: grid; grid-template-columns: 44px 1fr 1fr 100px 80px 70px 80px;
+    align-items: center; padding: 14px 16px; border-radius: 10px;
+    background: rgba(255,255,255,0.02); transition: background 0.15s;
+    gap: 12px;
+  }
+  .leg:hover { background: rgba(255,255,255,0.04); }
+
+  .leg-header {
+    display: grid; grid-template-columns: 44px 1fr 1fr 100px 80px 70px 80px;
+    padding: 8px 16px; gap: 12px; margin-bottom: 4px;
+  }
+  .leg-header span {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    color: #4a4a5c; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  .leg-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: #4a4a5c; font-weight: 500;
+  }
+
+  .leg-route {
+    display: flex; flex-direction: column;
+  }
+  .leg-route .codes {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #fff; font-weight: 600;
+  }
+  .leg-route .date {
+    font-size: 0.75rem; color: #6b6b80; margin-top: 1px;
+  }
+
+  .leg-flight {
+    display: flex; flex-direction: column;
+  }
+  .leg-flight .airline { font-size: 0.8rem; color: #c0c0d0; }
+  .leg-flight .times {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #8888a0; margin-top: 1px;
+  }
+
+  .leg-duration {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #8888a0;
+  }
+
+  .leg-stops { font-size: 0.8rem; color: #6b6b80; }
+  .leg-stops.nonstop { color: #34d399; }
+
+  .leg-price {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 600; color: #fff;
+  }
+
+  .leg-link a {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: #60a5fa; text-decoration: none; opacity: 0.7; transition: opacity 0.15s;
+  }
+  .leg-link a:hover { opacity: 1; text-decoration: underline; }
+
+  /* Warning */
+  .leg.flagged { border-left: 2px solid rgba(251,146,60,0.4); }
+  .flag-warn {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    color: #fb923c; margin-top: 2px;
+  }
+
+  /* Stay divider */
+  .stay-divider {
+    display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  }
+  .stay-divider .line { flex: 1; height: 1px; background: rgba(255,255,255,0.04); }
+  .stay-divider .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: #4a4a5c; white-space: nowrap;
+  }
+
+  /* Summary */
+  .card-summary {
+    margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+  }
+  .summary-item { }
+  .summary-item .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    color: #4a4a5c; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .summary-item .value { font-size: 0.9rem; color: #c0c0d0; margin-top: 4px; }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    .leg, .leg-header { grid-template-columns: 1fr; gap: 4px; }
+    .leg-header { display: none; }
+    .leg { padding: 16px; gap: 8px; }
+    .card-header { flex-direction: column; }
+    .total-price { text-align: left; }
+    .option-card { padding: 24px; }
+    .route-viz { gap: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="page-header">
+  <h1>Hawaii + Asia &mdash; Summer 2026</h1>
+  <div class="subtitle">Depart Chicago &middot; Hawaii through July 4 &middot; ~1 week in Asia &middot; Home by mid-July</div>
+  <div class="note">All prices USD, economy class &middot; Prices validated March 25, 2026 &middot; Click flight links to verify on Google Flights</div>
+</div>
+
+<div class="nav-bar">
+  <button class="nav-btn" onclick="show(0)">Manila + Singapore <span class="price">$1,539</span></button>
+  <button class="nav-btn active" onclick="show(1)">Fiji <span class="price">$1,377</span></button>
+  <button class="nav-btn" onclick="show(2)">Bali + Singapore <span class="price">$1,543</span></button>
+  <button class="nav-btn" onclick="show(3)">Manila + Cebu <span class="price">$1,607</span></button>
+  <button class="nav-btn" onclick="show(4)">Cebu <span class="price">$1,601</span></button>
+  <button class="nav-btn" onclick="show(5)">Lombok (skip Bali) <span class="price">$1,720</span></button>
+  <button class="nav-btn" onclick="show(6)">Komodo (skip Bali) <span class="price">$1,733</span></button>
+  <button class="nav-btn" onclick="show(7)">Lombok + Komodo <span class="price">$1,844</span></button>
+</div>
+
+<div class="options">
+
+<!-- OPTION 1: Manila + Singapore -->
+<div class="option-card" id="opt-0">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;"><h2>Manila + Singapore</h2> <span class="tag tag-green">Best Value</span></div>
+      <div class="route-text">2 new countries + overnight Tokyo &mdash; 19 days total</div>
+    </div>
+    <div class="total-price"><span class="label">Total flights</span>$1,539</div>
+  </div>
+
+  <div class="weather-bar"><span class="weather-dot ok"></span> Manila: rainy season, warm &nbsp;|&nbsp; <span class="weather-dot good"></span> Singapore: year-round fine</div>
+
+  <div class="route-viz">
+    <div class="route-node"><span class="code">ORD</span><span class="city">Chicago</span></div>
+    <div class="route-line"><span class="stay"></span></div>
+    <div class="route-node"><span class="code">HNL</span><span class="city">Hawaii</span></div>
+    <div class="route-line"><span class="stay">10 nights</span></div>
+    <div class="route-node"><span class="code">NRT</span><span class="city">Tokyo</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">MNL</span><span class="city">Manila</span></div>
+    <div class="route-line"><span class="stay">3 nights</span></div>
+    <div class="route-node"><span class="code">SIN</span><span class="city">Singapore</span></div>
+    <div class="route-line"><span class="stay">4 nights</span></div>
+    <div class="route-node"><span class="code">ORD</span><span class="city">Home</span></div>
+  </div>
+
+  <div class="leg-header">
+    <span>Leg</span><span>Route</span><span>Flight</span><span>Duration</span><span>Stops</span><span>Price</span><span></span>
+  </div>
+  <div class="legs">
+    <div class="leg">
+      <span class="leg-num">01</span>
+      <div class="leg-route"><span class="codes">ORD &rarr; HNL</span><span class="date">Thu, Jun 25</span></div>
+      <div class="leg-flight"><span class="airline">Delta</span><span class="times">7:35 AM &rarr; 4:45 PM</span></div>
+      <span class="leg-duration">14h 10m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$398</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+HNL+on+2026-06-25+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">10 nights in Hawaii &middot; Thu Jun 25 &ndash; Sun Jul 5</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">02</span>
+      <div class="leg-route"><span class="codes">HNL &rarr; NRT</span><span class="date">Sun, Jul 5</span></div>
+      <div class="leg-flight"><span class="airline">ZIPAIR (budget)</span><span class="times">9:50 AM &rarr; 1:05 PM+1</span></div>
+      <span class="leg-duration">8h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$234</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+HNL+to+NRT+on+2026-07-05+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">Overnight in Tokyo &middot; Mon Jul 6</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">03</span>
+      <div class="leg-route"><span class="codes">NRT &rarr; MNL</span><span class="date">Tue, Jul 7</span></div>
+      <div class="leg-flight"><span class="airline">Philippines AirAsia</span><span class="times">11:10 AM &rarr; 2:50 PM</span></div>
+      <span class="leg-duration">4h 40m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$133</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+NRT+to+MNL+on+2026-07-07+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">3 nights in Manila &middot; Tue Jul 7 &ndash; Fri Jul 10</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">04</span>
+      <div class="leg-route"><span class="codes">MNL &rarr; SIN</span><span class="date">Fri, Jul 10</span></div>
+      <div class="leg-flight"><span class="airline">Scoot</span><span class="times">6:55 AM &rarr; 10:40 AM</span></div>
+      <span class="leg-duration">3h 45m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$130</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+MNL+to+SIN+on+2026-07-10+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">4 nights in Singapore &middot; Fri Jul 10 &ndash; Tue Jul 14</span><div class="line"></div></div>
+    <div class="leg flagged">
+      <span class="leg-num">05</span>
+      <div class="leg-route"><span class="codes">SIN &rarr; ORD</span><span class="date">Tue, Jul 14</span><span class="flag-warn">~25h travel day</span></div>
+      <div class="leg-flight"><span class="airline">JAL / American</span><span class="times">Check link for times</span></div>
+      <span class="leg-duration">~25h</span>
+      <span class="leg-stops">2 stops</span>
+      <span class="leg-price">$644</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SIN+to+ORD+on+2026-07-14+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Trip length</span><div class="value">19 days (Jun 25 &ndash; Jul 14)</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Philippines, Singapore (+Tokyo night)</div></div>
+    <div class="summary-item"><span class="label">Layover quality</span><div class="value">Legs 1&ndash;4 all good. Return leg ~25h.</div></div>
+  </div>
+</div>
+
+<!-- OPTION 2: Fiji -->
+<div class="option-card visible" id="opt-1">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;"><h2>Fiji</h2> <span class="tag tag-blue">Cleanest Itinerary</span></div>
+      <div class="route-text">Route A (Fiji first, then Hawaii) &mdash; only 3 flights, zero rough legs &mdash; 16 days total</div>
+    </div>
+    <div class="total-price"><span class="label">Total flights</span>$1,377</div>
+  </div>
+
+  <div class="weather-bar"><span class="weather-dot great"></span> Fiji: dry season &mdash; sunny, perfect</div>
+
+  <div class="route-viz">
+    <div class="route-node"><span class="code">ORD</span><span class="city">Chicago</span></div>
+    <div class="route-line"></div>
+    <div class="route-node"><span class="code">NAN</span><span class="city">Fiji</span></div>
+    <div class="route-line"><span class="stay">8 nights</span></div>
+    <div class="route-node"><span class="code">HNL</span><span class="city">Hawaii</span></div>
+    <div class="route-line"><span class="stay">8 nights</span></div>
+    <div class="route-node"><span class="code">ORD</span><span class="city">Home</span></div>
+  </div>
+
+  <div class="leg-header">
+    <span>Leg</span><span>Route</span><span>Flight</span><span>Duration</span><span>Stops</span><span>Price</span><span></span>
+  </div>
+  <div class="legs">
+    <div class="leg">
+      <span class="leg-num">01</span>
+      <div class="leg-route"><span class="codes">ORD &rarr; NAN</span><span class="date">Sat, Jun 20</span></div>
+      <div class="leg-flight"><span class="airline">American / Fiji Airways</span><span class="times">via LAX</span></div>
+      <span class="leg-duration">17h 48m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$501</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+NAN+on+2026-06-20+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">8 nights in Fiji &middot; Sat Jun 20 &ndash; Sun Jun 28</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">02</span>
+      <div class="leg-route"><span class="codes">NAN &rarr; HNL</span><span class="date">Sun, Jun 28</span></div>
+      <div class="leg-flight"><span class="airline">Fiji Airways</span><span class="times">Nonstop to Honolulu</span></div>
+      <span class="leg-duration">6h 35m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$478</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+NAN+to+HNL+on+2026-06-28+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">8 nights in Hawaii &middot; Sun Jun 28 &ndash; Mon Jul 6</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">03</span>
+      <div class="leg-route"><span class="codes">HNL &rarr; ORD</span><span class="date">Mon, Jul 6</span></div>
+      <div class="leg-flight"><span class="airline">Delta</span><span class="times">Early morning departure</span></div>
+      <span class="leg-duration">11h 18m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$398</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+HNL+to+ORD+on+2026-07-06+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Trip length</span><div class="value">16 days (Jun 20 &ndash; Jul 6)</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Fiji</div></div>
+    <div class="summary-item"><span class="label">Layover quality</span><div class="value">All good. No overnight layovers. Nonstop Fiji&rarr;Hawaii.</div></div>
+    <div class="summary-item"><span class="label">Why this one</span><div class="value">Simplest routing. 3 flights. Dry season. Zero pain.</div></div>
+  </div>
+</div>
+
+<!-- OPTION 3: Bali + Singapore -->
+<div class="option-card" id="opt-2">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;"><h2>Bali + Singapore</h2> <span class="tag tag-orange">Peak Dry Season</span></div>
+      <div class="route-text">2 new countries + overnight Tokyo &mdash; 19 days total</div>
+    </div>
+    <div class="total-price"><span class="label">Total flights</span>$1,543</div>
+  </div>
+
+  <div class="weather-bar"><span class="weather-dot great"></span> Bali: DRY SEASON &mdash; best weather of the year, 27C &nbsp;|&nbsp; <span class="weather-dot good"></span> Singapore: year-round fine</div>
+
+  <div class="route-viz">
+    <div class="route-node"><span class="code">ORD</span><span class="city">Chicago</span></div>
+    <div class="route-line"></div>
+    <div class="route-node"><span class="code">HNL</span><span class="city">Hawaii</span></div>
+    <div class="route-line"><span class="stay">10 nights</span></div>
+    <div class="route-node"><span class="code">NRT</span><span class="city">Tokyo</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">DPS</span><span class="city">Bali</span></div>
+    <div class="route-line"><span class="stay">3 nights</span></div>
+    <div class="route-node"><span class="code">SIN</span><span class="city">Singapore</span></div>
+    <div class="route-line"><span class="stay">3 nights</span></div>
+    <div class="route-node"><span class="code">ORD</span><span class="city">Home</span></div>
+  </div>
+
+  <div class="leg-header">
+    <span>Leg</span><span>Route</span><span>Flight</span><span>Duration</span><span>Stops</span><span>Price</span><span></span>
+  </div>
+  <div class="legs">
+    <div class="leg">
+      <span class="leg-num">01</span>
+      <div class="leg-route"><span class="codes">ORD &rarr; HNL</span><span class="date">Thu, Jun 25</span></div>
+      <div class="leg-flight"><span class="airline">Delta</span><span class="times">7:35 AM &rarr; 4:45 PM</span></div>
+      <span class="leg-duration">14h 10m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$398</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+HNL+on+2026-06-25+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">10 nights in Hawaii &middot; Thu Jun 25 &ndash; Sun Jul 5</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">02</span>
+      <div class="leg-route"><span class="codes">HNL &rarr; NRT</span><span class="date">Sun, Jul 5</span></div>
+      <div class="leg-flight"><span class="airline">ZIPAIR (budget)</span><span class="times">9:50 AM &rarr; 1:05 PM+1</span></div>
+      <span class="leg-duration">8h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$234</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+HNL+to+NRT+on+2026-07-05+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">Overnight in Tokyo &middot; Mon Jul 6</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">03</span>
+      <div class="leg-route"><span class="codes">NRT &rarr; DPS</span><span class="date">Tue, Jul 7</span></div>
+      <div class="leg-flight"><span class="airline">Vietjet</span><span class="times">8:55 AM &rarr; 12:55 PM+1</span></div>
+      <span class="leg-duration">29h</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$213</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+NRT+to+DPS+on+2026-07-07+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">3 nights in Bali &middot; Wed Jul 8 &ndash; Sat Jul 11</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">04</span>
+      <div class="leg-route"><span class="codes">DPS &rarr; SIN</span><span class="date">Sat, Jul 11</span></div>
+      <div class="leg-flight"><span class="airline">Indonesia AirAsia</span><span class="times">7:25 PM &rarr; 10:05 PM</span></div>
+      <span class="leg-duration">2h 40m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$54</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+DPS+to+SIN+on+2026-07-11+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">3 nights in Singapore &middot; Sat Jul 11 &ndash; Tue Jul 14</span><div class="line"></div></div>
+    <div class="leg flagged">
+      <span class="leg-num">05</span>
+      <div class="leg-route"><span class="codes">SIN &rarr; ORD</span><span class="date">Tue, Jul 14</span><span class="flag-warn">~25h travel day</span></div>
+      <div class="leg-flight"><span class="airline">JAL / American</span><span class="times">Check link for times</span></div>
+      <span class="leg-duration">~25h</span>
+      <span class="leg-stops">2 stops</span>
+      <span class="leg-price">$644</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SIN+to+ORD+on+2026-07-14+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Trip length</span><div class="value">19 days (Jun 25 &ndash; Jul 14)</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Indonesia (Bali), Singapore (+Tokyo night)</div></div>
+    <div class="summary-item"><span class="label">Layover quality</span><div class="value">Legs 1&ndash;4 all good. Return ~25h.</div></div>
+    <div class="summary-item"><span class="label">Why this one</span><div class="value">Peak dry season Bali + world-class Singapore food. $54 hop.</div></div>
+  </div>
+</div>
+
+<!-- OPTION 4: Manila + Cebu -->
+<div class="option-card" id="opt-3">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;"><h2>Manila + Cebu</h2> <span class="tag tag-purple">Island Hopping</span></div>
+      <div class="route-text">2 Philippine islands + overnight Tokyo &mdash; 18 days total</div>
+    </div>
+    <div class="total-price"><span class="label">Total flights</span>$1,607</div>
+  </div>
+
+  <div class="weather-bar"><span class="weather-dot ok"></span> Philippines: rainy season but warm, beaches still great</div>
+
+  <div class="route-viz">
+    <div class="route-node"><span class="code">ORD</span><span class="city">Chicago</span></div>
+    <div class="route-line"></div>
+    <div class="route-node"><span class="code">HNL</span><span class="city">Hawaii</span></div>
+    <div class="route-line"><span class="stay">10 nights</span></div>
+    <div class="route-node"><span class="code">NRT</span><span class="city">Tokyo</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">MNL</span><span class="city">Manila</span></div>
+    <div class="route-line"><span class="stay">3 nights</span></div>
+    <div class="route-node"><span class="code">CEB</span><span class="city">Cebu</span></div>
+    <div class="route-line"><span class="stay">3 nights</span></div>
+    <div class="route-node"><span class="code">ORD</span><span class="city">Home</span></div>
+  </div>
+
+  <div class="leg-header">
+    <span>Leg</span><span>Route</span><span>Flight</span><span>Duration</span><span>Stops</span><span>Price</span><span></span>
+  </div>
+  <div class="legs">
+    <div class="leg">
+      <span class="leg-num">01</span>
+      <div class="leg-route"><span class="codes">ORD &rarr; HNL</span><span class="date">Thu, Jun 25</span></div>
+      <div class="leg-flight"><span class="airline">Delta</span><span class="times">7:35 AM &rarr; 4:45 PM</span></div>
+      <span class="leg-duration">14h 10m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$398</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+HNL+on+2026-06-25+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">10 nights in Hawaii &middot; Thu Jun 25 &ndash; Sun Jul 5</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">02</span>
+      <div class="leg-route"><span class="codes">HNL &rarr; NRT</span><span class="date">Sun, Jul 5</span></div>
+      <div class="leg-flight"><span class="airline">ZIPAIR (budget)</span><span class="times">9:50 AM &rarr; 1:05 PM+1</span></div>
+      <span class="leg-duration">8h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$234</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+HNL+to+NRT+on+2026-07-05+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">Overnight in Tokyo &middot; Mon Jul 6</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">03</span>
+      <div class="leg-route"><span class="codes">NRT &rarr; MNL</span><span class="date">Tue, Jul 7</span></div>
+      <div class="leg-flight"><span class="airline">Cebu Pacific</span><span class="times">7:15 PM &rarr; 11:20 PM</span></div>
+      <span class="leg-duration">5h 05m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$133</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+NRT+to+MNL+on+2026-07-07+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">3 nights in Manila &middot; Tue Jul 7 &ndash; Fri Jul 10</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">04</span>
+      <div class="leg-route"><span class="codes">MNL &rarr; CEB</span><span class="date">Fri, Jul 10</span></div>
+      <div class="leg-flight"><span class="airline">Philippines AirAsia</span><span class="times">4:00 PM &rarr; 5:25 PM</span></div>
+      <span class="leg-duration">1h 25m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$24</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+MNL+to+CEB+on+2026-07-10+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">3 nights in Cebu &middot; Fri Jul 10 &ndash; Mon Jul 13</span><div class="line"></div></div>
+    <div class="leg flagged">
+      <span class="leg-num">05</span>
+      <div class="leg-route"><span class="codes">CEB &rarr; ORD</span><span class="date">Mon, Jul 13</span><span class="flag-warn">31h travel day</span></div>
+      <div class="leg-flight"><span class="airline">EVA Air / Alaska</span><span class="times">12:15 PM &rarr; 6:20 AM+1</span></div>
+      <span class="leg-duration">31h 05m</span>
+      <span class="leg-stops">2 stops</span>
+      <span class="leg-price">$818</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+CEB+to+ORD+on+2026-07-13+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Trip length</span><div class="value">18 days (Jun 25 &ndash; Jul 13)</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Philippines (2 islands) + Tokyo night</div></div>
+    <div class="summary-item"><span class="label">Layover quality</span><div class="value">Legs 1&ndash;4 great. Return is 31h &mdash; rough.</div></div>
+    <div class="summary-item"><span class="label">The $24 hop</span><div class="value">Manila&rarr;Cebu is 1h 25m for twenty-five dollars.</div></div>
+  </div>
+</div>
+
+<!-- OPTION 5: Cebu Only -->
+<div class="option-card" id="opt-4">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;"><h2>Cebu</h2> <span class="tag tag-cyan">Island Paradise</span></div>
+      <div class="route-text">1 new country + overnight Tokyo + full week in Cebu &mdash; 18 days total</div>
+    </div>
+    <div class="total-price"><span class="label">Total flights</span>$1,601</div>
+  </div>
+
+  <div class="weather-bar"><span class="weather-dot ok"></span> Cebu: mixed season &mdash; rain possible but beaches still great, warm</div>
+
+  <div class="route-viz">
+    <div class="route-node"><span class="code">ORD</span><span class="city">Chicago</span></div>
+    <div class="route-line"></div>
+    <div class="route-node"><span class="code">HNL</span><span class="city">Hawaii</span></div>
+    <div class="route-line"><span class="stay">10 nights</span></div>
+    <div class="route-node"><span class="code">NRT</span><span class="city">Tokyo</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">CEB</span><span class="city">Cebu</span></div>
+    <div class="route-line"><span class="stay">6 nights</span></div>
+    <div class="route-node"><span class="code">ORD</span><span class="city">Home</span></div>
+  </div>
+
+  <div class="leg-header">
+    <span>Leg</span><span>Route</span><span>Flight</span><span>Duration</span><span>Stops</span><span>Price</span><span></span>
+  </div>
+  <div class="legs">
+    <div class="leg">
+      <span class="leg-num">01</span>
+      <div class="leg-route"><span class="codes">ORD &rarr; HNL</span><span class="date">Thu, Jun 25</span></div>
+      <div class="leg-flight"><span class="airline">Delta</span><span class="times">7:35 AM &rarr; 4:45 PM</span></div>
+      <span class="leg-duration">14h 10m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$398</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+HNL+on+2026-06-25+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">10 nights in Hawaii &middot; Thu Jun 25 &ndash; Sun Jul 5</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">02</span>
+      <div class="leg-route"><span class="codes">HNL &rarr; NRT</span><span class="date">Sun, Jul 5</span></div>
+      <div class="leg-flight"><span class="airline">ZIPAIR (budget)</span><span class="times">9:50 AM &rarr; 1:05 PM+1</span></div>
+      <span class="leg-duration">8h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$234</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+HNL+to+NRT+on+2026-07-05+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">Overnight in Tokyo &middot; Mon Jul 6</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">03</span>
+      <div class="leg-route"><span class="codes">NRT &rarr; CEB</span><span class="date">Tue, Jul 7</span></div>
+      <div class="leg-flight"><span class="airline">Philippines AirAsia</span><span class="times">11:10 AM &rarr; 12:35 AM+1 (via MNL)</span></div>
+      <span class="leg-duration">14h 25m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$151</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+NRT+to+CEB+on+2026-07-07+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">6 nights in Cebu &middot; Tue Jul 7 &ndash; Mon Jul 13</span><div class="line"></div></div>
+    <div class="leg flagged">
+      <span class="leg-num">04</span>
+      <div class="leg-route"><span class="codes">CEB &rarr; ORD</span><span class="date">Mon, Jul 13</span><span class="flag-warn">31h travel day</span></div>
+      <div class="leg-flight"><span class="airline">EVA Air / Alaska</span><span class="times">12:15 PM &rarr; 6:20 AM+1</span></div>
+      <span class="leg-duration">31h 05m</span>
+      <span class="leg-stops">2 stops</span>
+      <span class="leg-price">$818</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+CEB+to+ORD+on+2026-07-13+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Trip length</span><div class="value">18 days (Jun 25 &ndash; Jul 13)</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Philippines + Tokyo night</div></div>
+    <div class="summary-item"><span class="label">Layover quality</span><div class="value">Legs 1&ndash;3 all great. Return is 31h.</div></div>
+    <div class="summary-item"><span class="label">Why this one</span><div class="value">Full week in Cebu. Whale sharks, island hopping, beaches. Simpler than 2-country options.</div></div>
+  </div>
+</div>
+
+<!-- OPTION 6: Lombok (skip Bali) -->
+<div class="option-card" id="opt-5">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;"><h2>Lombok / Gili Islands</h2> <span class="tag tag-cyan">Skip Bali</span></div>
+      <div class="route-text">Via Singapore hub &mdash; Gili Islands, sea turtles, no cars &mdash; 19 days total</div>
+    </div>
+    <div class="total-price"><span class="label">Total flights</span>$1,720</div>
+  </div>
+
+  <div class="weather-bar"><span class="weather-dot great"></span> Lombok: DRY SEASON &mdash; perfect beach weather, 28C</div>
+
+  <div class="route-viz">
+    <div class="route-node"><span class="code">ORD</span><span class="city">Chicago</span></div>
+    <div class="route-line"></div>
+    <div class="route-node"><span class="code">HNL</span><span class="city">Hawaii</span></div>
+    <div class="route-line"><span class="stay">10 nights</span></div>
+    <div class="route-node"><span class="code">NRT</span><span class="city">Tokyo</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">SIN</span><span class="city">Singapore</span></div>
+    <div class="route-line"><span class="stay">transit</span></div>
+    <div class="route-node"><span class="code">LOP</span><span class="city">Lombok</span></div>
+    <div class="route-line"><span class="stay">5 nights</span></div>
+    <div class="route-node"><span class="code">SIN</span><span class="city">Singapore</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">ORD</span><span class="city">Home</span></div>
+  </div>
+
+  <div class="leg-header">
+    <span>Leg</span><span>Route</span><span>Flight</span><span>Duration</span><span>Stops</span><span>Price</span><span></span>
+  </div>
+  <div class="legs">
+    <div class="leg">
+      <span class="leg-num">01</span>
+      <div class="leg-route"><span class="codes">ORD &rarr; HNL</span><span class="date">Thu, Jun 25</span></div>
+      <div class="leg-flight"><span class="airline">Delta</span><span class="times">2:45 PM &rarr; 9:14 PM</span></div>
+      <span class="leg-duration">11h 29m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$398</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+HNL+on+2026-06-25+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">10 nights in Hawaii &middot; Thu Jun 25 &ndash; Sun Jul 5</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">02</span>
+      <div class="leg-route"><span class="codes">HNL &rarr; NRT</span><span class="date">Sun, Jul 5</span></div>
+      <div class="leg-flight"><span class="airline">ZIPAIR (budget)</span><span class="times">9:50 AM &rarr; 1:05 PM+1</span></div>
+      <span class="leg-duration">8h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$234</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+HNL+to+NRT+on+2026-07-05+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">Overnight in Tokyo &middot; Mon Jul 6</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">03</span>
+      <div class="leg-route"><span class="codes">NRT &rarr; SIN</span><span class="date">Tue, Jul 7</span></div>
+      <div class="leg-flight"><span class="airline">Scoot</span><span class="times">Nonstop ~7h</span></div>
+      <span class="leg-duration">7h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$119</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+NRT+to+SIN+on+2026-07-07+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">1 night in Singapore (transit + food crawl) &middot; Tue Jul 7</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">04</span>
+      <div class="leg-route"><span class="codes">SIN &rarr; LOP</span><span class="date">Wed, Jul 8</span></div>
+      <div class="leg-flight"><span class="airline">Citilink</span><span class="times">10:10 AM &rarr; 4:55 PM</span></div>
+      <span class="leg-duration">6h 45m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$186</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SIN+to+LOP+on+2026-07-08+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">5 nights in Lombok / Gili Islands &middot; Wed Jul 8 &ndash; Sun Jul 12</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">05</span>
+      <div class="leg-route"><span class="codes">LOP &rarr; SIN</span><span class="date">Sun, Jul 12</span></div>
+      <div class="leg-flight"><span class="airline">Budget carrier</span><span class="times">Check link for times</span></div>
+      <span class="leg-duration">~3h</span>
+      <span class="leg-stops">Varies</span>
+      <span class="leg-price">$139</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+LOP+to+SIN+on+2026-07-12+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">1 night in Singapore &middot; Sun Jul 12</span><div class="line"></div></div>
+    <div class="leg flagged">
+      <span class="leg-num">06</span>
+      <div class="leg-route"><span class="codes">SIN &rarr; ORD</span><span class="date">Tue, Jul 14</span><span class="flag-warn">~25h travel day</span></div>
+      <div class="leg-flight"><span class="airline">JAL / American</span><span class="times">Check link for times</span></div>
+      <span class="leg-duration">~25h</span>
+      <span class="leg-stops">2 stops</span>
+      <span class="leg-price">$644</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SIN+to+ORD+on+2026-07-14+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Trip length</span><div class="value">19 days (Jun 25 &ndash; Jul 14)</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Indonesia (Lombok), Singapore (transit) + Tokyo night</div></div>
+    <div class="summary-item"><span class="label">What is Lombok</span><div class="value">Island next to Bali, way less touristy. Gili Islands: car-free, crystal water, sea turtles. Mt. Rinjani volcano. Empty surf beaches. Think Bali 20 years ago.</div></div>
+  </div>
+</div>
+
+<!-- OPTION 7: Komodo (skip Bali) -->
+<div class="option-card" id="opt-6">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;"><h2>Komodo / Flores</h2> <span class="tag tag-orange">Skip Bali &middot; Adventure</span></div>
+      <div class="route-text">Via Singapore hub &mdash; Komodo dragons, Pink Beach, manta rays &mdash; 19 days total</div>
+    </div>
+    <div class="total-price"><span class="label">Total flights</span>$1,733</div>
+  </div>
+
+  <div class="weather-bar"><span class="weather-dot great"></span> Komodo/Flores: DRY SEASON &mdash; best visibility for snorkeling, 27C</div>
+
+  <div class="route-viz">
+    <div class="route-node"><span class="code">ORD</span><span class="city">Chicago</span></div>
+    <div class="route-line"></div>
+    <div class="route-node"><span class="code">HNL</span><span class="city">Hawaii</span></div>
+    <div class="route-line"><span class="stay">10 nights</span></div>
+    <div class="route-node"><span class="code">NRT</span><span class="city">Tokyo</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">SIN</span><span class="city">Singapore</span></div>
+    <div class="route-line"><span class="stay">transit</span></div>
+    <div class="route-node"><span class="code">LBJ</span><span class="city">Komodo</span></div>
+    <div class="route-line"><span class="stay">4 nights</span></div>
+    <div class="route-node"><span class="code">SIN</span><span class="city">Singapore</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">ORD</span><span class="city">Home</span></div>
+  </div>
+
+  <div class="leg-header">
+    <span>Leg</span><span>Route</span><span>Flight</span><span>Duration</span><span>Stops</span><span>Price</span><span></span>
+  </div>
+  <div class="legs">
+    <div class="leg">
+      <span class="leg-num">01</span>
+      <div class="leg-route"><span class="codes">ORD &rarr; HNL</span><span class="date">Thu, Jun 25</span></div>
+      <div class="leg-flight"><span class="airline">Delta</span><span class="times">2:45 PM &rarr; 9:14 PM</span></div>
+      <span class="leg-duration">11h 29m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$398</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+HNL+on+2026-06-25+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">10 nights in Hawaii &middot; Thu Jun 25 &ndash; Sun Jul 5</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">02</span>
+      <div class="leg-route"><span class="codes">HNL &rarr; NRT</span><span class="date">Sun, Jul 5</span></div>
+      <div class="leg-flight"><span class="airline">ZIPAIR (budget)</span><span class="times">9:50 AM &rarr; 1:05 PM+1</span></div>
+      <span class="leg-duration">8h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$234</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+HNL+to+NRT+on+2026-07-05+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">Overnight in Tokyo &middot; Mon Jul 6</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">03</span>
+      <div class="leg-route"><span class="codes">NRT &rarr; SIN</span><span class="date">Tue, Jul 7</span></div>
+      <div class="leg-flight"><span class="airline">Scoot</span><span class="times">Nonstop ~7h</span></div>
+      <span class="leg-duration">7h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$119</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+NRT+to+SIN+on+2026-07-07+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">1 night in Singapore (transit) &middot; Tue Jul 7</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">04</span>
+      <div class="leg-route"><span class="codes">SIN &rarr; LBJ</span><span class="date">Wed, Jul 8</span></div>
+      <div class="leg-flight"><span class="airline">Scoot / Citilink</span><span class="times">Check link for nonstop ~3.5h</span></div>
+      <span class="leg-duration">3h 30m</span>
+      <span class="leg-stops nonstop">Nonstop available</span>
+      <span class="leg-price">$187</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SIN+to+LBJ+on+2026-07-08+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">4 nights in Komodo / Flores &middot; Wed Jul 8 &ndash; Sun Jul 12</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">05</span>
+      <div class="leg-route"><span class="codes">LBJ &rarr; SIN</span><span class="date">Sun, Jul 12</span></div>
+      <div class="leg-flight"><span class="airline">Citilink</span><span class="times">1:15 PM &rarr; 8:00 PM</span></div>
+      <span class="leg-duration">6h 45m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$151</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+LBJ+to+SIN+on+2026-07-12+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">1 night in Singapore &middot; Sun Jul 12</span><div class="line"></div></div>
+    <div class="leg flagged">
+      <span class="leg-num">06</span>
+      <div class="leg-route"><span class="codes">SIN &rarr; ORD</span><span class="date">Tue, Jul 14</span><span class="flag-warn">~25h travel day</span></div>
+      <div class="leg-flight"><span class="airline">JAL / American</span><span class="times">Check link for times</span></div>
+      <span class="leg-duration">~25h</span>
+      <span class="leg-stops">2 stops</span>
+      <span class="leg-price">$644</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SIN+to+ORD+on+2026-07-14+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Trip length</span><div class="value">19 days (Jun 25 &ndash; Jul 14)</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Indonesia (Komodo/Flores), Singapore (transit) + Tokyo night</div></div>
+    <div class="summary-item"><span class="label">What is Komodo</span><div class="value">Komodo dragons (actual dragons), Pink Beach, manta ray snorkeling, Padar Island. Remote, adventurous, zero tourist crowds. Peak dry season = best visibility.</div></div>
+  </div>
+</div>
+
+<!-- OPTION 8: Lombok + Komodo -->
+<div class="option-card" id="opt-7">
+  <div class="card-header">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:12px;"><h2>Lombok + Komodo</h2> <span class="tag tag-purple">Full Archipelago</span></div>
+      <div class="route-text">Via Singapore hub &mdash; Gili Islands + Komodo dragons &mdash; skip Bali entirely &mdash; 19 days</div>
+    </div>
+    <div class="total-price"><span class="label">Total flights</span>$1,844</div>
+  </div>
+
+  <div class="weather-bar"><span class="weather-dot great"></span> Both: DRY SEASON &mdash; perfect weather across the Lesser Sundas</div>
+
+  <div class="route-viz">
+    <div class="route-node"><span class="code">ORD</span><span class="city">Chicago</span></div>
+    <div class="route-line"></div>
+    <div class="route-node"><span class="code">HNL</span><span class="city">Hawaii</span></div>
+    <div class="route-line"><span class="stay">10 nights</span></div>
+    <div class="route-node"><span class="code">NRT</span><span class="city">Tokyo</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">SIN</span><span class="city">Singapore</span></div>
+    <div class="route-line"><span class="stay">transit</span></div>
+    <div class="route-node"><span class="code">LOP</span><span class="city">Lombok</span></div>
+    <div class="route-line"><span class="stay">2 nights</span></div>
+    <div class="route-node"><span class="code">LBJ</span><span class="city">Komodo</span></div>
+    <div class="route-line"><span class="stay">2 nights</span></div>
+    <div class="route-node"><span class="code">SIN</span><span class="city">Singapore</span></div>
+    <div class="route-line"><span class="stay">1 night</span></div>
+    <div class="route-node"><span class="code">ORD</span><span class="city">Home</span></div>
+  </div>
+
+  <div class="leg-header">
+    <span>Leg</span><span>Route</span><span>Flight</span><span>Duration</span><span>Stops</span><span>Price</span><span></span>
+  </div>
+  <div class="legs">
+    <div class="leg">
+      <span class="leg-num">01</span>
+      <div class="leg-route"><span class="codes">ORD &rarr; HNL</span><span class="date">Thu, Jun 25</span></div>
+      <div class="leg-flight"><span class="airline">Delta</span><span class="times">2:45 PM &rarr; 9:14 PM</span></div>
+      <span class="leg-duration">11h 29m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$398</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+HNL+on+2026-06-25+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">10 nights in Hawaii &middot; Thu Jun 25 &ndash; Sun Jul 5</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">02</span>
+      <div class="leg-route"><span class="codes">HNL &rarr; NRT</span><span class="date">Sun, Jul 5</span></div>
+      <div class="leg-flight"><span class="airline">ZIPAIR (budget)</span><span class="times">9:50 AM &rarr; 1:05 PM+1</span></div>
+      <span class="leg-duration">8h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$234</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+HNL+to+NRT+on+2026-07-05+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">Overnight in Tokyo &middot; Mon Jul 6</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">03</span>
+      <div class="leg-route"><span class="codes">NRT &rarr; SIN</span><span class="date">Tue, Jul 7</span></div>
+      <div class="leg-flight"><span class="airline">Scoot</span><span class="times">Nonstop ~7h</span></div>
+      <span class="leg-duration">7h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$119</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+NRT+to+SIN+on+2026-07-07+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">1 night in Singapore (transit) &middot; Tue Jul 7</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">04</span>
+      <div class="leg-route"><span class="codes">SIN &rarr; LOP</span><span class="date">Wed, Jul 8</span></div>
+      <div class="leg-flight"><span class="airline">Citilink</span><span class="times">10:10 AM &rarr; 4:55 PM</span></div>
+      <span class="leg-duration">6h 45m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$186</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SIN+to+LOP+on+2026-07-08+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">2 nights in Lombok / Gili Islands &middot; Wed Jul 8 &ndash; Fri Jul 10</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">05</span>
+      <div class="leg-route"><span class="codes">LOP &rarr; LBJ</span><span class="date">Fri, Jul 10</span></div>
+      <div class="leg-flight"><span class="airline">Wings Air</span><span class="times">2:30 PM &rarr; 3:45 PM</span></div>
+      <span class="leg-duration">1h 15m</span>
+      <span class="leg-stops nonstop">Nonstop</span>
+      <span class="leg-price">$112</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+LOP+to+LBJ+on+2026-07-10+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">2 nights in Komodo / Flores &middot; Fri Jul 10 &ndash; Sun Jul 12</span><div class="line"></div></div>
+    <div class="leg">
+      <span class="leg-num">06</span>
+      <div class="leg-route"><span class="codes">LBJ &rarr; SIN</span><span class="date">Sun, Jul 12</span></div>
+      <div class="leg-flight"><span class="airline">Citilink</span><span class="times">1:15 PM &rarr; 8:00 PM</span></div>
+      <span class="leg-duration">6h 45m</span>
+      <span class="leg-stops">1 stop</span>
+      <span class="leg-price">$151</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+LBJ+to+SIN+on+2026-07-12+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+    <div class="stay-divider"><div class="line"></div><span class="label">1 night in Singapore &middot; Sun Jul 12</span><div class="line"></div></div>
+    <div class="leg flagged">
+      <span class="leg-num">07</span>
+      <div class="leg-route"><span class="codes">SIN &rarr; ORD</span><span class="date">Tue, Jul 14</span><span class="flag-warn">~25h travel day</span></div>
+      <div class="leg-flight"><span class="airline">JAL / American</span><span class="times">Check link for times</span></div>
+      <span class="leg-duration">~25h</span>
+      <span class="leg-stops">2 stops</span>
+      <span class="leg-price">$644</span>
+      <span class="leg-link"><a href="https://www.google.com/travel/flights?q=Flights+from+SIN+to+ORD+on+2026-07-14+one+way" target="_blank">Book &rarr;</a></span>
+    </div>
+  </div>
+
+  <div class="card-summary">
+    <div class="summary-item"><span class="label">Trip length</span><div class="value">19 days (Jun 25 &ndash; Jul 14)</div></div>
+    <div class="summary-item"><span class="label">New countries</span><div class="value">Indonesia (Lombok + Komodo), Singapore (transit) + Tokyo night</div></div>
+    <div class="summary-item"><span class="label">Why this one</span><div class="value">The ultimate off-the-beaten-path Indonesia trip. Gili Islands + Komodo dragons + zero Bali tourists. 7 flights but all short hops. Most adventurous option.</div></div>
+  </div>
+</div>
+
+</div><!-- /options -->
+
+<!-- TRIP PLANNER: Barbados + St. Vincent & Grenadines -->
+<div style="max-width:1100px;margin:0 auto;padding:60px 24px 80px;border-top:1px solid rgba(255,255,255,0.06);">
+
+  <h1 style="font-size:2rem;font-weight:700;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a0a0b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">Barbados + St. Vincent &amp; Grenadines</h1>
+  <div style="font-size:0.95rem;color:#6b6b80;font-weight:300;">May 14&ndash;25, 2026 &middot; 11 days &middot; 2 new countries &middot; Active couple trip</div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#4a4a5c;margin-top:12px;">Water temp: 81&ndash;82F &middot; Dry-ish season &middot; Flights + Airbnb priced as of March 25, 2026</div>
+
+  <!-- Route visualization -->
+  <div style="display:flex;align-items:center;gap:0;margin:32px 0;overflow-x:auto;padding-bottom:8px;">
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:60px;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;color:#fff;">ORD</span><span style="font-size:0.65rem;color:#6b6b80;margin-top:2px;">Chicago</span></div>
+    <div style="flex:1;min-width:40px;height:1px;margin:0 4px;border-top:1px dashed rgba(255,255,255,0.15);"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:60px;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;color:#34d399;">BGI</span><span style="font-size:0.65rem;color:#6b6b80;margin-top:2px;">Barbados</span></div>
+    <div style="flex:1;min-width:40px;height:1px;margin:0 4px;border-top:1px dashed rgba(255,255,255,0.15);position:relative;"><span style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#4a4a5c;white-space:nowrap;background:#06060a;padding:0 4px;">4 nights</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:60px;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;color:#34d399;">SVD</span><span style="font-size:0.65rem;color:#6b6b80;margin-top:2px;">St. Vincent</span></div>
+    <div style="flex:1;min-width:40px;height:1px;margin:0 4px;border-top:1px dashed rgba(255,255,255,0.15);position:relative;"><span style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#4a4a5c;white-space:nowrap;background:#06060a;padding:0 4px;">7 nights</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:60px;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;color:#fff;">BGI</span><span style="font-size:0.65rem;color:#6b6b80;margin-top:2px;">Barbados</span></div>
+    <div style="flex:1;min-width:40px;height:1px;margin:0 4px;border-top:1px dashed rgba(255,255,255,0.15);"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:60px;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;color:#fff;">ORD</span><span style="font-size:0.65rem;color:#6b6b80;margin-top:2px;">Home</span></div>
+  </div>
+
+  <!-- Day-by-day timeline -->
+  <div style="margin-top:40px;">
+    <h2 style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:500;color:#4a4a5c;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;">Day-by-Day Itinerary</h2>
+
+    <!-- Day 1 -->
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#34d399;font-weight:600;">DAY 1</div>
+        <div style="font-size:0.8rem;color:#8888a0;">Thu, May 14</div>
+      </div>
+      <div>
+        <div style="font-size:1rem;color:#fff;font-weight:600;">Fly to Barbados</div>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:4px;">ORD &rarr; BGI &middot; American Airlines &middot; ~8h, 1 stop &middot; <span style="color:#fff;font-family:'JetBrains Mono',monospace;">$269/pp</span></div>
+        <a href="https://www.google.com/travel/flights?q=Flights+from+ORD+to+BGI+on+2026-05-14+one+way" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#60a5fa;text-decoration:none;">Book flight &rarr;</a>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:8px;">Check into <strong style="color:#fff;">Beach Villas &ndash; Ocean View</strong>, Worthing Beach</div>
+        <div style="font-size:0.8rem;color:#6b6b80;">Beachfront 1BR &middot; King bed &middot; Ocean view balcony &middot; Kitchen &middot; Free parking</div>
+        <a href="https://www.airbnb.com/rooms/29684788?adults=2&check_in=2026-05-14&check_out=2026-05-18" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#60a5fa;text-decoration:none;">View on Airbnb &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Day 2 -->
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#34d399;font-weight:600;">DAY 2</div>
+        <div style="font-size:0.8rem;color:#8888a0;">Fri, May 15</div>
+      </div>
+      <div>
+        <div style="font-size:1rem;color:#fff;font-weight:600;">South Coast &amp; Surfing</div>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:4px;">
+          <strong style="color:#c0c0d0;">Morning:</strong> Surf or bodyboard at Worthing Beach (right outside your door) or Rockley Beach (5 min walk)<br>
+          <strong style="color:#c0c0d0;">Afternoon:</strong> Snorkel at Carlisle Bay shipwrecks &mdash; 6 sunken ships in shallow clear water, swim with sea turtles (20 min drive)<br>
+          <strong style="color:#c0c0d0;">Evening:</strong> Oistins Fish Fry &mdash; the legendary Friday night street food market. Fresh grilled fish, rum punch, live music.
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 3 -->
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#34d399;font-weight:600;">DAY 3</div>
+        <div style="font-size:0.8rem;color:#8888a0;">Sat, May 16</div>
+      </div>
+      <div>
+        <div style="font-size:1rem;color:#fff;font-weight:600;">East Coast Adventure</div>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:4px;">
+          <strong style="color:#c0c0d0;">Morning:</strong> Drive to Bathsheba &mdash; dramatic Atlantic coast, the famous Soup Bowl surf break. Watch or rent a board.<br>
+          <strong style="color:#c0c0d0;">Afternoon:</strong> Harrison's Cave &mdash; underground limestone caverns with stalactites, waterfall, crystalline pools<br>
+          <strong style="color:#c0c0d0;">Detour:</strong> Welchman Hall Gully &mdash; hike through a collapsed cave turned tropical forest (30 min trail)
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 4 -->
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#34d399;font-weight:600;">DAY 4</div>
+        <div style="font-size:0.8rem;color:#8888a0;">Sun, May 17</div>
+      </div>
+      <div>
+        <div style="font-size:1rem;color:#fff;font-weight:600;">West Coast &amp; Catamaran</div>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:4px;">
+          <strong style="color:#c0c0d0;">Full day:</strong> Catamaran cruise down the west coast &mdash; snorkel stops over reefs, swim with turtles, lunch on board, rum punch included. Book "Cool Runnings" or "Good Times" catamaran.<br>
+          <strong style="color:#c0c0d0;">Alt:</strong> Folkestone Marine Park for reef snorkeling + Animal Flower Cave (sea caves at the island's north tip)
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 5: Travel -->
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(52,211,153,0.03);margin:0 -20px;padding-left:20px;padding-right:20px;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#22d3ee;font-weight:600;">DAY 5</div>
+        <div style="font-size:0.8rem;color:#8888a0;">Mon, May 18</div>
+      </div>
+      <div>
+        <div style="font-size:1rem;color:#fff;font-weight:600;">Fly to St. Vincent</div>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:4px;">
+          Check out of Airbnb. <strong style="color:#fff;">BGI &rarr; SVD</strong> &middot; Caribbean Airlines &middot; 12:35 PM &rarr; 1:20 PM &middot; 45 min nonstop &middot; <span style="color:#fff;font-family:'JetBrains Mono',monospace;">$152/pp</span>
+        </div>
+        <a href="https://www.google.com/travel/flights?q=Flights+from+BGI+to+SVD+on+2026-05-18+one+way" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#60a5fa;text-decoration:none;">Book flight &rarr;</a>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:8px;">Arrive St. Vincent early afternoon. Pick up rental car ($55/day). Check into accommodation. Explore Kingstown or head to a beach.</div>
+        <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:250px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#22d3ee;text-transform:uppercase;letter-spacing:0.08em;">Option A &mdash; Mountain Retreat</div>
+            <div style="font-size:0.9rem;color:#fff;font-weight:600;margin-top:4px;">Spirit of the Valley</div>
+            <div style="font-size:0.78rem;color:#8888a0;">Vermont, St. Vincent &middot; Tiny home in the mountains &middot; 1BR/1BA &middot; Jungle views &middot; Amazing outdoor space</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#fff;margin-top:6px;">$617 <span style="color:#6b6b80;font-size:0.7rem;">/ 5 nights</span></div>
+            <div style="font-size:0.75rem;color:#8888a0;">4.91 stars &middot; 158 reviews &middot; Superhost &middot; Guest Favorite</div>
+            <a href="https://www.airbnb.com/rooms/22044927?adults=2&check_in=2026-05-18&check_out=2026-05-23" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#60a5fa;text-decoration:none;display:inline-block;margin-top:6px;">View on Airbnb &rarr;</a>
+          </div>
+          <div style="flex:1;min-width:250px;background:rgba(255,255,255,0.03);border:1px solid rgba(52,211,153,0.15);border-radius:10px;padding:14px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#34d399;text-transform:uppercase;letter-spacing:0.08em;">Option B &mdash; Seaside &middot; Top 1%</div>
+            <div style="font-size:0.9rem;color:#fff;font-weight:600;margin-top:4px;">Sunset@Jenny's Place</div>
+            <div style="font-size:0.78rem;color:#8888a0;">Ratho Mill, St. Vincent &middot; Steps to the sea &middot; 1BR/1BA &middot; Sunset views &middot; Scenic location</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#34d399;margin-top:6px;">$464 <span style="color:#6b6b80;font-size:0.7rem;">/ 5 nights</span></div>
+            <div style="font-size:0.75rem;color:#8888a0;">4.97 stars &middot; 227 reviews &middot; Superhost &middot; Top 1% of homes</div>
+            <a href="https://www.airbnb.com/rooms/14290799?adults=2&check_in=2026-05-18&check_out=2026-05-23" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#60a5fa;text-decoration:none;display:inline-block;margin-top:6px;">View on Airbnb &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Days 6-7 -->
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#34d399;font-weight:600;">DAYS 6&ndash;7</div>
+        <div style="font-size:0.8rem;color:#8888a0;">Tue&ndash;Wed<br>May 19&ndash;20</div>
+      </div>
+      <div>
+        <div style="font-size:1rem;color:#fff;font-weight:600;">St. Vincent &mdash; Volcano &amp; Waterfalls</div>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:4px;">
+          <strong style="color:#c0c0d0;">La Soufriere Volcano:</strong> 2-hour hike to the crater rim of an active volcano (4,049 ft). Misty, dramatic, unforgettable. Book a guide &mdash; the trail starts from Bamboo Range or Rabacca. Full day.<br>
+          <strong style="color:#c0c0d0;">Trinity Falls:</strong> Triple waterfall deep in the rainforest &mdash; shorter hike, great swimming hole at the base.<br>
+          <strong style="color:#c0c0d0;">Dark View Falls:</strong> Twin waterfalls accessible via suspension bridge. Easy hike, swim under the falls.<br>
+          <strong style="color:#c0c0d0;">Vermont Nature Trail:</strong> Birdwatching through rainforest &mdash; spot the St. Vincent Parrot (national bird).
+        </div>
+      </div>
+    </div>
+
+    <!-- Days 8-10 -->
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#34d399;font-weight:600;">DAYS 8&ndash;10</div>
+        <div style="font-size:0.8rem;color:#8888a0;">Thu&ndash;Sat<br>May 21&ndash;23</div>
+      </div>
+      <div>
+        <div style="font-size:1rem;color:#fff;font-weight:600;">The Grenadines &mdash; Tobago Cays &amp; Island Hopping</div>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:4px;">
+          This is the highlight of the trip. Take a multi-day sailing trip or day trips from Bequia/Union Island:<br><br>
+          <strong style="color:#c0c0d0;">Tobago Cays:</strong> Uninhabited islands in a marine park. Crystal clear water, swim with green sea turtles, snorkel Horseshoe Reef, eat grilled lobster on the beach. Best snorkeling in the Caribbean.<br>
+          <strong style="color:#c0c0d0;">Bequia:</strong> Take the ferry from Kingstown (1 hour). Laid-back island, great walks, Old Hegg Turtle Sanctuary, Princess Margaret Beach.<br>
+          <strong style="color:#c0c0d0;">Mustique:</strong> Ultra-exclusive island (day trip from Bequia). Beautiful hiking trails, Basil's Bar.<br>
+          <strong style="color:#c0c0d0;">Mayreau:</strong> Tiny island (300 people), Salt Whistle Bay &mdash; one of the most beautiful beaches in the world.<br>
+          <strong style="color:#c0c0d0;">Kitesurfing:</strong> Union Island is one of the Caribbean's top kite spots.
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 11 -->
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#34d399;font-weight:600;">DAY 11</div>
+        <div style="font-size:0.8rem;color:#8888a0;">Sun, May 24</div>
+      </div>
+      <div>
+        <div style="font-size:1rem;color:#fff;font-weight:600;">Last Day in SVG</div>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:4px;">Relax, beach day, or squeeze in one more snorkel/dive. Pack up for early departure tomorrow.</div>
+      </div>
+    </div>
+
+    <!-- Day 12: Return -->
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:20px;padding:20px 0;background:rgba(96,165,250,0.03);margin:0 -20px;padding-left:20px;padding-right:20px;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#60a5fa;font-weight:600;">DAY 12</div>
+        <div style="font-size:0.8rem;color:#8888a0;">Mon, May 25</div>
+      </div>
+      <div>
+        <div style="font-size:1rem;color:#fff;font-weight:600;">Fly Home (via Barbados)</div>
+        <div style="font-size:0.85rem;color:#8888a0;margin-top:4px;">
+          <strong style="color:#fff;">Leg 1:</strong> SVD &rarr; BGI &middot; ~45 min nonstop &middot; <span style="color:#fff;font-family:'JetBrains Mono',monospace;">$148/pp</span><br>
+          <a href="https://www.google.com/travel/flights?q=Flights+from+SVD+to+BGI+on+2026-05-25+one+way" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#60a5fa;text-decoration:none;">Book SVD&rarr;BGI &rarr;</a><br><br>
+          <strong style="color:#fff;">Leg 2:</strong> BGI &rarr; ORD &middot; American &middot; ~9h, 1 stop &middot; <span style="color:#fff;font-family:'JetBrains Mono',monospace;">$368/pp</span><br>
+          <a href="https://www.google.com/travel/flights?q=Flights+from+BGI+to+ORD+on+2026-05-25+one+way" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#60a5fa;text-decoration:none;">Book BGI&rarr;ORD &rarr;</a>
+        </div>
+        <div style="font-size:0.8rem;color:#6b6b80;margin-top:8px;">Split return saves $164 vs flying SVD&rarr;ORD direct ($680)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget Summary -->
+  <div style="margin-top:48px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:32px;">
+    <h2 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:20px;">Budget Summary</h2>
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+          <th style="text-align:left;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#4a4a5c;text-transform:uppercase;letter-spacing:0.08em;">Item</th>
+          <th style="text-align:left;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#4a4a5c;text-transform:uppercase;">Details</th>
+          <th style="text-align:right;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#4a4a5c;text-transform:uppercase;">Per Person</th>
+          <th style="text-align:right;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#4a4a5c;text-transform:uppercase;">For 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+          <td style="padding:10px 12px;color:#c0c0d0;font-size:0.85rem;">ORD &rarr; BGI</td>
+          <td style="padding:10px 12px;color:#8888a0;font-size:0.8rem;">Thu May 14, American, ~8h</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$269</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$538</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+          <td style="padding:10px 12px;color:#c0c0d0;font-size:0.85rem;">BGI &rarr; SVD</td>
+          <td style="padding:10px 12px;color:#8888a0;font-size:0.8rem;">Mon May 18, Caribbean Airlines, 45 min</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$152</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$304</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+          <td style="padding:10px 12px;color:#c0c0d0;font-size:0.85rem;">SVD &rarr; BGI</td>
+          <td style="padding:10px 12px;color:#8888a0;font-size:0.8rem;">Mon May 25, InterCaribbean, 45 min</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$148</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$296</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+          <td style="padding:10px 12px;color:#c0c0d0;font-size:0.85rem;">BGI &rarr; ORD</td>
+          <td style="padding:10px 12px;color:#8888a0;font-size:0.8rem;">Mon May 25, American, ~9h</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$368</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$736</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+          <td style="padding:10px 12px;color:#c0c0d0;font-size:0.85rem;">Airbnb (Barbados)</td>
+          <td style="padding:10px 12px;color:#8888a0;font-size:0.8rem;">Beach Villas Ocean View, 4 nights</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#8888a0;">$318</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$635</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+          <td style="padding:10px 12px;color:#c0c0d0;font-size:0.85rem;">SVG Airbnb (Option A)</td>
+          <td style="padding:10px 12px;color:#8888a0;font-size:0.8rem;">Spirit of the Valley, 5 nights</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#8888a0;">$309</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$617</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+          <td style="padding:10px 12px;color:#c0c0d0;font-size:0.85rem;">SVG Airbnb (Option B)</td>
+          <td style="padding:10px 12px;color:#8888a0;font-size:0.8rem;">Sunset@Jenny's Place, 5 nights</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#34d399;">$232</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#34d399;">$464</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+          <td style="padding:10px 12px;color:#c0c0d0;font-size:0.85rem;">Rental Car (SVG)</td>
+          <td style="padding:10px 12px;color:#8888a0;font-size:0.8rem;">5 days @ $55/day</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#8888a0;">$138</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#fff;">$275</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+          <td style="padding:14px 12px;color:#fff;font-size:0.95rem;font-weight:600;">Total w/ Jenny's Place (cheaper)</td>
+          <td style="padding:14px 12px;color:#8888a0;font-size:0.8rem;">flights + both stays + car</td>
+          <td style="padding:14px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#34d399;">$1,624</td>
+          <td style="padding:14px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#34d399;">$3,248</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 12px;color:#fff;font-size:0.95rem;font-weight:600;">Total w/ Spirit of Valley</td>
+          <td style="padding:14px 12px;color:#8888a0;font-size:0.8rem;">flights + both stays + car</td>
+          <td style="padding:14px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#fff;">$1,701</td>
+          <td style="padding:14px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#fff;">$3,401</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:0.75rem;color:#4a4a5c;margin-top:12px;">+ activities/food/drinks. Does not include Tobago Cays day trip (~$100&ndash;150/pp), volcano guide (~$40/pp), catamaran cruise (~$80&ndash;100/pp).</div>
+  </div>
+
+  <!-- Key spots map placeholder + descriptions -->
+  <div style="margin-top:48px;">
+    <h2 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:20px;">Key Locations</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#34d399;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Barbados</div>
+        <h3 style="font-size:0.95rem;color:#fff;margin-bottom:8px;">Worthing Beach (your Airbnb)</h3>
+        <p style="font-size:0.8rem;color:#8888a0;line-height:1.6;">South coast, calm Caribbean water. Walking distance to restaurants and Rockley Beach. 15 min to Carlisle Bay, 20 min to Oistins.</p>
+        <a href="https://maps.google.com/?q=Worthing+Beach+Barbados" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#60a5fa;text-decoration:none;">View on Google Maps &rarr;</a>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#34d399;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Barbados</div>
+        <h3 style="font-size:0.95rem;color:#fff;margin-bottom:8px;">Carlisle Bay Shipwrecks</h3>
+        <p style="font-size:0.8rem;color:#8888a0;line-height:1.6;">6 sunken ships in 15&ndash;40 ft of clear water. Swim with sea turtles, rays, tropical fish. Best snorkeling on the island. Gear rental on the beach.</p>
+        <a href="https://maps.google.com/?q=Carlisle+Bay+Barbados" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#60a5fa;text-decoration:none;">View on Google Maps &rarr;</a>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#34d399;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Barbados</div>
+        <h3 style="font-size:0.95rem;color:#fff;margin-bottom:8px;">Bathsheba / Soup Bowl</h3>
+        <p style="font-size:0.8rem;color:#8888a0;line-height:1.6;">Wild Atlantic east coast. Dramatic rock formations, world-class surf break. Totally different vibe from the calm west coast. Great for photos.</p>
+        <a href="https://maps.google.com/?q=Bathsheba+Barbados" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#60a5fa;text-decoration:none;">View on Google Maps &rarr;</a>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#22d3ee;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">St. Vincent</div>
+        <h3 style="font-size:0.95rem;color:#fff;margin-bottom:8px;">La Soufriere Volcano</h3>
+        <p style="font-size:0.8rem;color:#8888a0;line-height:1.6;">Active volcano, 4,049 ft. 2-hour hike to the crater. Misty, dramatic. Erupted 2021. Book a local guide. Full day trip.</p>
+        <a href="https://maps.google.com/?q=La+Soufriere+St+Vincent" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#60a5fa;text-decoration:none;">View on Google Maps &rarr;</a>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#22d3ee;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Grenadines</div>
+        <h3 style="font-size:0.95rem;color:#fff;margin-bottom:8px;">Tobago Cays</h3>
+        <p style="font-size:0.8rem;color:#8888a0;line-height:1.6;">THE highlight. Uninhabited islands, marine park, clearest water in the Caribbean. Swim with green sea turtles. Snorkel Horseshoe Reef. Grilled lobster on the beach. Day trip from Bequia or Union Island.</p>
+        <a href="https://maps.google.com/?q=Tobago+Cays+Marine+Park" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#60a5fa;text-decoration:none;">View on Google Maps &rarr;</a>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#22d3ee;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Grenadines</div>
+        <h3 style="font-size:0.95rem;color:#fff;margin-bottom:8px;">Bequia</h3>
+        <p style="font-size:0.8rem;color:#8888a0;line-height:1.6;">1-hour ferry from Kingstown. Laid-back harbor town, Princess Margaret Beach, Old Hegg Turtle Sanctuary. Great base for day trips to Tobago Cays and Mustique.</p>
+        <a href="https://maps.google.com/?q=Bequia+St+Vincent+and+the+Grenadines" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#60a5fa;text-decoration:none;">View on Google Maps &rarr;</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Still need -->
+  <div style="margin-top:40px;background:rgba(251,146,60,0.05);border:1px solid rgba(251,146,60,0.15);border-radius:12px;padding:20px 24px;">
+    <h3 style="font-size:0.9rem;font-weight:600;color:#fb923c;margin-bottom:8px;">Still need to book</h3>
+    <ul style="font-size:0.85rem;color:#8888a0;line-height:1.8;list-style:none;padding:0;">
+      <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;">&#9744;</span> SVG accommodation (7 nights, May 18&ndash;25) &mdash; check Airbnb in Bequia or Kingstown</li>
+      <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;">&#9744;</span> Tobago Cays sailing/snorkel day trip &mdash; book Friendship Rose or a local charter</li>
+      <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;">&#9744;</span> La Soufriere volcano guide &mdash; book through your accommodation or local operator</li>
+      <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;">&#9744;</span> Barbados catamaran day cruise &mdash; Cool Runnings IV or Good Times</li>
+      <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;">&#9744;</span> Bequia ferry tickets (Kingstown &rarr; Bequia, ~$5 each way)</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+function show(idx) {
+  document.querySelectorAll('.option-card').forEach(c => c.classList.remove('visible'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('opt-' + idx).classList.add('visible');
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+}
+</script>
+</body>
+</html>
