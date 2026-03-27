@@ -20,7 +20,7 @@ export function FamilyCard({ member, googlePhoto }: FamilyCardProps) {
   return (
     <div
       className={cn(
-        "group relative rounded-xl border border-border bg-card overflow-hidden",
+        "group relative rounded-xl border border-transparent bg-transparent overflow-hidden",
         "transition-all duration-300 ease-out",
         "hover:-translate-y-1 hover:shadow-lg",
         colors.glow,
@@ -28,16 +28,7 @@ export function FamilyCard({ member, googlePhoto }: FamilyCardProps) {
       )}
     >
       {/* Photo area with subtle gradient background */}
-      <div className={cn("relative w-full h-56 flex items-end justify-center", colors.bg)}>
-        {/* Radial gradient glow behind person */}
-        <div
-          className={cn(
-            "absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-300"
-          )}
-          style={{
-            background: 'radial-gradient(ellipse at 50% 60%, currentColor 0%, transparent 70%)',
-          }}
-        />
+      <div className="relative w-full h-56 flex items-end justify-center">
 
         {photoSrc ? (
           <Image
