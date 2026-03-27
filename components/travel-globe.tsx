@@ -78,16 +78,25 @@ export function TravelGlobe({
       .catch(err => console.error('Failed to load countries:', err))
   }, [])
 
-  // Build lookup of visited countries
+  // Build lookup of visited countries (by code AND name for GeoJSON datasets with -99 codes)
   const visitedCountries = useMemo(() => {
     const visited: Record<string, string[]> = {}
     for (const travel of travels) {
       if (selectedUser && travel.user_email !== selectedUser) continue
+      // Index by country code
       if (!visited[travel.country_code]) {
         visited[travel.country_code] = []
       }
       if (!visited[travel.country_code].includes(travel.user_email)) {
         visited[travel.country_code].push(travel.user_email)
+      }
+      // Also index by country name (fallback for GeoJSON entries with ISO=-99)
+      const nameKey = `name:${travel.country_name}`
+      if (!visited[nameKey]) {
+        visited[nameKey] = []
+      }
+      if (!visited[nameKey].includes(travel.user_email)) {
+        visited[nameKey].push(travel.user_email)
       }
     }
     return visited
@@ -152,11 +161,16 @@ export function TravelGlobe({
 
     return countries.filter(country => {
       const isoCode = country.properties['ISO3166-1-Alpha-2']
-      return visitedCountries[isoCode]
-    }).map(country => ({
-      ...country,
-      visitors: visitedCountries[country.properties['ISO3166-1-Alpha-2']] || []
-    }))
+      const name = country.properties['ADMIN'] || country.properties['name'] || ''
+      return visitedCountries[isoCode] || visitedCountries[`name:${name}`]
+    }).map(country => {
+      const isoCode = country.properties['ISO3166-1-Alpha-2']
+      const name = country.properties['ADMIN'] || country.properties['name'] || ''
+      return {
+        ...country,
+        visitors: visitedCountries[isoCode] || visitedCountries[`name:${name}`] || []
+      }
+    })
   }, [countries, visitedCountries])
 
   const getPolygonColor = useCallback((d: any) => {
