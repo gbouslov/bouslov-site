@@ -10,7 +10,6 @@ import {
   ThumbsUp,
   Zap,
   Link2,
-  ArrowRight,
 } from 'lucide-react'
 import { FamilyCard } from '@/components/family-card'
 import { FAMILY_MEMBERS } from '@/lib/family-data'
@@ -34,39 +33,41 @@ interface HomeClientProps {
 export function HomeClient({ userName }: HomeClientProps) {
   const firstName = userName.split(' ')[0]
 
+  // Split family into two rows for a natural arrangement
+  const topRow = FAMILY_MEMBERS.slice(0, 4)    // Gabe, David, Jonathan, Daniel
+  const bottomRow = FAMILY_MEMBERS.slice(4)     // Dad, Mom
+
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden">
-      {/* Top — Title */}
-      <div className="text-center shrink-0">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+    <div className="h-[calc(100vh-4rem)] flex flex-col gap-4 overflow-hidden">
+      {/* Title */}
+      <div className="text-center shrink-0 pt-2">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
           The Bouslovs
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-xs text-muted-foreground mt-0.5">
           Welcome back, {firstName}
         </p>
       </div>
 
-      {/* Middle — Family members flowing naturally */}
-      <div className="flex-1 flex items-center justify-center">
-        <div className="flex flex-wrap items-end justify-center gap-x-6 gap-y-2 md:gap-x-10 lg:gap-x-14 max-w-4xl px-4">
-          {FAMILY_MEMBERS.map((member, i) => (
-            <div
-              key={member.email}
-              className={cn(
-                // Stagger heights for organic feel
-                i % 3 === 0 && 'self-end',
-                i % 3 === 1 && 'self-start',
-                i % 3 === 2 && 'self-center',
-              )}
-            >
-              <FamilyCard member={member} />
-            </div>
+      {/* Family — two organic rows */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-2 min-h-0">
+        {/* Row 1: the four brothers */}
+        <div className="flex items-start justify-center gap-4 md:gap-8 lg:gap-12">
+          {topRow.map((member) => (
+            <FamilyCard key={member.email} member={member} />
+          ))}
+        </div>
+
+        {/* Row 2: parents, centered beneath */}
+        <div className="flex items-start justify-center gap-4 md:gap-8 lg:gap-12">
+          {bottomRow.map((member) => (
+            <FamilyCard key={member.email} member={member} />
           ))}
         </div>
       </div>
 
-      {/* Bottom — Compact nav links */}
-      <div className="shrink-0 flex flex-wrap items-center justify-center gap-2 px-4">
+      {/* Nav links — compact row */}
+      <div className="shrink-0 flex flex-wrap items-center justify-center gap-1.5 px-4 pb-2">
         {FEATURE_LINKS.map((link) => {
           const Icon = link.icon
           return (
@@ -74,13 +75,13 @@ export function HomeClient({ userName }: HomeClientProps) {
               key={link.href}
               href={link.href}
               className={cn(
-                "group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm",
+                "group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs",
                 "border border-border bg-card/50",
                 "transition-all duration-200",
                 "hover:bg-accent hover:-translate-y-0.5"
               )}
             >
-              <Icon className={cn("h-3.5 w-3.5", link.color)} />
+              <Icon className={cn("h-3 w-3", link.color)} />
               <span className="text-muted-foreground group-hover:text-foreground transition-colors">
                 {link.label}
               </span>

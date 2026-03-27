@@ -17,9 +17,9 @@ export function FamilyCard({ member }: FamilyCardProps) {
   const photoSrc = !imgError && member.photo ? member.photo : null
 
   return (
-    <div className="group flex flex-col items-center text-center transition-transform duration-300 hover:-translate-y-1">
+    <div className="group flex flex-col items-center text-center w-32 md:w-36 lg:w-40 transition-transform duration-300 hover:-translate-y-1">
       {/* Cutout photo */}
-      <div className="relative h-32 md:h-40 lg:h-48 aspect-square">
+      <div className="relative w-full aspect-square">
         {photoSrc ? (
           <Image
             src={photoSrc}
@@ -30,20 +30,22 @@ export function FamilyCard({ member }: FamilyCardProps) {
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className={cn("h-full w-full flex items-center justify-center text-4xl font-bold rounded-full", colors.bg, colors.text)}>
+          <div className={cn("h-full w-full flex items-center justify-center text-3xl font-bold rounded-full", colors.bg, colors.text)}>
             {member.name[0]}
           </div>
         )}
       </div>
 
-      {/* Name + info */}
+      {/* Name */}
       <span className="text-sm font-semibold text-foreground mt-1">{member.name}</span>
-      <p className="text-xs text-muted-foreground max-w-[140px] leading-snug mt-0.5 line-clamp-2">
+
+      {/* Bio */}
+      <p className="text-[11px] text-muted-foreground leading-tight mt-0.5 line-clamp-2">
         {member.bio}
       </p>
 
       {/* Trait tags */}
-      <div className="flex flex-wrap justify-center gap-1 mt-1.5">
+      <div className="flex flex-wrap justify-center gap-1 mt-1">
         {member.traits.map((trait) => {
           const Icon = trait.icon
           return (
@@ -51,7 +53,7 @@ export function FamilyCard({ member }: FamilyCardProps) {
               key={trait.label}
               variant="outline"
               className={cn(
-                "text-[10px] font-normal gap-0.5 py-0 px-1.5 h-5",
+                "text-[10px] font-normal gap-0.5 py-0 px-1.5 h-[18px]",
                 colors.border,
                 colors.text,
                 "bg-transparent"
