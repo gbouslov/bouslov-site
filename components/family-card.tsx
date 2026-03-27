@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { type FamilyMember, getMemberColors } from '@/lib/family-data'
 import { cn } from '@/lib/utils'
@@ -15,53 +15,51 @@ export function FamilyCard({ member, googlePhoto }: FamilyCardProps) {
   const [imgError, setImgError] = useState(false)
   const colors = getMemberColors(member.color)
 
-  // Use local photo first, fall back to Google profile pic, then initials
   const photoSrc = !imgError && member.photo ? member.photo : googlePhoto || null
 
   return (
     <div
       className={cn(
-        "group relative rounded-xl border border-border bg-card p-5",
+        "group relative rounded-xl border border-border bg-card overflow-hidden",
         "transition-all duration-300 ease-out",
         "hover:-translate-y-1 hover:shadow-lg",
         colors.glow,
         "hover:border-border/80"
       )}
     >
-      {/* Subtle top accent line */}
-      <div
-        className={cn(
-          "absolute top-0 left-4 right-4 h-px",
-          "opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-          colors.bg
-        )}
-      />
-
-      <div className="flex flex-col items-center text-center gap-3">
-        {/* Photo */}
-        <Avatar className="h-20 w-20 ring-2 ring-border group-hover:ring-border/60 transition-all duration-300">
-          {photoSrc ? (
-            <AvatarImage
-              src={photoSrc}
-              alt={member.name}
-              onError={() => setImgError(true)}
-            />
-          ) : null}
-          <AvatarFallback className={cn("text-lg font-semibold", colors.bg, colors.text)}>
+      {/* Large cover photo */}
+      <div className="relative w-full h-48 bg-muted">
+        {photoSrc ? (
+          <Image
+            src={photoSrc}
+            alt={member.name}
+            fill
+            className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className={cn("absolute inset-0 flex items-center justify-center text-4xl font-bold", colors.bg, colors.text)}>
             {member.name[0]}
-          </AvatarFallback>
-        </Avatar>
+          </div>
+        )}
+        {/* Gradient overlay at bottom for name readability */}
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card to-transparent" />
+        {/* Name overlaid on photo */}
+        <h3 className="absolute bottom-3 left-4 text-lg font-semibold text-foreground">
+          {member.name}
+        </h3>
+      </div>
 
-        {/* Name */}
-        <h3 className="text-lg font-semibold text-foreground">{member.name}</h3>
-
+      {/* Content below photo */}
+      <div className="p-4 space-y-3">
         {/* Bio */}
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
           {member.bio}
         </p>
 
         {/* Trait tags */}
-        <div className="flex flex-wrap justify-center gap-1.5 mt-1">
+        <div className="flex flex-wrap gap-1.5">
           {member.traits.map((trait) => {
             const Icon = trait.icon
             return (
