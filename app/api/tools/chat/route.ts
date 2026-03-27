@@ -48,7 +48,7 @@ export async function POST(req: Request) {
 
           const response = await anthropic.messages.create({
             model: 'claude-sonnet-4-20250514',
-            max_tokens: 4096,
+            max_tokens: 8192,
             system: systemPrompt,
             tools: FLIGHT_TOOLS,
             messages: conversationMessages,
