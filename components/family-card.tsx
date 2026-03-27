@@ -2,79 +2,41 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Badge } from '@/components/ui/badge'
 import { type FamilyMember, getMemberColors } from '@/lib/family-data'
 import { cn } from '@/lib/utils'
 
 interface FamilyCardProps {
   member: FamilyMember
-  googlePhoto?: string | null
 }
 
-export function FamilyCard({ member, googlePhoto }: FamilyCardProps) {
+export function FamilyCard({ member }: FamilyCardProps) {
   const [imgError, setImgError] = useState(false)
   const colors = getMemberColors(member.color)
 
   const photoSrc = !imgError && member.photo ? member.photo : null
 
   return (
-    <div
-      className={cn(
-        "group relative rounded-xl border border-transparent bg-transparent overflow-hidden",
-        "transition-all duration-300 ease-out",
-        "hover:-translate-y-1 hover:shadow-lg",
-        colors.glow,
-        "hover:border-border/80"
-      )}
-    >
-      {/* Photo area with subtle gradient background */}
-      <div className="relative w-full h-56 flex items-end justify-center">
-
+    <div className="group flex flex-col items-center gap-1 transition-transform duration-300 hover:-translate-y-1">
+      {/* Cutout photo */}
+      <div className="relative h-36 md:h-44 lg:h-52 aspect-square">
         {photoSrc ? (
           <Image
             src={photoSrc}
             alt={member.name}
-            width={600}
-            height={600}
-            className="relative z-10 h-full w-auto object-contain object-bottom group-hover:scale-105 transition-transform duration-500"
+            width={400}
+            height={400}
+            className="h-full w-full object-contain object-bottom drop-shadow-lg group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className={cn("relative z-10 flex items-center justify-center h-full w-full text-5xl font-bold", colors.text)}>
+          <div className={cn("h-full w-full flex items-center justify-center text-4xl font-bold rounded-full", colors.bg, colors.text)}>
             {member.name[0]}
           </div>
         )}
       </div>
 
-      {/* Content below photo */}
-      <div className="p-4 space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">{member.name}</h3>
-
-        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-          {member.bio}
-        </p>
-
-        <div className="flex flex-wrap gap-1.5">
-          {member.traits.map((trait) => {
-            const Icon = trait.icon
-            return (
-              <Badge
-                key={trait.label}
-                variant="outline"
-                className={cn(
-                  "text-xs font-normal gap-1 py-0.5",
-                  colors.border,
-                  colors.text,
-                  "bg-transparent"
-                )}
-              >
-                <Icon className="h-3 w-3" />
-                {trait.label}
-              </Badge>
-            )
-          })}
-        </div>
-      </div>
+      {/* Name */}
+      <span className="text-sm font-semibold text-foreground">{member.name}</span>
     </div>
   )
 }
