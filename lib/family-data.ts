@@ -33,7 +33,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
       { label: 'Fitness', icon: Dumbbell },
       { label: 'Strategy', icon: Compass },
     ],
-    photo: '/family/gabe.jpg',
+    photo: '/family/gabe.png',
     color: 'blue',
   },
   {
@@ -45,7 +45,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
       { label: 'Code', icon: Code },
       { label: 'Research', icon: BookOpen },
     ],
-    photo: '/family/david.jpg',
+    photo: '/family/david.png',
     color: 'emerald',
   },
   {
@@ -57,7 +57,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
       { label: 'Gaming', icon: Gamepad2 },
       { label: 'Creative', icon: Camera },
     ],
-    photo: '/family/jonathan.jpg',
+    photo: '/family/jonathan.png',
     color: 'violet',
   },
   {
@@ -69,7 +69,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
       { label: 'Sports', icon: Dumbbell },
       { label: 'Learning', icon: BookOpen },
     ],
-    photo: '/family/daniel.jpg',
+    photo: '/family/daniel.png',
     color: 'amber',
   },
   {
@@ -81,7 +81,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
       { label: 'Travel', icon: Compass },
       { label: 'Cooking', icon: ChefHat },
     ],
-    photo: '/family/dad.jpg',
+    photo: '/family/dad.png',
     color: 'rose',
   },
   {
@@ -93,7 +93,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
       { label: 'Cooking', icon: ChefHat },
       { label: 'Travel', icon: Compass },
     ],
-    photo: '/family/mom.jpg',
+    photo: '/family/mom.png',
     color: 'pink',
   },
 ]

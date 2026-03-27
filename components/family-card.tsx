@@ -15,7 +15,7 @@ export function FamilyCard({ member, googlePhoto }: FamilyCardProps) {
   const [imgError, setImgError] = useState(false)
   const colors = getMemberColors(member.color)
 
-  const photoSrc = !imgError && member.photo ? member.photo : googlePhoto || null
+  const photoSrc = !imgError && member.photo ? member.photo : null
 
   return (
     <div
@@ -27,38 +27,42 @@ export function FamilyCard({ member, googlePhoto }: FamilyCardProps) {
         "hover:border-border/80"
       )}
     >
-      {/* Large cover photo */}
-      <div className="relative w-full h-48 bg-muted">
+      {/* Photo area with subtle gradient background */}
+      <div className={cn("relative w-full h-56 flex items-end justify-center", colors.bg)}>
+        {/* Radial gradient glow behind person */}
+        <div
+          className={cn(
+            "absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-300"
+          )}
+          style={{
+            background: 'radial-gradient(ellipse at 50% 60%, currentColor 0%, transparent 70%)',
+          }}
+        />
+
         {photoSrc ? (
           <Image
             src={photoSrc}
             alt={member.name}
-            fill
-            className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            width={600}
+            height={600}
+            className="relative z-10 h-full w-auto object-contain object-bottom group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className={cn("absolute inset-0 flex items-center justify-center text-4xl font-bold", colors.bg, colors.text)}>
+          <div className={cn("relative z-10 flex items-center justify-center h-full w-full text-5xl font-bold", colors.text)}>
             {member.name[0]}
           </div>
         )}
-        {/* Gradient overlay at bottom for name readability */}
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card to-transparent" />
-        {/* Name overlaid on photo */}
-        <h3 className="absolute bottom-3 left-4 text-lg font-semibold text-foreground">
-          {member.name}
-        </h3>
       </div>
 
       {/* Content below photo */}
       <div className="p-4 space-y-3">
-        {/* Bio */}
+        <h3 className="text-lg font-semibold text-foreground">{member.name}</h3>
+
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
           {member.bio}
         </p>
 
-        {/* Trait tags */}
         <div className="flex flex-wrap gap-1.5">
           {member.traits.map((trait) => {
             const Icon = trait.icon
