@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
+  House,
   Trophy,
   Plane,
   BarChart3,
@@ -26,6 +27,7 @@ import { useState, useEffect } from 'react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 const NAV_ITEMS = [
+  { href: '/home', label: 'Home', icon: House },
   { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   { href: '/travel', label: 'Travel', icon: Plane },
   { href: '/trips', label: 'Trips', icon: Plane },
@@ -82,7 +84,7 @@ export function Sidebar() {
       )}>
         {!collapsed && (
           <Link
-            href="/leaderboard"
+            href="/home"
             className="flex items-center gap-2 font-semibold text-lg text-foreground hover:text-foreground/80 transition-colors"
           >
             <Zap className="h-5 w-5 text-blue-500 flex-shrink-0" />

@@ -59,7 +59,7 @@ export default function LandingPage() {
             <div className="h-10 w-32 bg-zinc-800/50 rounded-lg animate-pulse" />
           ) : session ? (
             <Link
-              href="/leaderboard"
+              href="/home"
               className="group inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/50 hover:border-zinc-600/50 rounded-lg transition-all duration-200 backdrop-blur-sm"
             >
               Enter
