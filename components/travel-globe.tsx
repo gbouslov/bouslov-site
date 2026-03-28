@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import * as THREE from 'three'
-import { vertexShader, fragmentShader, getCachedSunCoordinates, DAY_TEXTURE, NIGHT_TEXTURE, NIGHT_SKY } from '@/lib/globe-shaders'
+import { vertexShader, fragmentShader, getCachedSunCoordinates, DAY_TEXTURE, DAY_TEXTURE_LOW, NIGHT_TEXTURE, NIGHT_TEXTURE_LOW, NIGHT_SKY } from '@/lib/globe-shaders'
 import { useGlobeResize } from '@/hooks/use-globe-resize'
 
 const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default), {
@@ -65,8 +65,25 @@ export function TravelGlobe({
   const materialRef = useRef<THREE.ShaderMaterial | null>(null)
   const { containerRef, dimensions } = useGlobeResize()
 
-  const dayTexture = useMemo(() => new THREE.TextureLoader().load(DAY_TEXTURE), [])
-  const nightTexture = useMemo(() => new THREE.TextureLoader().load(NIGHT_TEXTURE), [])
+  // Progressive texture loading: show low-res instantly, swap to 4K when ready
+  const dayTexture = useMemo(() => {
+    const loader = new THREE.TextureLoader()
+    const tex = loader.load(DAY_TEXTURE_LOW) // instant low-res
+    loader.load(DAY_TEXTURE, (hd) => { // async 4K upgrade
+      tex.image = hd.image
+      tex.needsUpdate = true
+    })
+    return tex
+  }, [])
+  const nightTexture = useMemo(() => {
+    const loader = new THREE.TextureLoader()
+    const tex = loader.load(NIGHT_TEXTURE_LOW)
+    loader.load(NIGHT_TEXTURE, (hd) => {
+      tex.image = hd.image
+      tex.needsUpdate = true
+    })
+    return tex
+  }, [])
 
   // Load GeoJSON
   useEffect(() => {

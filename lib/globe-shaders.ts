@@ -47,9 +47,14 @@ export const fragmentShader = `
   }
 `
 
-export const DAY_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg'
-export const NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg'
-export const NIGHT_SKY = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png'
+// Low-res textures (load instantly, ~245KB each)
+export const DAY_TEXTURE_LOW = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg'
+export const NIGHT_TEXTURE_LOW = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg'
+
+// High-res 4K textures (4096x2048, load progressively)
+export const DAY_TEXTURE = '/textures/earth-day-hd.jpg'
+export const NIGHT_TEXTURE = '/textures/earth-night-hd.jpg'
+export const NIGHT_SKY = '/textures/night-sky-hd.png'
 
 // Calculate sun position based on current time
 export function getSunCoordinates(): { lng: number; lat: number } {
